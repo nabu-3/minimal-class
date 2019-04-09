@@ -69,10 +69,10 @@ class CNabuObjectTest extends TestCase
         $nb_object = new CNabuObject();
 
         $hash = $nb_object->createHash();
-        $this->assertTrue(nb_isValidGUID($hash));
+        $this->assertTrue(CNabuObject::isValidGUID($hash));
 
         $hash = $nb_object->getHash();
-        $this->assertTrue(nb_isValidGUID($hash));
+        $this->assertTrue(CNabuObject::isValidGUID($hash));
 
         $this->assertFalse(CNabuObject::isValidGUID('test-guid-invalid'));
     }
@@ -86,6 +86,6 @@ class CNabuObjectTest extends TestCase
         $nb_object = new CNabuObject();
 
         $hash = $nb_object->getHash();
-        $this->assertTrue(nb_isValidGUID($hash));
+        $this->assertTrue(CNabuObject::isValidGUID($hash));
     }
 }
