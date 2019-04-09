@@ -1,0 +1,41 @@
+{
+    "type": "library",
+    "name": "nabu-3/minimal-class",
+    "description": "nabu-3 Minimal base class to all nabu-3 packages",
+    "keywords": [ "nabu-3", "nabu", "class", "library", "minimal" ],
+    "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/nabu-3/minimal-class"
+        }
+    ],
+    "version": "0.0.2",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "Rafael Gutierrez",
+            "email": "rgutierrez@nabu-3.com",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/nabu-3/minimal-class/issues",
+        "email": "contact@nabu-3.com",
+        "source": "https://github.com/nabu-3/minimal-class"
+    },
+    "require": {
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8"
+    },
+    "autoload": {
+        "classmap": [
+            "src/"
+        ]
+    },
+    "autoload-dev": {
+        "classmap": [
+            "tests/"
+        ]
+    }
+}
