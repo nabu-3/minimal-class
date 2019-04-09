@@ -34,6 +34,9 @@ use nabu\min\CNabuObject;
  */
 class CNabuObjectTest extends TestCase
 {
+    /** @var int Number of iterations to test GUID massive tests. */
+    private const GUID_LOOP_COUNT = 1000;
+
     /**
      * @test getTimestamp
      */
@@ -87,5 +90,15 @@ class CNabuObjectTest extends TestCase
 
         $hash = $nb_object->getHash();
         $this->assertTrue(CNabuObject::isValidGUID($hash));
+    }
+
+    /**
+     * @test generateGUID
+     * @test isValidGUID
+     */
+    public function testMassiveGUIDManagement()
+    {
+        for ($i = 0; $i < self::GUID_LOOP_COUNT && CNabuObject::isValidGUID(CNabuObject::generateGUID()); $i++);
+        $this->assertSame(self::GUID_LOOP_COUNT, $i);
     }
 }
