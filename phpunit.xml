@@ -28,8 +28,8 @@
 
     <!-- ... -->
     <testsuites>
-        <testsuite name="Basic Lexer Tests">
-            <directory>./tests/nabu/lexer</directory>
+        <testsuite name="Minimal Class Tests">
+            <directory>tests/nabu/min</directory>
         </testsuite>
     </testsuites>
     <logging>

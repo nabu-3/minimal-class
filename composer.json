@@ -1,7 +1,7 @@
 {
     "type": "library",
     "name": "nabu-3/minimal-class",
-    "description": "nabu-3 Minimal base class to all nabu-3 packages",
+    "description": "nabu-3 Minimal base class for all nabu-3 packages",
     "keywords": [ "nabu-3", "nabu", "class", "library", "minimal" ],
     "repositories": [
         {
