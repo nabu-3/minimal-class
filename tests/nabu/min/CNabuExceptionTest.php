@@ -37,10 +37,18 @@ class CNabuExceptionTest extends TestCase
     /**
      * @test __construct
      */
-    public function testConstruct()
+    public function testConstruct1()
     {
         $this->expectException(ENabuExceptionAux::class);
         throw new ENabuExceptionAux('Exception test message', 1);
+    }
+    /**
+     * @test __construct
+     */
+    public function testConstruct2()
+    {
+        $this->expectException(ENabuExceptionAux::class);
+        throw new ENabuExceptionAux('Exception test message %s', 1, array('with array values'));
     }
 }
 
