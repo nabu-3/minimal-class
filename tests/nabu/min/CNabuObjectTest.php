@@ -101,4 +101,10 @@ class CNabuObjectTest extends TestCase
         for ($i = 0; $i < self::GUID_LOOP_COUNT && CNabuObject::isValidGUID(CNabuObject::generateGUID()); $i++);
         $this->assertSame(self::GUID_LOOP_COUNT, $i);
     }
+
+    public function testNbVnsprintf()
+    {
+        $value = nb_vnsprintf('%value$s', array('value' => 'test'));
+        $this->assertSame('test', $value);
+    }
 }
