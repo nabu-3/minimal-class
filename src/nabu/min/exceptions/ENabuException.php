@@ -26,6 +26,7 @@ use Exception;
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
  * @since 3.0.0
  * @version 3.0.0
+ * @package nabu\min\exceptions
  */
 abstract class ENabuException extends \Exception
 {

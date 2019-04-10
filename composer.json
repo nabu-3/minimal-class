@@ -31,6 +31,9 @@
     "autoload": {
         "classmap": [
             "src/"
+        ],
+        "files": [
+            "src/functions.php"
         ]
     },
     "autoload-dev": {
