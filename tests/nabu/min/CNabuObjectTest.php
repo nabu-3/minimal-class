@@ -97,7 +97,7 @@ class CNabuObjectTest extends TestCase
      */
     public function testMassiveGUIDManagement()
     {
-        for ($i = 0; $i < self::GUID_LOOP_COUNT && CNabuObject::isValidGUID(nb_generateGUID()); $i++);
+        for ($i = 0; $i < self::GUID_LOOP_COUNT && nb_isValidGUID(nb_generateGUID()); $i++);
         $this->assertSame(self::GUID_LOOP_COUNT, $i);
     }
 
