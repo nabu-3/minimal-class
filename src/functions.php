@@ -48,3 +48,43 @@ function nb_vnsprintf(string $format, array $data) : string
 
     return vsprintf($format, $data);
 }
+
+/**
+ * Generates a GUID or UUID v4.
+ * Courtesy of http://guid.us/GUID/PHP
+ * @return string Returns the GUID in string format
+ */
+function nb_generateGUID()
+{
+    $guid = false;
+
+    if (function_exists('com_create_guid')) {
+        $guid = com_create_guid();
+    } else {
+        mt_srand((double)microtime()*10000);//optional for php 4.2.0 and up.
+        $charid = strtoupper(md5(uniqid(rand(), true)));
+        $hyphen = chr(45);// "-"
+        $guid = chr(123)// "{"
+            .substr($charid, 0, 8).$hyphen
+            .substr($charid, 8, 4).$hyphen
+            .substr($charid, 12, 4).$hyphen
+            .substr($charid, 16, 4).$hyphen
+            .substr($charid, 20, 12)
+            .chr(125);// "}"
+    }
+
+    return $guid;
+}
+
+/**
+ * Check if a guid is valid
+ * @param string $guid
+ * @return bool Returns true if $guid is valid
+ */
+function nb_isValidGUID($guid)
+{
+    return is_string($guid) &&
+           strlen($guid) === 38 &&
+           preg_match('/^\{[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}\}$/', $guid) === 1
+    ;
+}

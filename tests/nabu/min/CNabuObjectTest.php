@@ -19,7 +19,7 @@
  *  limitations under the License.
  */
 
-namespace tests\nabu\core;
+namespace tests\nabu\min;
 
 use PHPUnit\Framework\TestCase;
 
@@ -28,9 +28,9 @@ use nabu\min\CNabuObject;
 /**
  * PHPUnit tests to verify functionality of class @see CNabuObject
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
- * @since 3.0.12 Surface
- * @version 3.0.12 Surface
- * @package tests\nabu\core
+ * @since 3.0.0 Surface
+ * @version 3.0.0 Surface
+ * @package tests\nabu\min
  */
 class CNabuObjectTest extends TestCase
 {
@@ -64,47 +64,63 @@ class CNabuObjectTest extends TestCase
     /**
      * @test createHash
      * @test getHash
-     * @test generateGUID
-     * @test isValidGUID
+     * @test ::nb_generateGUID
+     * @test ::nb_isValidGUID
      */
     public function testCreateAndGetHash_1()
     {
         $nb_object = new CNabuObject();
 
         $hash = $nb_object->createHash();
-        $this->assertTrue(CNabuObject::isValidGUID($hash));
+        $this->assertTrue(nb_isValidGUID($hash));
 
         $hash = $nb_object->getHash();
-        $this->assertTrue(CNabuObject::isValidGUID($hash));
+        $this->assertTrue(nb_isValidGUID($hash));
 
-        $this->assertFalse(CNabuObject::isValidGUID('test-guid-invalid'));
+        $this->assertFalse(nb_isValidGUID('test-guid-invalid'));
     }
 
     /**
      * @test getHash
-     * @test isValidGUID
+     * @test ::nb_isValidGUID
      */
     public function testCreateAndGetHash_2()
     {
         $nb_object = new CNabuObject();
-
         $hash = $nb_object->getHash();
-        $this->assertTrue(CNabuObject::isValidGUID($hash));
+        $this->assertTrue(nb_isValidGUID($hash));
     }
 
     /**
-     * @test generateGUID
-     * @test isValidGUID
+     * @test ::nb_generateGUID
+     * @test ::nb_isValidGUID
      */
     public function testMassiveGUIDManagement()
     {
-        for ($i = 0; $i < self::GUID_LOOP_COUNT && CNabuObject::isValidGUID(CNabuObject::generateGUID()); $i++);
+        for ($i = 0; $i < self::GUID_LOOP_COUNT && CNabuObject::isValidGUID(nb_generateGUID()); $i++);
         $this->assertSame(self::GUID_LOOP_COUNT, $i);
     }
 
+    /**
+     * @test ::nb_vnsprintf
+     */
     public function testNbVnsprintf()
     {
         $value = nb_vnsprintf('%value$s', array('value' => 'test'));
         $this->assertSame('test', $value);
+        $value = nb_vnsprintf('%value$-10s', array('value' => 'test'));
+        $this->assertSame('test      ', $value);
+        $value = nb_vnsprintf('%value$10s', array('value' => 'test'));
+        $this->assertSame('      test', $value);
+        $value = nb_vnsprintf('%value$d', array('value' => 12));
+        $this->assertSame('12', $value);
+        $value = nb_vnsprintf('%value$04d', array('value' => 835));
+        $this->assertSame('0835', $value);
+        $value = nb_vnsprintf('%value$-4d', array('value' => 835));
+        $this->assertSame('835 ', $value);
+        $value = nb_vnsprintf('%value$f', array('value' => 7.523));
+        $this->assertSame('7.523000', $value);
+        $value = nb_vnsprintf('%value$.4f', array('value' => 9.84));
+        $this->assertSame('9.8400', $value);
     }
 }
