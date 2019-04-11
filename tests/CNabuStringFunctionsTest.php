@@ -45,4 +45,20 @@ class CNabUStringFunctionsTest extends TestCase
         $this->assertFalse(nb_strStartsWith('áccènt', 'acc'));
         $this->assertFalse(nb_strStartsWith('accent', 'ácc'));
     }
+
+    /**
+     * @test ::nb_strEndsWith
+     */
+    public function testNbStrEndsWith()
+    {
+        $this->assertFalse(nb_strEndsWith(null, null));
+        $this->assertFalse(nb_strEndsWith(null, 'anything'));
+        $this->assertFalse(nb_strEndsWith('anything', null));
+        $this->assertFalse(nb_strEndsWith('str', 'nb_str'));
+        $this->assertFalse(nb_strEndsWith('nb_strEndsWith', 'mb_string'));
+        $this->assertTrue(nb_strEndsWith('nb_strEndsWith test', 'test'));
+        $this->assertTrue(nb_strEndsWith('áccènt', 'ènt'));
+        $this->assertFalse(nb_strEndsWith('áccènt', 'ent'));
+        $this->assertFalse(nb_strEndsWith('accent', 'ènt'));
+    }
 }
