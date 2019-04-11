@@ -1,8 +1,5 @@
 <testsuites>
     <testsuite name="Minimal Class Tests">
-        <directory>tests/nabu/min</directory>
-    </testsuite>
-    <testsuite name="Minimal Functions Tests">
         <directory>tests</directory>
     </testsuite>
 </testsuites>
