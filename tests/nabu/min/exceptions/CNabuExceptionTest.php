@@ -19,7 +19,7 @@
  *  limitations under the License.
  */
 
-namespace tests\nabu\min;
+namespace tests\nabu\min\exceptions;
 
 use PHPUnit\Framework\TestCase;
 
@@ -30,17 +30,25 @@ use nabu\min\exceptions\ENabuException;
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
  * @since 3.0.0 Surface
  * @version 3.0.0 Surface
- * @package tests\nabu\min
+ * @package tests\nabu\min\exceptions
  */
 class CNabuExceptionTest extends TestCase
 {
     /**
      * @test __construct
      */
-    public function testConstruct()
+    public function testConstruct1()
     {
         $this->expectException(ENabuExceptionAux::class);
         throw new ENabuExceptionAux('Exception test message', 1);
+    }
+    /**
+     * @test __construct
+     */
+    public function testConstruct2()
+    {
+        $this->expectException(ENabuExceptionAux::class);
+        throw new ENabuExceptionAux('Exception test message %s', 1, array('with array values'));
     }
 }
 
