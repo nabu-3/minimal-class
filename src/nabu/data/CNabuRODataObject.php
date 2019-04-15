@@ -21,8 +21,6 @@
 
 namespace nabu\data;
 
-use CNabuDataObject;
-
 use \nabu\min\CNabuObject;
 
 /**
@@ -116,7 +114,7 @@ abstract class CNabuRODataObject extends CNabuObject
      */
     public function isValueNumeric(string $name): bool
     {
-        return $this->hasValue($name) ? is_numeric($this->data[$name]) : false;
+        return $this->hasValue($name) && is_numeric($this->data[$name]);
     }
 
     /**
@@ -126,7 +124,7 @@ abstract class CNabuRODataObject extends CNabuObject
      */
     public function isValueFloat(string $name): bool
     {
-        return $this->hasValue($name) ? is_numeric($this->data[$name]) || is_float($this->data[$name]) : false;
+        return $this->hasValue($name) && (is_numeric($this->data[$name]) || is_float($this->data[$name]));
     }
 
     /**
@@ -136,7 +134,7 @@ abstract class CNabuRODataObject extends CNabuObject
      */
     public function isValueString(string $name): bool
     {
-        return $this->hasValue($name) ? is_string($this->data[$name]) : false;
+        return $this->hasValue($name) && is_string($this->data[$name]);
     }
 
     /**
@@ -146,7 +144,7 @@ abstract class CNabuRODataObject extends CNabuObject
      */
     public function isValueEmptyString(string $name): bool
     {
-        return $this->hasValue($name) ? (strlen($this->data[$name]) === 0) : false;
+        return $this->hasValue($name) && is_string($this->data[$name]) && mb_strlen($this->data[$name]) === 0;
     }
 
     /**
@@ -156,7 +154,7 @@ abstract class CNabuRODataObject extends CNabuObject
      */
     public function isValueNull(string $name): bool
     {
-        return $this->hasValue($name) ? is_null($this->data[$name]) : false;
+        return $this->hasValue($name) && is_null($this->data[$name]);
     }
 
     /**
@@ -170,7 +168,7 @@ abstract class CNabuRODataObject extends CNabuObject
                ($this->data[$name] === null ||
                 $this->data[$name] === false ||
                 $this->data[$name] === 0 ||
-                strlen($this->data[$name]) === 0
+                mb_strlen($this->data[$name]) === 0
                )
         ;
     }
@@ -189,7 +187,7 @@ abstract class CNabuRODataObject extends CNabuObject
      * Check if a value is strickly equal to a test value.
      * @param string $name Name of the value to check.
      * @param mixed $test Test value to compare.
-     * @param bool $strict If true comparation is strict (uses ===).
+     * @param bool $strict If true comparation is strict (uses === to match).
      * @return bool Returns true if both values are equals.
      */
     public function isValueEqualTo(string $name, $test, bool $strict = false): bool
@@ -204,17 +202,19 @@ abstract class CNabuRODataObject extends CNabuObject
      * @param CNabuDataObject|null $object Object instance to match values.
      * @param string|null $source_name Source name of value to match.
      * @param string|null $target_name Target name in $object to match. If null, then uses $source_name.
+     * @param bool $strict If true comparation is strict (uses === to match).
      * @return bool Returns true if both values exists and matchs.
      */
-    public function matchValue(CNabuDataObject $object = null, string $source_name = null, string $target_name = null)
-    {
+    public function matchValue(
+        CNabuDataObject $object = null, string $source_name = null, string $target_name = null, bool $strict = false
+    ): bool {
         $retval = false;
 
         if ($object instanceof CNabuDataObject) {
             $target_name = (is_string($target_name) ? $target_name : $source_name);
             $retval = $this->hasValue($source_name) &&
                       $object->hasValue($target_name) &&
-                      $this->isValueEqualThan($source_name, $object->getValue($target_name));
+                      $this->isValueEqualTo($source_name, $object->getValue($target_name), $strict);
         }
 
         return $retval;

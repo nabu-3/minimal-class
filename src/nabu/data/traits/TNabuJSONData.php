@@ -23,6 +23,8 @@ namespace nabu\data\traits;
 
 use CNabuDataObject;
 
+use nabu\data\CNabuDataObject;
+
 /**
  * Trait to manage a TNabuDataObject as a JSON object.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
@@ -37,32 +39,37 @@ trait TNabuJSONData
     /** @var int JSON_REPLACE_EXISTING Flag to determine if an operation with JSON needs to replace existing path. */
     const JSON_REPLACE_EXISTING = 0x0002;
 
-    public function checkJSONPath($path)
+    /**
+     * Check if a JSON Path exists.
+     * @param string $path Path to check.
+     * @return bool Returns true if the path exists.
+     */
+    public function checkJSONPath(string $path): bool
     {
-        if ($this->isEmpty() || strlen($path) === 0) {
-            return false;
-        }
+        $retval = false;
 
-        $route = preg_split('/\./', $path);
+        if (!$this->isEmpty() && mb_strlen($path) > 0) {
+            $route = preg_split('/\./', $path);
 
-        if (count($route) > 0) {
-            $l = count($route);
-            $p = &$this->data;
-            for ($i = 0; $i < $l; $i++) {
-                if (!is_array($p) || !array_key_exists($route[$i], $p)) {
-                    return false;
+            if (count($route) > 0) {
+                $l = count($route);
+                $p = &$this->data;
+                for ($i = 0; $i < $l; $i++) {
+                    if (!is_array($p) || !array_key_exists($route[$i], $p)) {
+                        break;
+                    }
+                    $p = &$p[$route[$i]];
                 }
-                $p = &$p[$route[$i]];
+                $retval = ($i === $l);
             }
-            return true;
-        } else {
-            return false;
         }
+
+        return $retval;
     }
 
     public function getJSONValue($path)
     {
-        if ($this->isEmpty() || strlen($path) === 0) {
+        if ($this->isEmpty() || mb_strlen($path) === 0) {
             return false;
         }
 
@@ -85,7 +92,7 @@ trait TNabuJSONData
 
     public function isJSONValueEqualThan($path, $value)
     {
-        if ($this->isEmpty() || strlen($path) === 0) {
+        if ($this->isEmpty() || mb_strlen($path) === 0) {
             return false;
         }
 
@@ -108,7 +115,7 @@ trait TNabuJSONData
 
     public function setJSONValue($path, $value, $flags = 0)
     {
-        if (strlen($path) === 0) {
+        if (mb_strlen($path) === 0) {
             return false;
         }
 

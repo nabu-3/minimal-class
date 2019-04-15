@@ -171,7 +171,7 @@ trait TNabuXMLData
     protected function getXmlCDATA($xml, $field, $emptynull)
     {
         $value = $xml->getCDATA();
-        if (strlen($value) == 0 && $emptynull === true) {
+        if (mb_strlen($value) == 0 && $emptynull === true) {
             $value = null;
         }
         $this->setValue($field, $value);
@@ -185,7 +185,7 @@ trait TNabuXMLData
     protected function getXmlText($xml, $field, $emptynull)
     {
         $value = $xml->getText();
-        if (strlen($value) == 0 && $emptynull === true) {
+        if (mb_strlen($value) == 0 && $emptynull === true) {
             $value = null;
         }
         $this->setValue($field, $value);
