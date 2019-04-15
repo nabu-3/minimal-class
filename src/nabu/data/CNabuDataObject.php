@@ -44,7 +44,7 @@ abstract class CNabuDataObject extends CNabuRODataObject
      */
     public function isEditable(): bool
     {
-        return $this->edit_mode === self::MODE_READONLY;
+        return $this->edit_mode === self::MODE_EDITABLE;
     }
 
     /**
@@ -54,6 +54,8 @@ abstract class CNabuDataObject extends CNabuRODataObject
     public function setAsEditable(): CNabuDataObject
     {
         $this->edit_mode = self::MODE_EDITABLE;
+
+        return $this;
     }
 
     /**
@@ -62,7 +64,7 @@ abstract class CNabuDataObject extends CNabuRODataObject
      */
     public function isReadOnly(): bool
     {
-        return $this->edit_mode === self::MODE_EDITABLE;
+        return $this->edit_mode === self::MODE_READONLY;
     }
 
     /**
@@ -72,6 +74,8 @@ abstract class CNabuDataObject extends CNabuRODataObject
     public function setAsReadOnly(): CNabuDataObject
     {
         $this->edit_mode = self::MODE_READONLY;
+
+        return $this;
     }
 
     /**
@@ -104,6 +108,8 @@ abstract class CNabuDataObject extends CNabuRODataObject
         } else {
             trigger_error( "Instance is in Read Only mode and cannot be edited.", E_USER_ERROR);
         }
+
+        return $this;
     }
 
     /**

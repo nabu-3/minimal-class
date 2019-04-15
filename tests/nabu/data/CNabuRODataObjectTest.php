@@ -23,6 +23,13 @@ namespace nabu\data;
 
 use PHPUnit\Framework\TestCase;
 
+/**
+ * PHPUnit tests to verify functionality of class @see { CNabuRODataObject }.
+ * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
+ * @since 3.0.0 Surface
+ * @version 3.0.0 Surface
+ * @package tests\nabu\min
+ */
 class CNabuRODataObjectTest extends TestCase
 {
     /**
