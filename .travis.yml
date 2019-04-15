@@ -10,6 +10,13 @@ addons:
     sonarcloud:
         organization: "nabu-3-github"
 
+cache:
+    directories:
+        - $HOME/.composer
+        - $HOME/.sonar
+        - $HOME/.sonarscanner
+        - $HOME/build/nabu-3/minimal-class/vendor
+
 install:
     - travis_retry composer install
 

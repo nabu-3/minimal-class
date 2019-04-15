@@ -208,6 +208,39 @@ class CNabuRODataObjectTest extends TestCase
         $this->assertFalse($object->matchValue($object, 'value_int', 'value_array'));
         $this->assertFalse($object->matchValue($object, 'value_int', 'value_array', true));
     }
+
+    /**
+     * @test dump
+     */
+    public function testDump()
+    {
+        $object = new CNabuDataObjectTestingRO(
+            array(
+                'test_name' => 'test_value'
+            )
+        );
+
+        $this->assertSame("array (\n  'test_name' => 'test_value',\n)", $object->dump());
+    }
+
+    /**
+     * @test reset
+     * @test isEmpty
+     */
+    public function testReset()
+    {
+        $object = new CNabuDataObjectTestingRO(
+            array(
+                'test_name' => 'test_value'
+            )
+        );
+        $this->assertFalse($object->isEmpty());
+        $object->reset();
+        $this->assertTrue($object->isEmpty());
+
+        $object = new CNabuDataObjectTestingRO();
+        $this->assertTrue($object->isEmpty());
+    }
 }
 
 class CNabuDataObjectTestingRO extends CNabuDataObject
