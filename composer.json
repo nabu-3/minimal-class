@@ -35,6 +35,7 @@
             "src/"
         ],
         "files": [
+            "src/globals.php",
             "src/functions.php",
             "src/strings.php"
         ]

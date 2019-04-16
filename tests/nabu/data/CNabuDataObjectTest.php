@@ -31,9 +31,9 @@ use PHPUnit\Framework\TestCase;
 /**
  * PHPUnit tests to verify functionality of class @see { CNabuRODataObject }.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
- * @since 3.0.0 Surface
- * @version 3.0.0 Surface
- * @package tests\nabu\min
+ * @since 3.0.2
+ * @version 3.0.2
+ * @package nabu\data
  */
 class CNabuDataObjectTest extends TestCase
 {
@@ -57,6 +57,30 @@ class CNabuDataObjectTest extends TestCase
         $this->assertSame($object, $object->setAsEditable());
         $this->assertTrue($object->isEditable());
         $this->assertFalse($object->isReadOnly());
+    }
+
+    /**
+     * @test reset
+     */
+    public function testReset()
+    {
+        $object = new CNabuDataObjectTestingWR(
+            array(
+                'test_name' => 'test_value'
+            )
+        );
+        $this->assertFalse($object->isEmpty());
+        $object->reset();
+        $this->assertTrue($object->isEmpty());
+
+        $object = new CNabuDataObjectTestingWR();
+        $this->assertTrue($object->isEmpty());
+        $this->assertFalse($object->reset());
+
+        $object = new CNabuDataObjectTestingWR();
+        $object->setAsReadOnly();
+        $this->expectException(Error::class);
+        $object->reset();
     }
 
     /**

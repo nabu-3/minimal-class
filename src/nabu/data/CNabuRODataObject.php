@@ -44,14 +44,6 @@ abstract class CNabuRODataObject extends CNabuObject
     }
 
     /**
-     * Reset the data content stored in the instance and empty internal storage, lossing all previous stored data.
-     */
-    public function reset()
-    {
-        $this->data = null;
-    }
-
-    /**
      * Dumps data to the standard output using var_export.
      */
     public function dump()
@@ -199,18 +191,18 @@ abstract class CNabuRODataObject extends CNabuObject
 
     /**
      * Check if a value of this instance matches another value in another instance.
-     * @param CNabuDataObject|null $object Object instance to match values.
+     * @param CNabuRODataObject|null $object Object instance to match values.
      * @param string|null $source_name Source name of value to match.
      * @param string|null $target_name Target name in $object to match. If null, then uses $source_name.
      * @param bool $strict If true comparation is strict (uses === to match).
      * @return bool Returns true if both values exists and matchs.
      */
     public function matchValue(
-        CNabuDataObject $object = null, string $source_name = null, string $target_name = null, bool $strict = false
+        CNabuRODataObject $object = null, string $source_name = null, string $target_name = null, bool $strict = false
     ): bool {
         $retval = false;
 
-        if ($object instanceof CNabuDataObject) {
+        if ($object instanceof CNabuRODataObject) {
             $target_name = (is_string($target_name) ? $target_name : $source_name);
             $retval = $this->hasValue($source_name) &&
                       $object->hasValue($target_name) &&

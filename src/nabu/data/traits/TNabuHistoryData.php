@@ -21,6 +21,8 @@
 
 namespace nabu\data\traits;
 
+use nabu\data\CNabuDataObject;
+
 /**
  * Trait to manage a TNabuDataObject as a LIFO stack data object.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
@@ -35,24 +37,53 @@ trait TNabuHistoryData
 
     /**
      * Reset the data content stored in the instance and empty internal storage, lossing all previous stored data.
+     * @return bool Returns true if the instance is reseted.
      */
-    public function reset()
+    public function reset():bool
     {
-        parent::reset();
+        $retval = parent::reset();
 
-        $this->data_stack = null;
+        if ($this instanceof CNabuDataObject && $this->isEditable()) {
+            $this->data_stack = null;
+            $retval = true;
+        } elseif ($retval === false) {
+            trigger_error(TRIGGER_ERROR_READ_ONLY_MODE, E_USER_ERROR);
+        }
+
+        return $retval;
+    }
+
+    /**
+     * Check if the stack is empty or have history.
+     * @return bool If the stack is empty returns true.
+     */
+    public function isStackEmpty(): bool
+    {
+        return $this->data_stack === null || count($this->data_stack) === 0;
     }
 
     /**
      * Copy current data to a point of time storage. This is a LIFO stack.
+     * @return bool Returns true if they have data to be pushed.
      */
-    public function push()
+    public function push(): bool
     {
-        if (is_array($this->data_stack)) {
-            array_push($this->data_stack, $this->data);
+        $retval = false;
+
+        if ($this instanceof CNabuDataObject && $this->isEditable()) {
+            if (is_array($this->data)) {
+                if (is_array($this->data_stack)) {
+                    array_push($this->data_stack, $this->data);
+                } else {
+                    $this->data_stack = array($this->data);
+                }
+                $retval = true;
+            }
         } else {
-            $this->data_stack = array($this->data);
+            trigger_error(TRIGGER_ERROR_READ_ONLY_MODE, E_USER_ERROR);
         }
+
+        return $retval;
     }
 
     /**
@@ -63,15 +94,42 @@ trait TNabuHistoryData
     {
         $result = false;
 
-        if (is_array($this->data_stack) && count($this->data_stack)) {
-            $this->data = array_pop($this->data_stack);
-            $result = true;
+        if ($this instanceof CNabuDataObject && $this->isEditable()) {
+            if (is_array($this->data_stack) && count($this->data_stack)) {
+                $this->data = array_pop($this->data_stack);
+                $result = true;
+            } else {
+                $this->data = null;
+                trigger_error("Data stack is empty. Current data is emptied.", E_USER_NOTICE);
+            }
         } else {
-            $this->data = null;
-            trigger_error("Data stack is empty. Current data is emptied.", E_USER_NOTICE);
+            trigger_error(TRIGGER_ERROR_READ_ONLY_MODE, E_USER_ERROR);
         }
 
         return $result;
+    }
+
+    /**
+     * Overwrite last LIFO Stack pushed data with current data if LIFO is filled, or pushes current data if is empty.
+     * @return bool Returns true if data is overwrited or pushed.
+     */
+    public function overwrite(): bool
+    {
+        $retval = false;
+
+        if ($this instanceof CNabuDataObject && $this->isEditable()) {
+            if (is_array($this->data)) {
+                if (is_array($this->data_stack)) {
+                    array_pop($this->data_stack);
+                }
+                array_push($this->data_stack, $this->data);
+                $retval = true;
+            }
+        } else {
+            trigger_error(TRIGGER_ERROR_READ_ONLY_MODE, E_USER_ERROR);
+        }
+
+        return $retval;
     }
 
     /**

@@ -19,7 +19,7 @@
  *  limitations under the License.
  */
 
-namespace tests\nabu\min;
+namespace nabu\min;
 
 use PHPUnit\Framework\TestCase;
 
@@ -28,9 +28,9 @@ use nabu\min\CNabuObject;
 /**
  * PHPUnit tests to verify functionality of class @see CNabuObject
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
- * @since 3.0.0 Surface
- * @version 3.0.0 Surface
- * @package tests\nabu\min
+ * @since 3.0.0
+ * @version 3.0.0
+ * @package nabu\min
  */
 class CNabuObjectTest extends TestCase
 {

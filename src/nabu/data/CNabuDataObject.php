@@ -41,9 +41,6 @@ abstract class CNabuDataObject extends CNabuRODataObject
     /** @var string TRIGGER_NOTICE_USING_OBJECT Constant literal for Notice message. */
     private const TRIGGER_NOTICE_USING_OBJECT =
         "CNabuDataObject::setValue is using a mismatch value. Result will be unpredectible.";
-    /** @var string TRIGGER_ERROR_READ_ONLY_MODE Constant literal for Error message. */
-    private const TRIGGER_ERROR_READ_ONLY_MODE =
-         "Instance is in Read Only mode and cannot be edited.";
 
     /** @var int Current Edit mode. */
     protected $edit_mode = CNabuDataObject::MODE_EDITABLE;
@@ -89,6 +86,26 @@ abstract class CNabuDataObject extends CNabuRODataObject
     }
 
     /**
+     * Reset the data content stored in the instance and empty internal storage, lossing all previous stored data.
+     * @return bool Returns true if the instance is reseted.
+     */
+    public function reset(): bool
+    {
+        $retval = false;
+
+        if ($this->isEditable()) {
+            if (is_array($this->data)) {
+                $this->data = null;
+                $retval = true;
+            }
+        } else {
+            trigger_error(TRIGGER_ERROR_READ_ONLY_MODE, E_USER_ERROR);
+        }
+
+        return $retval;
+    }
+
+    /**
      * Sets a Value associated to a name.
      * @param string $name Name of the value to set.
      * @param mixed $value Value to be setted.
@@ -110,7 +127,7 @@ abstract class CNabuDataObject extends CNabuRODataObject
                 }
             }
         } else {
-            trigger_error(self::TRIGGER_ERROR_READ_ONLY_MODE, E_USER_ERROR);
+            trigger_error(TRIGGER_ERROR_READ_ONLY_MODE, E_USER_ERROR);
         }
 
         return $this;
@@ -132,7 +149,7 @@ abstract class CNabuDataObject extends CNabuRODataObject
                 $this->data = array_merge($this->data, $array);
             }
         } else {
-            trigger_error(self::TRIGGER_ERROR_READ_ONLY_MODE, E_USER_ERROR);
+            trigger_error(TRIGGER_ERROR_READ_ONLY_MODE, E_USER_ERROR);
         }
 
         return $this;
@@ -154,7 +171,7 @@ abstract class CNabuDataObject extends CNabuRODataObject
                 $this->setValue($target_name, $object->getValue($source_name));
             }
         } else {
-            trigger_error(self::TRIGGER_ERROR_READ_ONLY_MODE, E_USER_ERROR);
+            trigger_error(TRIGGER_ERROR_READ_ONLY_MODE, E_USER_ERROR);
         }
     }
 
@@ -178,7 +195,7 @@ abstract class CNabuDataObject extends CNabuRODataObject
                 $this->setValue($target_name, $object);
             }
         } else {
-            trigger_error(self::TRIGGER_ERROR_READ_ONLY_MODE, E_USER_ERROR);
+            trigger_error(TRIGGER_ERROR_READ_ONLY_MODE, E_USER_ERROR);
         }
     }
 
@@ -198,7 +215,7 @@ abstract class CNabuDataObject extends CNabuRODataObject
                 $this->setValue($target_name, $aux);
             }
         } else {
-            trigger_error(self::TRIGGER_ERROR_READ_ONLY_MODE, E_USER_ERROR);
+            trigger_error(TRIGGER_ERROR_READ_ONLY_MODE, E_USER_ERROR);
         }
     }
 
@@ -213,7 +230,7 @@ abstract class CNabuDataObject extends CNabuRODataObject
         if ($this->isEditable()) {
             $this->data = $object->data;
         } else {
-            trigger_error(self::TRIGGER_ERROR_READ_ONLY_MODE, E_USER_ERROR);
+            trigger_error(TRIGGER_ERROR_READ_ONLY_MODE, E_USER_ERROR);
         }
     }
 }
