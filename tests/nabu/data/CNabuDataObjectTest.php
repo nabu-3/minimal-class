@@ -231,6 +231,10 @@ class CNabuDataObjectTest extends TestCase
         $this->assertFalse($obj_target->isEmpty());
         $this->assertSame(20, $obj_target->getValue('test_name'));
         $this->assertSame('string', $obj_target->getValue('other_test'));
+
+        $obj_target->setAsReadOnly();
+        $this->expectException(Error::class);
+        $obj_target->copyData($obj_source);
     }
 }
 
