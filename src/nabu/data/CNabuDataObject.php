@@ -35,6 +35,16 @@ abstract class CNabuDataObject extends CNabuRODataObject
     /** @var int MODE_EDITABLE Constant value to determine if the insance is in edit mode. */
     const MODE_EDITABLE = 1;
 
+    /** @var string TRIGGER_NOTICE_USING_ARRAY Constant literal for Notice message. */
+    private const TRIGGER_NOTICE_USING_ARRAY =
+        "CNabuDataObject::setValue is using an array value. Try to use TNabuJSONData trait in your class.";
+    /** @var string TRIGGER_NOTICE_USING_OBJECT Constant literal for Notice message. */
+    private const TRIGGER_NOTICE_USING_OBJECT =
+        "CNabuDataObject::setValue is using a mismatch value. Result will be unpredectible.";
+    /** @var string TRIGGER_ERROR_READ_ONLY_MODE Constant literal for Error message. */
+    private const TRIGGER_ERROR_READ_ONLY_MODE =
+         "Instance is in Read Only mode and cannot be edited.";
+
     /** @var int Current Edit mode. */
     protected $edit_mode = CNabuDataObject::MODE_EDITABLE;
 
@@ -94,19 +104,13 @@ abstract class CNabuDataObject extends CNabuRODataObject
             }
             if (!is_scalar($value) && !is_null($value)) {
                 if (is_array($value)) {
-                    trigger_error(
-                        "CNabuDataObject::setValue is using an array value. Try to use TNabuJSONData trait in your class.",
-                        E_USER_NOTICE
-                    );
+                    trigger_error(self::TRIGGER_NOTICE_USING_ARRAY, E_USER_NOTICE);
                 } else {
-                    trigger_error(
-                        "CNabuDataObject::setValue is using a mismatch value. Result will be unpredectible.",
-                        E_USER_NOTICE
-                    );
+                    trigger_error(self::TRIGGER_NOTICE_USING_OBJECT, E_USER_NOTICE);
                 }
             }
         } else {
-            trigger_error( "Instance is in Read Only mode and cannot be edited.", E_USER_ERROR);
+            trigger_error(self::TRIGGER_ERROR_READ_ONLY_MODE, E_USER_ERROR);
         }
 
         return $this;
@@ -128,8 +132,10 @@ abstract class CNabuDataObject extends CNabuRODataObject
                 $this->data = array_merge($this->data, $array);
             }
         } else {
-            trigger_error( "Instance is in Read Only mode and cannot be edited.", E_USER_ERROR);
+            trigger_error(self::TRIGGER_ERROR_READ_ONLY_MODE, E_USER_ERROR);
         }
+
+        return $this;
     }
 
     /**
@@ -148,7 +154,7 @@ abstract class CNabuDataObject extends CNabuRODataObject
                 $this->setValue($target_name, $object->getValue($source_name));
             }
         } else {
-            trigger_error( "Instance is in Read Only mode and cannot be edited.", E_USER_ERROR);
+            trigger_error(self::TRIGGER_ERROR_READ_ONLY_MODE, E_USER_ERROR);
         }
     }
 
@@ -170,7 +176,7 @@ abstract class CNabuDataObject extends CNabuRODataObject
                 $this->setValue($source_name, $object);
             }
         } else {
-            trigger_error( "Instance is in Read Only mode and cannot be edited.", E_USER_ERROR);
+            trigger_error(self::TRIGGER_ERROR_READ_ONLY_MODE, E_USER_ERROR);
         }
     }
 
@@ -190,7 +196,7 @@ abstract class CNabuDataObject extends CNabuRODataObject
                 $this->setValue($source_name, $aux);
             }
         } else {
-            trigger_error( "Instance is in Read Only mode and cannot be edited.", E_USER_ERROR);
+            trigger_error(self::TRIGGER_ERROR_READ_ONLY_MODE, E_USER_ERROR);
         }
     }
 
@@ -205,7 +211,7 @@ abstract class CNabuDataObject extends CNabuRODataObject
         if ($this->isEditable()) {
             $this->data = $object->data;
         } else {
-            trigger_error( "Instance is in Read Only mode and cannot be edited.", E_USER_ERROR);
+            trigger_error(self::TRIGGER_ERROR_READ_ONLY_MODE, E_USER_ERROR);
         }
     }
 }

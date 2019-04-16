@@ -21,7 +21,10 @@
 
 namespace nabu\data;
 
+use stdClass;
+
 use PHPUnit\Framework\Error\Error;
+use PHPUnit\Framework\Error\Notice;
 
 use PHPUnit\Framework\TestCase;
 
@@ -61,16 +64,60 @@ class CNabuDataObjectTest extends TestCase
      * @test setAsEditable
      * @test setAsReadOnly
      */
-    public function testSetValue()
+    public function testSetValueScalar()
     {
         $object = new CNabuDataObjectTestingWR();
         $this->assertTrue($object->isEditable());
         $this->assertSame($object, $object->setValue('test_name', 'test_value'));
         $this->assertSame('test_value', $object->getValue('test_name'));
+        $this->assertSame($object, $object->setValue('other_name', 10));
+        $this->assertSame(10, $object->getValue('other_name'));
 
         $this->assertSame($object, $object->setAsReadOnly());
         $this->expectException(Error::class);
         $object->setValue('test_name', 'test_value');
+    }
+
+    /**
+     * @test setValue
+     */
+    public function testValueArray()
+    {
+        $object = new CNabuDataObjectTestingWR();
+        $this->assertTrue($object->isEditable());
+        $this->expectException(Notice::class);
+        $object->setValue('test_array', array(1, 2, 3, 4));
+    }
+
+    /**
+     * @test setValue
+     */
+    public function testValueObject()
+    {
+        $object = new CNabuDataObjectTestingWR();
+        $this->assertTrue($object->isEditable());
+        $this->expectException(Notice::class);
+        $object->setValue('test_object', new stdClass());
+    }
+
+    /**
+     * @test setArrayValues
+     */
+    public function testSetArrayValues()
+    {
+        $object = new CNabuDataObjectTestingWR();
+        $this->assertTrue($object->isEditable());
+        $this->assertSame($object, $object->setArrayValues(array('a' => 1, 'b' => 2)));
+        $this->assertSame(1, $object->getValue('a'));
+        $this->assertSame(2, $object->getValue('b'));
+        $this->assertSame($object, $object->setArrayValues(array('a' => 3, 'c' => 5)));
+        $this->assertSame(3, $object->getValue('a'));
+        $this->assertSame(2, $object->getValue('b'));
+        $this->assertSame(5, $object->getValue('c'));
+
+        $object->setAsReadOnly();
+        $this->expectException(Error::class);
+        $object->setArrayValues(array('a' => 10, 'd' => 6));
     }
 }
 
