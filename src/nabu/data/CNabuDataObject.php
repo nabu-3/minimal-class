@@ -159,21 +159,23 @@ abstract class CNabuDataObject extends CNabuRODataObject
     }
 
     /**
-     * Transfer a mixed value from $object to this instance.
-     * @param mixed|null $object Object instance where is stored the value to be transferred.
+     * Transfer a mixed value from $object to this instance. This method evaluates if $object is an instance of
+     * CNabuDataObject and, if setted $type, an instance of it, and then, transfers the value like a transferValue call.
+     * Otherwise, if $object is null, scalar or array, then hi is setted like a setValue call.
+     * @param mixed|null $object Mixed value or object instance where is stored the value to be transferred.
      * @param string|null $source_name Name of field in $object that contains the value.
      * @param string|null $target_name Name of field in this instance where the value will be stored. If null,
-     * then usees $source_name.
+     * then uses $source_name.
      * @param string|null $type Type of object to match.
      */
     public function transferMixedValue($object = null, string $source_name = null, string $target_name = null, string $type = null)
     {
         if ($this->isEditable()) {
+            $target_name = (is_string($target_name) ? $target_name : $source_name);
             if (($object instanceof CNabuDataObject) && ($type === null || ($object instanceof $type))) {
-                $target_name = (is_string($target_name) ? $target_name : $source_name);
                 $this->setValue($target_name, $object->getValue($source_name));
             } elseif (is_scalar($object) || is_array($object) || is_null($object)) {
-                $this->setValue($source_name, $object);
+                $this->setValue($target_name, $object);
             }
         } else {
             trigger_error(self::TRIGGER_ERROR_READ_ONLY_MODE, E_USER_ERROR);
@@ -191,9 +193,9 @@ abstract class CNabuDataObject extends CNabuRODataObject
         if ($this->isEditable()) {
             if ($object instanceof CNabuDataObject && is_string($source_name)) {
                 $target_name = (is_string($target_name) ? $target_name : $source_name);
-                $aux = $object->getValue($target_name);
-                $object->setValue($target_name, $this->getValue($source_name));
-                $this->setValue($source_name, $aux);
+                $aux = $object->getValue($source_name);
+                $object->setValue($source_name, $this->getValue($target_name));
+                $this->setValue($target_name, $aux);
             }
         } else {
             trigger_error(self::TRIGGER_ERROR_READ_ONLY_MODE, E_USER_ERROR);

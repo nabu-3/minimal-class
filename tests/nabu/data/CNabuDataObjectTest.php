@@ -119,6 +119,119 @@ class CNabuDataObjectTest extends TestCase
         $this->expectException(Error::class);
         $object->setArrayValues(array('a' => 10, 'd' => 6));
     }
+
+    /**
+     * @test transferValue
+     */
+    public function testTransferValue()
+    {
+        $obj_source = new CNabuDataObjectTestingWR();
+        $this->assertTrue($obj_source->isEditable());
+        $obj_source->setValue('test_name', 20);
+
+        $obj_target = new CNabuDataObjectTestingWR();
+        $this->assertTrue($obj_target->isEditable());
+
+        $obj_target->transferValue($obj_source, 'test_name');
+        $this->assertTrue($obj_target->hasValue('test_name'));
+        $this->assertSame(20, $obj_target->getValue('test_name'));
+
+        $obj_source->setValue('test_name', 40);
+        $obj_target->transferValue($obj_source, 'test_name');
+        $this->assertSame(40, $obj_target->getValue('test_name'));
+
+        $obj_source->setValue('other_test', 'white');
+        $obj_target->transferValue($obj_source, 'other_test', 'test_name');
+        $this->assertSame('white', $obj_target->getValue('test_name'));
+
+        $obj_target->setAsReadOnly();
+        $this->expectException(Error::class);
+        $obj_target->transferValue($obj_source, 'test_name');
+    }
+
+    /**
+     * @test testTransferMixedValue
+     */
+    public function testTransferMixedValue()
+    {
+        $obj_source = new CNabuDataObjectTestingWR();
+        $this->assertTrue($obj_source->isEditable());
+        $obj_source->setValue('test_name', 20);
+
+        $obj_target = new CNabuDataObjectTestingWR();
+        $this->assertTrue($obj_target->isEditable());
+
+        $obj_target->transferMixedValue($obj_source, 'test_name');
+        $this->assertTrue($obj_target->hasValue('test_name'));
+        $this->assertSame(20, $obj_target->getValue('test_name'));
+
+        $obj_source->setValue('test_name', 40);
+        $obj_target->transferMixedValue($obj_source, 'test_name');
+        $this->assertSame(40, $obj_target->getValue('test_name'));
+
+        $obj_source->setValue('other_test', 'white');
+        $obj_target->transferMixedValue($obj_source, 'other_test', 'test_name');
+        $this->assertSame('white', $obj_target->getValue('test_name'));
+
+        $obj_target->transferMixedValue(90, 'test_name');
+        $this->assertSame(90, $obj_target->getValue('test_name'));
+
+        $obj_target->transferMixedValue(100, 'other_test', 'test_name');
+        $this->assertSame(100, $obj_target->getValue('test_name'));
+
+        $obj_target->setAsReadOnly();
+        $this->expectException(Error::class);
+        $obj_target->transferMixedValue($obj_source, 'test_name');
+    }
+
+    /**
+     * @test exchangeValue
+     */
+    public function testExchangeValue()
+    {
+        $obj_source = new CNabuDataObjectTestingWR();
+        $this->assertTrue($obj_source->isEditable());
+        $obj_source->setValue('test_name', 20);
+
+        $obj_target = new CNabuDataObjectTestingWR();
+        $this->assertTrue($obj_target->isEditable());
+        $obj_target->setValue('test_name', 30);
+
+        $obj_target->exchangeValue($obj_source, 'test_name');
+        $this->assertSame(30, $obj_source->getValue('test_name'));
+        $this->assertSame(20, $obj_target->getValue('test_name'));
+
+        $obj_source->setValue('other_test', 40);
+        $obj_target->exchangeValue($obj_source, 'other_test', 'test_name');
+        $this->assertSame(30, $obj_source->getValue('test_name'));
+        $this->assertSame(20, $obj_source->getValue('other_test'));
+        $this->assertSame(40, $obj_target->getValue('test_name'));
+        $this->assertFalse($obj_target->hasValue('other_test'));
+
+        $obj_target->setAsReadOnly();
+        $this->expectException(Error::class);
+        $obj_target->exchangeValue($obj_source, 'test_name');
+    }
+
+    /**
+     * @test copyData
+     */
+    public function testCopyData()
+    {
+        $obj_source = new CNabuDataObjectTestingWR();
+        $this->assertTrue($obj_source->isEditable());
+        $obj_source->setValue('test_name', 20);
+        $obj_source->setValue('other_test', 'string');
+
+        $obj_target = new CNabuDataObjectTestingWR();
+        $this->assertTrue($obj_target->isEditable());
+        $obj_target->copyData($obj_source);
+        $this->assertSame(20, $obj_source->getValue('test_name'));
+        $this->assertSame('string', $obj_source->getValue('other_test'));
+        $this->assertFalse($obj_target->isEmpty());
+        $this->assertSame(20, $obj_target->getValue('test_name'));
+        $this->assertSame('string', $obj_target->getValue('other_test'));
+    }
 }
 
 class CNabuDataObjectTestingWR extends CNabuDataObject
