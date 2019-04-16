@@ -193,6 +193,40 @@ class TNabuHistoryDataTest extends TestCase
         $this->expectException(Error::class);
         $object->overwrite();
     }
+
+    /**
+     * @test isValueNew
+     * @test isValueModified
+     */
+    public function testIsValueModified()
+    {
+        $object = new CNabuHistoryDataTestingWR(
+            array(
+                'test_name' => 'test_value'
+            )
+        );
+        $this->assertFalse($object->isEmpty());
+        $this->assertTrue($object->isHistoryEmpty());
+        $this->assertFalse($object->isValueNew('test_name'));
+        $this->assertFalse($object->isValueModified('test_name'));
+        $this->assertTrue($object->push());
+        $this->assertFalse($object->isValueNew('test_name'));
+        $this->assertFalse($object->isValueModified('test_name'));
+
+        $object->setValue('test_name', 'new_value');
+        $this->assertFalse($object->isValueNew('test_name'));
+        $this->assertTrue($object->isValueModified('test_name'));
+
+        $object->setValue('other_name', 'other_value');
+        $this->assertTrue($object->isValueNew('other_name'));
+        $this->assertFalse($object->isValueModified('other_name'));
+
+        $this->assertTrue($object->pop());
+        $this->assertFalse($object->hasValue('other_name'));
+        $this->assertFalse($object->isValueNew('test_name'));
+        $this->assertFalse($object->isValueModified('test_name'));
+        $this->assertSame('test_value', $object->getValue('test_name'));
+    }
 }
 
 class CNabuHistoryDataTestingWR extends CNabuDataObject

@@ -136,29 +136,6 @@ trait TNabuHistoryData
     }
 
     /**
-     * Check if a value was modified from last pushed data in the history stack.
-     * @param string $name Name of the value to check.
-     * @return bool Returns true if the stack contains a previous stored data value and both values are differents.
-     */
-    public function isValueModified(string $name): bool
-    {
-        $retval = false;
-
-        if ($this->hasValue($name)) {
-            if (is_array($this->data_stack)) {
-                $pos = count($this->data_stack) - 1;
-                $retval = array_key_exists($name, $this->data_stack[$pos]) &&
-                          $this->data[$name] !== $this->data_stack[$pos][$name]
-                ;
-            } else {
-                $retval = true;
-            }
-        }
-
-        return $retval;
-    }
-
-    /**
      * Check if a value is new or is previously stored in the data history stack.
      * @param string $name Name of the value to check.
      * @return bool Returns true if the value is new.
@@ -167,7 +144,7 @@ trait TNabuHistoryData
     {
         $retval = false;
 
-        if ($this->hasValue($name) && is_array($this->data_stack)) {
+        if ($this->hasValue($name) && !$this->isHistoryEmpty()) {
             $pos = count($this->data_stack) - 1;
             $retval = !array_key_exists($name, $this->data_stack[$pos]);
         }
@@ -175,5 +152,22 @@ trait TNabuHistoryData
         return $retval;
     }
 
+    /**
+     * Check if a value was modified from last pushed data in the history stack.
+     * @param string $name Name of the value to check.
+     * @return bool Returns true if the stack contains a previous stored data value and both values are differents.
+     */
+    public function isValueModified(string $name): bool
+    {
+        $retval = false;
 
+        if ($this->hasValue($name) && !$this->isHistoryEmpty()) {
+            $pos = count($this->data_stack) - 1;
+            $retval = array_key_exists($name, $this->data_stack[$pos]) &&
+                      $this->data[$name] !== $this->data_stack[$pos][$name]
+            ;
+        }
+
+        return $retval;
+    }
 }
