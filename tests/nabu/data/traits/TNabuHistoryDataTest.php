@@ -27,6 +27,7 @@ use PHPUnit\Framework\Error\Notice;
 use PHPUnit\Framework\TestCase;
 
 use nabu\data\CNabuDataObject;
+use nabu\data\CNabuRODataObject;
 
 /**
  * PHPUnit tests to verify functionality of class @see { TNabuHistoryData }.
@@ -38,25 +39,48 @@ use nabu\data\CNabuDataObject;
 class TNabuHistoryDataTest extends TestCase
 {
     /**
-     * @test reset
-     * @test isStackEmpty
+     * @test resetHistory
+     * @test isHistoryEmpty
      * @test push
      * @test pop
      */
-    public function testReset()
+    public function testResetHistoryWR()
     {
         $object = new CNabuHistoryDataTestingWR();
-        $this->assertTrue($object->isStackEmpty());
+        $this->assertTrue($object->isEmpty());
+        $this->assertTrue($object->isHistoryEmpty());
+        $this->assertFalse($object->reset());
+        $this->assertFalse($object->resetHistory());
+        $object->setValue('test_name', 'test_value');
+        $this->assertTrue($object->push());
+        $this->assertFalse($object->isEmpty());
+        $this->assertFalse($object->isHistoryEmpty());
+        $this->assertTrue($object->resetHistory());
+        $this->assertTrue($object->isEmpty());
+        $this->assertTrue($object->isHistoryEmpty());
+    }
+
+    /**
+     * @test resetHistory
+     * @test isHistoryEmpty
+     */
+    public function testResetHistoryRO()
+    {
+        $object = new CNabuHistoryDataTestingRO();
+        $this->assertTrue($object->isEmpty());
+        $this->assertTrue($object->isHistoryEmpty());
+        $this->expectException(Error::class);
+        $object->resetHistory();
     }
 
     /**
      * @test push
      * @test pop
      */
-    public function testPushAndPop()
+    public function testPushAndPopWR()
     {
         $object = new CNabuHistoryDataTestingWR();
-        $this->assertTrue($object->isStackEmpty());
+        $this->assertTrue($object->isHistoryEmpty());
         $this->assertFalse($object->push());
         $object->setValue('test_name', 'test_value');
         $this->assertTrue($object->push());
@@ -74,9 +98,20 @@ class TNabuHistoryDataTest extends TestCase
     }
 
     /**
+     * @test push
+     */
+    public function testPushRO()
+    {
+        $object = new CNabuHistoryDataTestingRO();
+        $this->assertTrue($object->isHistoryEmpty());
+        $this->expectException(Error::class);
+        $object->push();
+    }
+
+    /**
      * @test pop
      */
-    public function testPopWhenStackEmpty()
+    public function testPopWhenStackEmptyWR()
     {
         $object = new CNabuHistoryDataTestingWR();
 
@@ -87,7 +122,7 @@ class TNabuHistoryDataTest extends TestCase
     /**
      * @test pop
      */
-    public function testPopWhenReadOnly()
+    public function testPopWhenReadOnlyWR()
     {
         $object = new CNabuHistoryDataTestingWR();
         $object->setAsReadOnly();
@@ -98,12 +133,23 @@ class TNabuHistoryDataTest extends TestCase
     }
 
     /**
-     * @test overwrite
+     * @test pop
      */
-    public function testOverwrite()
+    public function testPopRO()
     {
         $object = new CNabuHistoryDataTestingWR();
-        $this->assertTrue($object->isStackEmpty());
+        $this->assertTrue($object->isHistoryEmpty());
+        $this->expectException(Error::class);
+        $object->pop();
+    }
+
+    /**
+     * @test overwrite
+     */
+    public function testOverwriteWR()
+    {
+        $object = new CNabuHistoryDataTestingWR();
+        $this->assertTrue($object->isHistoryEmpty());
         $this->assertFalse($object->overwrite());
         $object->setValue('test_name', 'test_value');
         $this->assertTrue($object->push());
@@ -121,9 +167,40 @@ class TNabuHistoryDataTest extends TestCase
         $this->expectException(Error::class);
         $object->pop();
     }
+
+    /**
+     * @test overwrite
+     */
+    public function testOverwriteReadOnlyWR()
+    {
+        $object = new CNabuHistoryDataTestingWR();
+        $this->assertTrue($object->isEditable());
+        $object->setValue('test_name', 'test_value');
+        $object->push();
+        $object->setAsReadOnly();
+        $this->assertTrue($object->isReadOnly());
+        $this->expectException(Error::class);
+        $object->overwrite();
+    }
+
+    /**
+     * @test overwrite
+     */
+    public function testOverwriteRO()
+    {
+        $object = new CNabuHistoryDataTestingRO();
+        $this->assertTrue($object->isHistoryEmpty());
+        $this->expectException(Error::class);
+        $object->overwrite();
+    }
 }
 
 class CNabuHistoryDataTestingWR extends CNabuDataObject
+{
+    use TNabuHistoryData;
+}
+
+class CNabuHistoryDataTestingRO extends CNabuRODataObject
 {
     use TNabuHistoryData;
 }

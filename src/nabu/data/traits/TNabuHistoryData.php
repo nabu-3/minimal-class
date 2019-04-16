@@ -39,14 +39,17 @@ trait TNabuHistoryData
      * Reset the data content stored in the instance and empty internal storage, lossing all previous stored data.
      * @return bool Returns true if the instance is reseted.
      */
-    public function reset():bool
+    public function resetHistory(): bool
     {
-        $retval = parent::reset();
+        $retval = false;
 
         if ($this instanceof CNabuDataObject && $this->isEditable()) {
-            $this->data_stack = null;
-            $retval = true;
-        } elseif ($retval === false) {
+            parent::reset();
+            if (is_array($this->data_stack)) {
+                $this->data_stack = null;
+                $retval = true;
+            }
+        } else {
             trigger_error(TRIGGER_ERROR_READ_ONLY_MODE, E_USER_ERROR);
         }
 
@@ -57,7 +60,7 @@ trait TNabuHistoryData
      * Check if the stack is empty or have history.
      * @return bool If the stack is empty returns true.
      */
-    public function isStackEmpty(): bool
+    public function isHistoryEmpty(): bool
     {
         return $this->data_stack === null || count($this->data_stack) === 0;
     }
