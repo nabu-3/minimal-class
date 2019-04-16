@@ -82,20 +82,20 @@ trait TNabuJSONData
     {
         $retval = null;
 
-        if (!$this->isEmpty() && mb_strlen($path) > 0) {
-            $route = preg_split('/\./', $path);
-            if (count($route) > 0) {
-                $l = count($route);
-                $p = &$this->data;
-                for ($i = 0; $i < $l; $i++) {
-                    if ($p !==null && is_array($p) && array_key_exists($route[$i], $p)) {
-                        $p = &$p[$route[$i]];
-                    } else {
-                        break;
-                    }
+        if (!$this->isEmpty() &&
+            mb_strlen($path) > 0 &&
+            count($route = preg_split('/\./', $path)) > 0
+        ) {
+            $l = count($route);
+            $p = &$this->data;
+            for ($i = 0; $i < $l; $i++) {
+                if ($p !==null && is_array($p) && array_key_exists($route[$i], $p)) {
+                    $p = &$p[$route[$i]];
+                } else {
+                    break;
                 }
-                $retval = ($i === $l ? $p : null);
             }
+            $retval = ($i === $l ? $p : null);
         }
 
         return $retval;
