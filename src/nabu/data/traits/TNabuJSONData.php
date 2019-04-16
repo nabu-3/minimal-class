@@ -21,8 +21,6 @@
 
 namespace nabu\data\traits;
 
-use CNabuDataObject;
-
 use nabu\data\CNabuDataObject;
 
 /**
@@ -34,10 +32,74 @@ use nabu\data\CNabuDataObject;
  */
 trait TNabuJSONData
 {
-    /** @var int JSON_GRANT_PATH Flag to determine if the path needs to be granted in a JSON node. */
-    const JSON_GRANT_PATH = 0x0001;
-    /** @var int JSON_REPLACE_EXISTING Flag to determine if an operation with JSON needs to replace existing path. */
-    const JSON_REPLACE_EXISTING = 0x0002;
+    /**
+     * Try to parse value as a JSON data descriptor. If success returns an array with parsed structure. If fails,
+     * then returns the original value.
+     * @param string $name Name of the value to get.
+     * @return array|null Returns the array as result of decode the JSON, the original value if cannot be decoded,
+     * or null if data value is empty or not exists.
+     */
+    public function getValueAsJSONDecoded(string $name)
+    {
+        $value = $this->getValue($name);
+
+        if ($value !== null && is_string($value)) {
+            $value = json_decode($value, true);
+        }
+
+        return $value;
+    }
+
+    /**
+     * Stores a value as a JSON encoded string.
+     * @param string $name Name of the value to set.
+     * @param mixed|null $value Value to be setted.
+     * @return CNabuDataObject Returns self pointer for convenience for cascade calls.
+     */
+    public function setValueAsJSONEncoded(string $name, $value = null): CNabuDataObject
+    {
+        if ($this instanceof CNabuDataObject && $this->isEditable()) {
+            if ($value === null) {
+                $this->setValue($name, null);
+            } elseif (is_string($value)) {
+                $this->setValue($name, $value);
+            } elseif (is_array($value) || is_object($value)) {
+                $this->setValue($name, json_encode($value));
+            }
+        } else {
+            trigger_error(TRIGGER_ERROR_READ_ONLY_MODE, E_USER_ERROR);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Gets a value using a point style JSON path.
+     * @param string $path The path of the value to locate.
+     * @return mixed|null Returns the value in path if exists, or null otherwise.
+     */
+    public function getJSONValue(string $path)
+    {
+        $retval = null;
+
+        if (!$this->isEmpty() && mb_strlen($path) > 0) {
+            $route = preg_split('/\./', $path);
+            if (count($route) > 0) {
+                $l = count($route);
+                $p = &$this->data;
+                for ($i = 0; $i < $l; $i++) {
+                    if ($p !==null && is_array($p) && array_key_exists($route[$i], $p)) {
+                        $p = &$p[$route[$i]];
+                    } else {
+                        break;
+                    }
+                }
+                $retval = ($i === $l ? $p : null);
+            }
+        }
+
+        return $retval;
+    }
 
     /**
      * Check if a JSON Path exists.
@@ -67,30 +129,7 @@ trait TNabuJSONData
         return $retval;
     }
 
-    public function getJSONValue($path)
-    {
-        if ($this->isEmpty() || mb_strlen($path) === 0) {
-            return false;
-        }
-
-        $route = preg_split('/\./', $path);
-
-        if (count($route) > 0) {
-            $l = count($route);
-            $p = &$this->data;
-            for ($i = 0; $i < $l; $i++) {
-                if ($p ===null || !array_key_exists($route[$i], $p)) {
-                    return false;
-                }
-                $p = &$p[$route[$i]];
-            }
-            return $p;
-        } else {
-            return false;
-        }
-    }
-
-    public function isJSONValueEqualThan($path, $value)
+    public function isJSONValueEqualTo($path, $value)
     {
         if ($this->isEmpty() || mb_strlen($path) === 0) {
             return false;
@@ -130,15 +169,15 @@ trait TNabuJSONData
         for ($i = 0; $i < $l; $i++) {
             if (is_array($p)) {
                 if (!array_key_exists($route[$i], $p)) {
-                    if ($flags & CNabuDataObject::JSON_GRANT_PATH) {
+                    if ($flags & TRAIT_JSON_GRANT_PATH) {
                         $p[$route[$i]] = array();
                     } else {
                         return;
                     }
                 }
-            } elseif ($p === null && ($flags & CNabuDataObject::JSON_GRANT_PATH)) {
+            } elseif ($p === null && ($flags & TRAIT_JSON_GRANT_PATH)) {
                 $p = array($route[$i] => null);
-            } elseif ($flags & CNabuDataObject::JSON_REPLACE_EXISTING) {
+            } elseif ($flags & TRAIT_JSON_REPLACE_EXISTING) {
                 $p = array($route[$i] => null);
             } else {
                 return;
@@ -146,42 +185,5 @@ trait TNabuJSONData
             $p = &$p[$route[$i]];
         }
         $p = $value;
-    }
-
-    /**
-     * Try to parse value as a JSON data descriptor. If success returns an array with parsed structure. If fails,
-     * then returns the original value.
-     * @param string $name Name of the value to get.
-     * @return array|null Returns the array as result of decode the JSON, the original value if cannot be decoded,
-     * or null if data value is empty or not exists.
-     */
-    public function getValueAsJSONDecoded(string $name)
-    {
-        $value = $this->getValue($name);
-
-        if ($value !== null && is_string($value)) {
-            $value = json_decode($value, true);
-        }
-
-        return $value;
-    }
-
-    /**
-     * Stores a value as a JSON encoded string.
-     * @param string $name Name of the value to set.
-     * @param mixed|null $value Value to be setted.
-     * @return CNabuDataObject Returns self pointer for convenience for cascade calls.
-     */
-    public function setValueAsJSONEncoded(string $name, $value = null): CNabuDataObject
-    {
-        if ($value === null) {
-            $this->setValue($name, null);
-        } elseif (is_string($value)) {
-            $this->setValue($name, $value);
-        } elseif (is_array($value) || is_object($value)) {
-            $this->setValue($name, json_encode($value));
-        }
-
-        return $this;
     }
 }
