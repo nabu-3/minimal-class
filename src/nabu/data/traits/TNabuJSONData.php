@@ -84,9 +84,8 @@ trait TNabuJSONData
 
         if (!$this->isEmpty() &&
             mb_strlen($path) > 0 &&
-            count($route = preg_split('/\./', $path)) > 0
+            ($l = count($route = preg_split('/\./', $path))) > 0
         ) {
-            $l = count($route);
             $p = &$this->data;
             for ($i = 0; $i < $l; $i++) {
                 if ($p !==null && is_array($p) && array_key_exists($route[$i], $p)) {
