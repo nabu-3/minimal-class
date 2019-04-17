@@ -100,7 +100,7 @@ class TNabuNestedDataTest extends TestCase
 
     /**
      * @test getValue
-     * @test checkPath
+     * @test hasValue
      */
     public function testGetValueRO()
     {
@@ -116,18 +116,92 @@ class TNabuNestedDataTest extends TestCase
         $this->assertSame(array('c' => 2), $object->getValue('b'));
         $this->assertSame(2, $object->getValue('b.c'));
         $this->assertNull($object->getValue('a.b.c'));
-        $this->assertTrue($object->checkPath('a'));
-        $this->assertTrue($object->checkPath('b'));
-        $this->assertTrue($object->checkPath('b.c'));
-        $this->assertFalse($object->checkPath('b.2'));
-        $this->assertFalse($object->checkPath('a.b.c'));
-        $this->assertFalse($object->checkPath('b.c.d'));
-        $this->assertFalse($object->checkPath('b.c.2'));
+        $this->assertTrue($object->hasValue('a'));
+        $this->assertTrue($object->hasValue('b'));
+        $this->assertTrue($object->hasValue('b.c'));
+        $this->assertFalse($object->hasValue('b.2'));
+        $this->assertFalse($object->hasValue('a.b.c'));
+        $this->assertFalse($object->hasValue('b.c.d'));
+        $this->assertFalse($object->hasValue('b.c.2'));
+    }
+
+    /**
+     * @test hasValue
+     * @test grantPath
+     */
+    public function testGrantPathRO()
+    {
+        $object = new CNabuNestedDataTestingRO();
+
+        $this->expectException(Error::class);
+        $object->grantPath('a');
+    }
+
+    /**
+     * @test hasValue
+     * @test grantPath
+     * @test hasValue
+     */
+    public function testGrantPathWR()
+    {
+        $object = new CNabuNestedDataTestingWR();
+
+        $this->assertTrue($object->grantPath('a'));
+        $this->assertTrue($object->hasValue('a'));
+        $this->assertTrue($object->isValueNull('a'));
+
+        $this->assertTrue($object->grantPath('b'));
+        $this->assertTrue($object->hasValue('a'));
+        $this->assertTrue($object->hasValue('b'));
+        $this->assertTrue($object->isValueNull('a'));
+        $this->assertTrue($object->isValueNull('b'));
+
+        $this->assertTrue($object->grantPath('c.d'));
+        $this->assertTrue($object->hasValue('c.d'));
+        $this->assertSame(array('d' => null), $object->getValue('c'));
+        $this->assertNull($object->getValue('c.d'));
+        $this->assertTrue($object->hasValue('a'));
+        $this->assertTrue($object->hasValue('b'));
+        $this->assertTrue($object->isValueNull('a'));
+        $this->assertTrue($object->isValueNull('b'));
+        $this->assertFalse($object->isValueNull('c'));
+        $this->assertTrue($object->isValueNull('c.d'));
+
+        $this->assertTrue($object->grantPath('c.d.e'));
+        $this->assertTrue($object->hasValue('c.d'));
+        $this->assertTrue($object->hasValue('c.d.e'));
+        $this->assertSame(array('d' => array('e' => null)), $object->getValue('c'));
+        $this->assertSame(array('e' => null), $object->getValue('c.d'));
+        $this->assertNull($object->getValue('c.d.e'));
+        $this->assertTrue($object->isValueNull('c.d.e'));
+        $this->assertTrue($object->hasValue('a'));
+        $this->assertTrue($object->hasValue('b'));
+        $this->assertTrue($object->isValueNull('a'));
+        $this->assertTrue($object->isValueNull('b'));
+        $this->assertFalse($object->isValueNull('c'));
+        $this->assertFalse($object->isValueNull('c.d'));
+
+        $this->assertTrue($object->grantPath('b.x.z'));
+        $this->assertTrue($object->hasValue('b.x'));
+        $this->assertTrue($object->hasValue('b.x.z'));
+        $this->assertSame(array('x' => array('z' => null)), $object->getValue('b'));
+        $this->assertSame(array('z' => null), $object->getValue('b.x'));
+        $this->assertNull($object->getValue('b.x.z'));
+        $this->assertTrue($object->isValueNull('b.x.z'));
+        $this->assertTrue($object->hasValue('a'));
+        $this->assertTrue($object->hasValue('b'));
+        $this->assertTrue($object->isValueNull('a'));
+        $this->assertFalse($object->isValueNull('b'));
+        $this->assertFalse($object->isValueNull('c'));
+        $this->assertFalse($object->isValueNull('c.d'));
+        $this->assertSame(array('d' => array('e' => null)), $object->getValue('c'));
+        $this->assertSame(array('e' => null), $object->getValue('c.d'));
+        $this->assertTrue($object->isValueNull('c.d.e'));
     }
 
     /**
      * @test setValue
-     * @test checkPath
+     * @test hasValue
      */
     public function testSetValueRO()
     {
@@ -138,12 +212,13 @@ class TNabuNestedDataTest extends TestCase
 
     /**
      * @test SetValue
-     * @test checkPath
+     * @test hasValue
      * @test getValue
      */
     public function testSetValueWR()
     {
         $object = new CNabuNestedDataTestingWR();
+        $this->assertTrue($object->isEditable());
     }
 }
 

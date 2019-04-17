@@ -107,11 +107,11 @@ trait TNabuNestedData
     }
 
     /**
-     * Check if a Path exists.
+     * Overrides @see { CNabuRODataObject::hasValue() } to check if a Path exists.
      * @param string $path Path to check.
      * @return bool Returns true if the path exists.
      */
-    public function checkPath(string $path): bool
+    public function hasValue(string $path): bool
     {
         $retval = false;
 
@@ -128,6 +128,41 @@ trait TNabuNestedData
                 }
             }
             $retval = ($i === $l);
+        }
+
+        return $retval;
+    }
+
+    /**
+     * Grant a Path creating missed nested levels.
+     * Keep with caution because this method overwrites scalar data if their path needs to be converted
+     * to an intermediate level when flag is setted with TRAIT_NESTED_REPLACE_EXISTING.
+     * @param string $path Path to check.
+     * @param int $flags Flags to modify behavior of this method. Only TRAIT_NESTED_REPLACE_EXISTING is allowed.
+     * @return bool Returns true if the path is granted.
+     */
+    public function grantPath(string $path, int $flags = TRAIT_NESTED_REPLACE_EXISTING)
+    {
+        $retval = false;
+
+        if ($this instanceof CNabuDataObject && $this->isEditable()) {
+            if (($l = count($route = preg_split('/\./', $path))) > 0) {
+                $p = &$this->data;
+                $retval = true;
+                for ($i = 0; $i < $l; $i++) {
+                    if (is_null($p) || (!is_array($p) && $flags | TRAIT_NESTED_REPLACE_EXISTING)) {
+                        $p = array($route[$i] => null);
+                    } elseif (!is_array($p)) {
+                        $retval = false;
+                        break;
+                    } elseif (!array_key_exists($route[$i], $p)) {
+                        $p[$route[$i]] = null;
+                    }
+                    $p = &$p[$route[$i]];
+                }
+            }
+        } else {
+            trigger_error(TRIGGER_ERROR_READ_ONLY_MODE, E_USER_ERROR);
         }
 
         return $retval;
