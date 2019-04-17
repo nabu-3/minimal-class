@@ -37,7 +37,7 @@ use nabu\data\CNabuRODataObject;
  * @version 3.0.2
  * @package nabu\data\traits
  */
-class TNabuJSONDataTest extends TestCase
+class TNabuNestedDataTest extends TestCase
 {
     /**
      * @test getValueAsJSONDecoded
@@ -46,7 +46,7 @@ class TNabuJSONDataTest extends TestCase
     public function testGetValueAsJSONDecoded()
     {
         $array = array('a' => 1, 'b' => '2');
-        $object = new CNabuJSONDataTestingRO(
+        $object = new CNabuNestedDataTestingRO(
             array(
                 'json_name' => json_encode(array('a' => 1, 'b' => '2'), JSON_OBJECT_AS_ARRAY)
             )
@@ -64,30 +64,45 @@ class TNabuJSONDataTest extends TestCase
     {
         $array = array('a' => 1, 'b' => '2');
         $arrtxt = json_encode($array, JSON_OBJECT_AS_ARRAY);
-        $object = new CNabuJSONDataTestingWR();
+        $object = new CNabuNestedDataTestingWR();
+
         $object->setValueAsJSONEncoded('json_name', null);
         $this->assertNull($object->getValueAsJSONDecoded('json_name'));
+
+        $object->setValueAsJSONEncoded('json_name', array());
+        $this->assertSame(array(), $object->getValueAsJSONDecoded('json_name'));
+
+        $object->setValueAsJSONEncoded('json_name', 'no_json_string');
+        $this->assertSame(array('no_json_string'), $object->getValueAsJSONDecoded('json_name'));
+
         $object->setValueAsJSONEncoded('json_name', $arrtxt);
         $this->assertSame($array, $object->getValueAsJSONDecoded('json_name'));
         $this->assertSame($arrtxt, $object->getValue('json_name'));
+
         $object->setValueAsJSONEncoded('json_name', $array);
         $this->assertSame($array, $object->getValueAsJSONDecoded('json_name'));
         $this->assertSame($arrtxt, $object->getValue('json_name'));
+
         $arrobj = new stdClass();
+        $object->setValueAsJSONEncoded('json_name', $arrobj);
+        $this->assertSame(array(), $object->getValueAsJSONDecoded('json_name'));
+
         $arrobj->a = 1;
         $arrobj->b = '2';
         $object->setValueAsJSONEncoded('json_name', $arrobj);
         $this->assertSame($array, $object->getValueAsJSONDecoded('json_name'));
         $this->assertSame($arrtxt, $object->getValue('json_name'));
+
         $object->setAsReadOnly();
         $this->expectException(Error::class);
         $object->setValueAsJSONEncoded('json_name', '{}');
     }
 
     /**
-     * @test getJSONValue
+     * @test getValue
+     * @test checkPath
      */
-    public function testGetJSONValueRO()
+    public function testGetValueRO()
     {
         $array = array(
             'a' => 1,
@@ -96,20 +111,48 @@ class TNabuJSONDataTest extends TestCase
             )
         );
 
-        $object = new CNabuJSONDataTestingRO($array);
-        $this->assertSame(1, $object->getJSONValue('a'));
-        $this->assertSame(array('c' => 2), $object->getJSONValue('b'));
-        $this->assertSame(2, $object->getJSONValue('b.c'));
-        $this->assertNull($object->getJSONValue('a.b.c'));
+        $object = new CNabuNestedDataTestingRO($array);
+        $this->assertSame(1, $object->getValue('a'));
+        $this->assertSame(array('c' => 2), $object->getValue('b'));
+        $this->assertSame(2, $object->getValue('b.c'));
+        $this->assertNull($object->getValue('a.b.c'));
+        $this->assertTrue($object->checkPath('a'));
+        $this->assertTrue($object->checkPath('b'));
+        $this->assertTrue($object->checkPath('b.c'));
+        $this->assertFalse($object->checkPath('b.2'));
+        $this->assertFalse($object->checkPath('a.b.c'));
+        $this->assertFalse($object->checkPath('b.c.d'));
+        $this->assertFalse($object->checkPath('b.c.2'));
+    }
+
+    /**
+     * @test setValue
+     * @test checkPath
+     */
+    public function testSetValueRO()
+    {
+        $object = new CNabuNestedDataTestingRO();
+        $this->expectException(Error::class);
+        $object->setValue('a', 1);
+    }
+
+    /**
+     * @test SetValue
+     * @test checkPath
+     * @test getValue
+     */
+    public function testSetValueWR()
+    {
+        $object = new CNabuNestedDataTestingWR();
     }
 }
 
-class CNabuJSONDataTestingRO extends CNabuRODataObject
+class CNabuNestedDataTestingRO extends CNabuRODataObject
 {
-    use TNabuJSONData;
+    use TNabuNestedData;
 }
 
-class CNabuJSONDataTestingWR extends CNabuDataObject
+class CNabuNestedDataTestingWR extends CNabuDataObject
 {
-    use TNabuJSONData;
+    use TNabuNestedData;
 }

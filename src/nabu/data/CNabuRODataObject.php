@@ -44,7 +44,8 @@ abstract class CNabuRODataObject extends CNabuObject
     }
 
     /**
-     * Dumps data to the standard output using var_export.
+     * Dumps data to an string using var_export. Data string is in PHP format.
+     * @return string Returns data as string in PHP format.
      */
     public function dump()
     {

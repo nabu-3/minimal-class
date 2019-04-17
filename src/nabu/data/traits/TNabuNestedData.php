@@ -24,13 +24,13 @@ namespace nabu\data\traits;
 use nabu\data\CNabuDataObject;
 
 /**
- * Trait to manage a TNabuDataObject as a JSON object.
+ * Trait to manage a @see { TNabuDataObject } or a @see { TNabuRODataObject } as a nested or multilevel data.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
  * @since 3.0.2
  * @version 3.0.2
  * @package \nabu\data\traits
  */
-trait TNabuJSONData
+trait TNabuNestedData
 {
     /**
      * Try to parse value as a JSON data descriptor. If success returns an array with parsed structure. If fails,
@@ -43,8 +43,14 @@ trait TNabuJSONData
     {
         $value = $this->getValue($name);
 
-        if ($value !== null && is_string($value)) {
-            $value = json_decode($value, true);
+        if ($value !== null &&
+            is_string($value) &&
+            is_null($json = json_decode($value, true))
+        ) {
+            $json = array($value);
+        }
+        if (isset($json)) {
+            $value = $json;
         }
 
         return $value;
@@ -74,11 +80,11 @@ trait TNabuJSONData
     }
 
     /**
-     * Gets a value using a point style JSON path.
+     * Gets a value using a point style JSON path. Overrides parent method.
      * @param string $path The path of the value to locate.
      * @return mixed|null Returns the value in path if exists, or null otherwise.
      */
-    public function getJSONValue(string $path)
+    public function getValue(string $path)
     {
         $retval = null;
 
@@ -88,7 +94,7 @@ trait TNabuJSONData
         ) {
             $p = &$this->data;
             for ($i = 0; $i < $l; $i++) {
-                if ($p !==null && is_array($p) && array_key_exists($route[$i], $p)) {
+                if (is_array($p) && array_key_exists($route[$i], $p)) {
                     $p = &$p[$route[$i]];
                 } else {
                     break;
@@ -101,88 +107,68 @@ trait TNabuJSONData
     }
 
     /**
-     * Check if a JSON Path exists.
+     * Check if a Path exists.
      * @param string $path Path to check.
      * @return bool Returns true if the path exists.
      */
-    public function checkJSONPath(string $path): bool
+    public function checkPath(string $path): bool
     {
         $retval = false;
 
-        if (!$this->isEmpty() && mb_strlen($path) > 0) {
-            $route = preg_split('/\./', $path);
-
-            if (count($route) > 0) {
-                $l = count($route);
-                $p = &$this->data;
-                for ($i = 0; $i < $l; $i++) {
-                    if (!is_array($p) || !array_key_exists($route[$i], $p)) {
-                        break;
-                    }
+        if (!$this->isEmpty() &&
+            mb_strlen($path) > 0 &&
+            ($l = count($route = preg_split('/\./', $path))) > 0
+        ) {
+            $p = &$this->data;
+            for ($i = 0; $i < $l; $i++) {
+                if (is_array($p) && array_key_exists($route[$i], $p)) {
                     $p = &$p[$route[$i]];
+                } else {
+                    break;
                 }
-                $retval = ($i === $l);
             }
+            $retval = ($i === $l);
         }
 
         return $retval;
     }
 
-    public function isJSONValueEqualTo($path, $value)
+    /**
+     * Set a Nested data value.
+     * @param string $path Path of the value to be setted.
+     * @param mixed|null $value Value to be setted.
+     * @param int $flags Flags to modify behavior of this method.
+     * @return CNabuDataObject Returns self pointer for convenience.
+     */
+    public function setValue(string $path, $value = null, int $flags = TRAIT_NESTED_GRANT_PATH): CNabuDataObject
     {
-        if ($this->isEmpty() || mb_strlen($path) === 0) {
-            return false;
-        }
-
-        $route = preg_split('/\./', $path);
-
-        if (count($route) > 0) {
-            $l = count($route);
-            $p = &$this->data;
-            for ($i = 0; $i < $l; $i++) {
-                if (!array_key_exists($route[$i], $p)) {
-                    return false;
-                }
-                $p = &$p[$route[$i]];
-            }
-            return ($p === $value);
-        } else {
-            return false;
-        }
-    }
-
-    public function setJSONValue($path, $value, $flags = 0)
-    {
-        if (mb_strlen($path) === 0) {
-            return false;
-        }
-
-        $route = preg_split('/\./', $path);
-
-        if (count($route) === 0) {
-            return;
-        }
-
-        $l = count($route);
-        $p = &$this->data;
-        for ($i = 0; $i < $l; $i++) {
-            if (is_array($p)) {
-                if (!array_key_exists($route[$i], $p)) {
-                    if ($flags & TRAIT_JSON_GRANT_PATH) {
-                        $p[$route[$i]] = array();
+        if ($this instanceof CNabuDataObject && $this->isEditable()) {
+            if (mb_strlen($path) > 0 && ($l = count($route = preg_split('/\./', $path))) > 0) {
+                $p = &$this->data;
+                for ($i = 0; $i < $l; $i++) {
+                    if (is_array($p)) {
+                        if (!array_key_exists($route[$i], $p)) {
+                            if ($flags & TRAIT_NESTED_GRANT_PATH) {
+                                $p[$route[$i]] = null;
+                            } else {
+                                break;
+                            }
+                        }
+                    } elseif (($p === null && ($flags & TRAIT_NESTED_GRANT_PATH)) || $flags & TRAIT_NESTED_REPLACE_EXISTING) {
+                        $p = array($route[$i] => null);
                     } else {
-                        return;
+                        break;
                     }
+                    $p = &$p[$route[$i]];
                 }
-            } elseif ($p === null && ($flags & TRAIT_JSON_GRANT_PATH)) {
-                $p = array($route[$i] => null);
-            } elseif ($flags & TRAIT_JSON_REPLACE_EXISTING) {
-                $p = array($route[$i] => null);
-            } else {
-                return;
+                if ($i === $l) {
+                    $p = $value;
+                }
             }
-            $p = &$p[$route[$i]];
+        } else {
+            trigger_error(TRIGGER_ERROR_READ_ONLY_MODE, E_USER_ERROR);
         }
-        $p = $value;
+
+        return $this;
     }
 }
