@@ -147,7 +147,7 @@ abstract class CNabuRODataObject extends CNabuObject
      */
     public function isValueNull(string $name): bool
     {
-        return $this->hasValue($name) && is_null($this->data[$name]);
+        return $this->hasValue($name) && is_null($this->getValue($name));
     }
 
     /**
