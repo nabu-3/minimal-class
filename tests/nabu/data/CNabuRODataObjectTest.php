@@ -57,6 +57,7 @@ class CNabuRODataObjectTest extends TestCase
         $data = array(
             'value_int' => 2,
             'value_float' => 3.456,
+            'value_bool' => true,
             'value_string' => 'test_field',
             'value_string_int' => '2',
             'value_string_float' => '3.456',
@@ -77,6 +78,7 @@ class CNabuRODataObjectTest extends TestCase
         $this->assertTrue($object->hasValue('value_int'));
         $this->assertTrue($object->isValueNumeric('value_int'));
         $this->assertTrue($object->isValueFloat('value_int'));
+        $this->assertFalse($object->isValueBool('value_int'));
         $this->assertFalse($object->isValueString('value_int'));
         $this->assertFalse($object->isValueEmptyString('value_int'));
         $this->assertFalse($object->isValueNull('value_int'));
@@ -92,6 +94,7 @@ class CNabuRODataObjectTest extends TestCase
         $this->assertTrue($object->hasValue('value_float'));
         $this->assertTrue($object->isValueNumeric('value_float'));
         $this->assertTrue($object->isValueFloat('value_float'));
+        $this->assertFalse($object->isValueBool('value_float'));
         $this->assertFalse($object->isValueString('value_float'));
         $this->assertFalse($object->isValueEmptyString('value_float'));
         $this->assertFalse($object->isValueNull('value_float'));
@@ -103,9 +106,25 @@ class CNabuRODataObjectTest extends TestCase
         $this->assertIsFloat($object->getValue('value_float'));
         $this->assertSame(3.456, $object->getValue('value_float'));
 
+        $this->assertTrue($object->hasValue('value_bool'));
+        $this->assertFalse($object->isValueNumeric('value_bool'));
+        $this->assertFalse($object->isValueFloat('value_bool'));
+        $this->assertTrue($object->isValueBool('value_bool'));
+        $this->assertFalse($object->isValueString('value_bool'));
+        $this->assertFalse($object->isValueEmptyString('value_bool'));
+        $this->assertFalse($object->isValueNull('value_bool'));
+        $this->assertFalse($object->isValueGUID('value_bool'));
+        $this->assertTrue($object->isValueEqualTo('value_bool', true));
+        $this->assertTrue($object->isValueEqualTo('value_bool', 'true'));
+        $this->assertFalse($object->isValueEqualTo('value_bool', 'true', true));
+        $this->assertFalse($object->isValueEqualTo('value_bool', false));
+        $this->assertIsBool($object->getValue('value_bool'));
+        $this->assertSame(true, $object->getValue('value_bool'));
+
         $this->assertTrue($object->hasValue('value_string'));
         $this->assertFalse($object->isValueNumeric('value_string'));
         $this->assertFalse($object->isValueFloat('value_string'));
+        $this->assertFalse($object->isValueBool('value_strint'));
         $this->assertTrue($object->isValueString('value_string'));
         $this->assertFalse($object->isValueEmptyString('value_string'));
         $this->assertFalse($object->isValueNull('value_string'));
@@ -118,6 +137,7 @@ class CNabuRODataObjectTest extends TestCase
         $this->assertTrue($object->hasValue('value_string_int'));
         $this->assertTrue($object->isValueNumeric('value_string_int'));
         $this->assertTrue($object->isValueFloat('value_string_int'));
+        $this->assertFalse($object->isValueBool('value_string_int'));
         $this->assertTrue($object->isValueString('value_string_int'));
         $this->assertFalse($object->isValueEmptyString('value_string_int'));
         $this->assertFalse($object->isValueNull('value_string_int'));
@@ -132,6 +152,7 @@ class CNabuRODataObjectTest extends TestCase
         $this->assertTrue($object->hasValue('value_string_float'));
         $this->assertTrue($object->isValueNumeric('value_string_float'));
         $this->assertTrue($object->isValueFloat('value_string_float'));
+        $this->assertFalse($object->isValueBool('value_string_float'));
         $this->assertTrue($object->isValueString('value_string_float'));
         $this->assertFalse($object->isValueEmptyString('value_string_float'));
         $this->assertFalse($object->isValueNull('value_string_float'));
@@ -146,6 +167,7 @@ class CNabuRODataObjectTest extends TestCase
         $this->assertTrue($object->hasValue('value_guid'));
         $this->assertFalse($object->isValueNumeric('value_guid'));
         $this->assertFalse($object->isvalueFloat('value_guid'));
+        $this->assertFalse($object->isValueBool('value_guid'));
         $this->assertTrue($object->isValueString('value_guid'));
         $this->assertFalse($object->isValueEmptyString('value_guid'));
         $this->assertFalse($object->isValueNull('value_guid'));
@@ -157,6 +179,7 @@ class CNabuRODataObjectTest extends TestCase
         $this->assertTrue($object->hasValue('value_null'));
         $this->assertFalse($object->isValueNumeric('value_null'));
         $this->assertFalse($object->isValueFloat('value_null'));
+        $this->assertFalse($object->isValueBool('value_null'));
         $this->assertFalse($object->isValueString('value_null'));
         $this->assertFalse($object->isValueEmptyString('value_null'));
         $this->assertTrue($object->isValueNull('value_null'));
@@ -168,6 +191,7 @@ class CNabuRODataObjectTest extends TestCase
         $this->assertTrue($object->hasValue('value_array'));
         $this->assertFalse($object->isValueNumeric('value_array'));
         $this->assertFalse($object->isValueFloat('value_array'));
+        $this->assertFalse($object->isValueBool('value_array'));
         $this->assertFalse($object->isValueString('value_array'));
         $this->assertFalse($object->isValueEmptyString('value_array'));
         $this->assertFalse($object->isValueNull('value_array'));
@@ -182,6 +206,7 @@ class CNabuRODataObjectTest extends TestCase
         $this->assertTrue($object->hasValue('value_list'));
         $this->assertFalse($object->isValueNumeric('value_list'));
         $this->assertFalse($object->isValueFloat('value_list'));
+        $this->assertFalse($object->isValueBool('value_list'));
         $this->assertTrue($object->isValueString('value_list'));
         $this->assertFalse($object->isValueEmptyString('value_list'));
         $this->assertFalse($object->isValueNull('value_list'));
@@ -192,17 +217,22 @@ class CNabuRODataObjectTest extends TestCase
 
         $this->assertTrue($object->hasValue('value_empty_0'));
         $this->assertTrue($object->isValueEmpty('value_empty_0'));
+        $this->assertFalse($object->isValueBool('value_empty_0'));
 
         $this->assertTrue($object->hasValue('value_empty_false'));
         $this->assertTrue($object->isValueEmpty('value_empty_false'));
+        $this->assertTrue($object->isValueBool('value_empty_false'));
 
         $this->assertTrue($object->hasValue('value_empty_string'));
         $this->assertTrue($object->isValueEmpty('value_empty_string'));
+        $this->assertFalse($object->isValueBool('value_empty_string'));
 
         $this->assertTrue($object->matchValue($object, 'value_int'));
         $this->assertTrue($object->matchValue($object, 'value_int', null, true));
         $this->assertFalse($object->matchValue($object, 'value_int', 'value_float'));
         $this->assertFalse($object->matchValue($object, 'value_int', 'value_float', true));
+        $this->assertTrue($object->matchValue($object, 'value_int', 'value_bool'));
+        $this->assertFalse($object->matchValue($object, 'value_int', 'value_bool', true));
         $this->assertFalse($object->matchValue($object, 'value_int', 'value_string'));
         $this->assertFalse($object->matchValue($object, 'value_int', 'value_string', true));
         $this->assertTrue($object->matchValue($object, 'value_int', 'value_string_int'));

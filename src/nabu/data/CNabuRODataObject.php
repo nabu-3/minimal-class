@@ -118,7 +118,20 @@ abstract class CNabuRODataObject extends CNabuObject
     public function isValueFloat(string $name): bool
     {
         $value = $this->getValue($name);
+
         return $this->hasValue($name) && (is_numeric($value) || is_float($value));
+    }
+
+    /**
+     * CHeck if a value is boolean.
+     * @param string $name Name of the value to check.
+     * @return bool Returns true if the value exists and is a boolean.
+     */
+    public function isValueBool(string $name): bool
+    {
+        $value = $this->getValue($name);
+
+        return $this->hasValue($name) && is_bool($value);
     }
 
     /**

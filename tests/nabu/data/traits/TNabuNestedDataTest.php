@@ -245,6 +245,9 @@ class TNabuNestedDataTest extends TestCase
         $object->setValue('e.f', 60, 0);
         $this->assertFalse($object->hasValue('e.f'));
         $this->assertTrue($object->isValueEqualTo('e', 50));
+        $object->setValue('g.h.i', true);
+        $this->assertTrue($object->hasValue('g.h.i'));
+        $this->assertTrue($object->isValueEqualTo('g.h.i', true));
     }
 
     /**
@@ -252,6 +255,7 @@ class TNabuNestedDataTest extends TestCase
      * @test CNabuRODataObject::isValueEmpty
      * @test CNabuRODataObject::isValueNumeric
      * @test CNabuRODataObject::isValueFloat
+     * @test CNabuRODataObject::isValueBool
      * @test CNabuRODataObject::isValueString
      * @test CNabuRODataObject::isValueEmptyString
      * @test CNabuRODataObject::isValueGUID
@@ -266,6 +270,7 @@ class TNabuNestedDataTest extends TestCase
         $this->assertTrue($object->isValueEmpty('test.null'));
         $this->assertFalse($object->isValueNumeric('test.null'));
         $this->assertFalse($object->isValueFloat('test.null'));
+        $this->assertFalse($object->isValueBool('test.null'));
         $this->assertFalse($object->isValueString('test.null'));
         $this->assertFalse($object->isValueEmptyString('test.null'));
         $this->assertFalse($object->isValueGUID('test.null'));
@@ -275,6 +280,7 @@ class TNabuNestedDataTest extends TestCase
         $this->assertTrue($object->isValueEmpty('test.numeric'));
         $this->assertTrue($object->isValueNumeric('test.numeric'));
         $this->assertTrue($object->isValueFloat('test.numeric'));
+        $this->assertFalse($object->isValueBool('test.numeric'));
         $this->assertFalse($object->isValueString('test.numeric'));
         $this->assertFalse($object->isValueEmptyString('test.numeric'));
         $this->assertFalse($object->isValueGUID('test.numeric'));
@@ -284,6 +290,7 @@ class TNabuNestedDataTest extends TestCase
         $this->assertFalse($object->isValueEmpty('test.numeric'));
         $this->assertTrue($object->isValueNumeric('test.numeric'));
         $this->assertTrue($object->isValueFloat('test.numeric'));
+        $this->assertFalse($object->isValueBool('test.numeric'));
         $this->assertFalse($object->isValueString('test.numeric'));
         $this->assertFalse($object->isValueEmptyString('test.numeric'));
         $this->assertFalse($object->isValueGUID('test.numeric'));
@@ -293,15 +300,37 @@ class TNabuNestedDataTest extends TestCase
         $this->assertFalse($object->isValueEmpty('test.float'));
         $this->assertTrue($object->isValueNumeric('test.float'));
         $this->assertTrue($object->isValueFloat('test.float'));
+        $this->assertFalse($object->isValueBool('test.float'));
         $this->assertFalse($object->isValueString('test.float'));
         $this->assertFalse($object->isValueEmptyString('test.float'));
         $this->assertFalse($object->isValueGUID('test.float'));
+
+        $object->setValue('test.bool', false);
+        $this->assertFalse($object->isValueNull('test.bool'));
+        $this->assertTrue($object->isValueEmpty('test.bool'));
+        $this->assertFalse($object->isValueNumeric('test.bool'));
+        $this->assertFalse($object->isValueFloat('test.bool'));
+        $this->assertTrue($object->isValueBool('test.bool'));
+        $this->assertFalse($object->isValueString('test.bool'));
+        $this->assertFalse($object->isValueEmptyString('test.bool'));
+        $this->assertFalse($object->isValueGUID('test.bool'));
+
+        $object->setValue('test.bool', true);
+        $this->assertFalse($object->isValueNull('test.bool'));
+        $this->assertFalse($object->isValueEmpty('test.bool'));
+        $this->assertFalse($object->isValueNumeric('test.bool'));
+        $this->assertFalse($object->isValueFloat('test.bool'));
+        $this->assertTrue($object->isValueBool('test.bool'));
+        $this->assertFalse($object->isValueString('test.bool'));
+        $this->assertFalse($object->isValueEmptyString('test.bool'));
+        $this->assertFalse($object->isValueGUID('test.bool'));
 
         $object->setValue('test.string', '');
         $this->assertFalse($object->isValueNull('test.string'));
         $this->assertTrue($object->isValueEmpty('test.string'));
         $this->assertFalse($object->isValueNumeric('test.string'));
         $this->assertFalse($object->isValueFloat('test.string'));
+        $this->assertFalse($object->isValueBool('test.string'));
         $this->assertTrue($object->isValueString('test.string'));
         $this->assertTrue($object->isValueEmptyString('test.string'));
         $this->assertFalse($object->isValueGUID('test.string'));
@@ -311,6 +340,7 @@ class TNabuNestedDataTest extends TestCase
         $this->assertfalse($object->isValueEmpty('test.string'));
         $this->assertFalse($object->isValueNumeric('test.string'));
         $this->assertFalse($object->isValueFloat('test.string'));
+        $this->assertFalse($object->isValueBool('test.string'));
         $this->assertTrue($object->isValueString('test.string'));
         $this->assertFalse($object->isValueEmptyString('test.string'));
         $this->assertFalse($object->isValueGUID('test.string'));
@@ -320,6 +350,7 @@ class TNabuNestedDataTest extends TestCase
         $this->assertfalse($object->isValueEmpty('test.string'));
         $this->assertFalse($object->isValueNumeric('test.string'));
         $this->assertFalse($object->isValueFloat('test.string'));
+        $this->assertFalse($object->isValueBool('test.string'));
         $this->assertTrue($object->isValueString('test.string'));
         $this->assertFalse($object->isValueEmptyString('test.string'));
         $this->assertFalse($object->isValueGUID('test.string'));
@@ -329,6 +360,7 @@ class TNabuNestedDataTest extends TestCase
         $this->assertfalse($object->isValueEmpty('test.string'));
         $this->assertFalse($object->isValueNumeric('test.string'));
         $this->assertFalse($object->isValueFloat('test.string'));
+        $this->assertFalse($object->isValueBool('test.string'));
         $this->assertTrue($object->isValueString('test.string'));
         $this->assertFalse($object->isValueEmptyString('test.string'));
         $this->assertFalse($object->isValueGUID('test.string'));
@@ -338,6 +370,7 @@ class TNabuNestedDataTest extends TestCase
         $this->assertfalse($object->isValueEmpty('test.string'));
         $this->assertTrue($object->isValueNumeric('test.string'));
         $this->assertTrue($object->isValueFloat('test.string'));
+        $this->assertFalse($object->isValueBool('test.string'));
         $this->assertTrue($object->isValueString('test.string'));
         $this->assertFalse($object->isValueEmptyString('test.string'));
         $this->assertFalse($object->isValueGUID('test.string'));
@@ -347,6 +380,7 @@ class TNabuNestedDataTest extends TestCase
         $this->assertfalse($object->isValueEmpty('test.string'));
         $this->assertTrue($object->isValueNumeric('test.string'));
         $this->assertTrue($object->isValueFloat('test.string'));
+        $this->assertFalse($object->isValueBool('test.string'));
         $this->assertTrue($object->isValueString('test.string'));
         $this->assertFalse($object->isValueEmptyString('test.string'));
         $this->assertFalse($object->isValueGUID('test.string'));
@@ -356,6 +390,7 @@ class TNabuNestedDataTest extends TestCase
         $this->assertfalse($object->isValueEmpty('test.string'));
         $this->assertTrue($object->isValueNumeric('test.string'));
         $this->assertTrue($object->isValueFloat('test.string'));
+        $this->assertFalse($object->isValueBool('test.string'));
         $this->assertTrue($object->isValueString('test.string'));
         $this->assertFalse($object->isValueEmptyString('test.string'));
         $this->assertFalse($object->isValueGUID('test.string'));
@@ -365,6 +400,7 @@ class TNabuNestedDataTest extends TestCase
         $this->assertfalse($object->isValueEmpty('test.guid'));
         $this->assertFalse($object->isValueNumeric('test.guid'));
         $this->assertFalse($object->isValueFloat('test.guid'));
+        $this->assertFalse($object->isValueBool('test.string'));
         $this->assertTrue($object->isValueString('test.guid'));
         $this->assertFalse($object->isValueEmptyString('test.guid'));
         $this->assertTrue($object->isValueGUID('test.guid'));
