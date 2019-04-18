@@ -107,7 +107,7 @@ abstract class CNabuRODataObject extends CNabuObject
      */
     public function isValueNumeric(string $name): bool
     {
-        return $this->hasValue($name) && is_numeric($this->data[$name]);
+        return $this->hasValue($name) && is_numeric($this->getValue($name));
     }
 
     /**
@@ -117,7 +117,8 @@ abstract class CNabuRODataObject extends CNabuObject
      */
     public function isValueFloat(string $name): bool
     {
-        return $this->hasValue($name) && (is_numeric($this->data[$name]) || is_float($this->data[$name]));
+        $value = $this->getValue($name);
+        return $this->hasValue($name) && (is_numeric($value) || is_float($value));
     }
 
     /**
@@ -127,7 +128,7 @@ abstract class CNabuRODataObject extends CNabuObject
      */
     public function isValueString(string $name): bool
     {
-        return $this->hasValue($name) && is_string($this->data[$name]);
+        return $this->hasValue($name) && is_string($this->getValue($name));
     }
 
     /**
@@ -137,7 +138,9 @@ abstract class CNabuRODataObject extends CNabuObject
      */
     public function isValueEmptyString(string $name): bool
     {
-        return $this->hasValue($name) && is_string($this->data[$name]) && mb_strlen($this->data[$name]) === 0;
+        $value = $this->getValue($name);
+
+        return $this->hasValue($name) && is_string($value) && mb_strlen($value) === 0;
     }
 
     /**
@@ -157,11 +160,13 @@ abstract class CNabuRODataObject extends CNabuObject
      */
     public function isValueEmpty(string $name): bool
     {
+        $value = $this->getValue($name);
+
         return $this->hasValue($name) &&
-               ($this->data[$name] === null ||
-                $this->data[$name] === false ||
-                $this->data[$name] === 0 ||
-                mb_strlen($this->data[$name]) === 0
+               ($value === null ||
+                $value === false ||
+                $value === 0 ||
+                mb_strlen($value) === 0
                )
         ;
     }
@@ -173,7 +178,7 @@ abstract class CNabuRODataObject extends CNabuObject
      */
     public function isValueGUID(string $name): bool
     {
-        return $this->hasValue($name) && nb_isValidGUID($this->data[$name]);
+        return $this->hasValue($name) && nb_isValidGUID($this->getValue($name));
     }
 
     /**
@@ -185,8 +190,10 @@ abstract class CNabuRODataObject extends CNabuObject
      */
     public function isValueEqualTo(string $name, $test, bool $strict = false): bool
     {
+        $value = $this->getValue($name);
+
         return $this->hasValue($name) &&
-               (($strict && $this->data[$name] === $test) || (!$strict && $this->data[$name] == $test))
+               (($strict && $value === $test) || (!$strict && $value == $test))
         ;
     }
 

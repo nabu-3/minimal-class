@@ -147,15 +147,15 @@ trait TNabuNestedData
      * Keep with caution because this method overwrites scalar data if their path needs to be converted
      * to an intermediate level when flag is setted with TRAIT_NESTED_REPLACE_EXISTING.
      * @param string $path Path to check.
-     * @param int $flags Flags to modify behavior of this method. Only TRAIT_NESTED_REPLACE_EXISTING is allowed.
+     * @param bool $replace If true, forces to grant unexistent path replacing existing values if needed.
      * @return bool Returns true if the path is granted.
      */
-    public function grantPath(string $path, int $flags = TRAIT_NESTED_REPLACE_EXISTING)
+    public function grantPath(string $path, bool $replace = true)
     {
         $retval = false;
 
         if ($this instanceof CNabuDataObject && $this->isEditable()) {
-            $retval = $this->grantPathInternal($path, $flags);
+            $retval = $this->grantPathInternal($path, $replace);
         } else {
             trigger_error(TRIGGER_ERROR_READ_ONLY_MODE, E_USER_ERROR);
         }
@@ -167,10 +167,10 @@ trait TNabuNestedData
      * Process the deepest loop to grant a Path creating missed nested levels.
      * This method is called internally by @see { grantPath() } method.
      * @param string $path Path to check.
-     * @param int $flags Flags to modify behavior of this method. Only TRAIT_NESTED_REPLACE_EXISTING is allowed.
+     * @param bool $replace If true, forces to grant unexistent path replacing existing values if needed.
      * @return bool Returns true if the path is granted.
      */
-    private function grantPathInternal(string $path, int $flags)
+    private function grantPathInternal(string $path, bool $replace)
     {
         $retval = false;
         $route = array();
@@ -179,7 +179,7 @@ trait TNabuNestedData
             $p = &$this->data;
             $retval = true;
             for ($i = 0; $i < $l; $i++) {
-                if (is_null($p) || (!is_array($p) && $flags | TRAIT_NESTED_REPLACE_EXISTING)) {
+                if (is_null($p) || (!is_array($p) && $replace)) {
                     $p = array($route[$i] => null);
                 } elseif (!is_array($p)) {
                     $retval = false;
@@ -198,13 +198,13 @@ trait TNabuNestedData
      * Set a Nested data value.
      * @param string $path Path of the value to be setted.
      * @param mixed|null $value Value to be setted.
-     * @param int $flags Flags to modify behavior of this method.
+     * @param bool $replace If true, forces to grant unexistent path replacing existing values if needed.
      * @return CNabuDataObject Returns self pointer for convenience.
      */
-    public function setValue(string $path, $value = null, int $flags = TRAIT_NESTED_GRANT_PATH): CNabuDataObject
+    public function setValue(string $path, $value = null, bool $replace = true): CNabuDataObject
     {
         if ($this instanceof  CNabuDataObject && $this->isEditable()) {
-            if ($flags & TRAIT_NESTED_GRANT_PATH && $this->grantPath($path)) {
+            if ($this->grantPath($path, $replace)) {
                 $route = array();
                 $p = &$this->data;
                 for ($i = 0, $l = $this->splitPath($path, $route); $i < $l; $i++) {
