@@ -80,6 +80,19 @@ trait TNabuNestedData
     }
 
     /**
+     * Splits an string Path in dot style into an array with each level in order from top to down.
+     * @param string $path String path to split.
+     * @param array &$route If $path is splitted, overwrites $route with the array of levels.
+     * @return int Returns the size or $route (number of elements). If $path cannot be splitted then returns 0.
+     */
+    private function splitPath(string $path, array &$route): int
+    {
+        $route = mb_strlen($path) > 0 ? preg_split('/\./', $path) : null;
+
+        return is_array($route) ? count($route) : 0;
+    }
+
+    /**
      * Gets a value using a point style JSON path. Overrides parent method.
      * @param string $path The path of the value to locate.
      * @return mixed|null Returns the value in path if exists, or null otherwise.
@@ -87,11 +100,9 @@ trait TNabuNestedData
     public function getValue(string $path)
     {
         $retval = null;
+        $route = array();
 
-        if (!$this->isEmpty() &&
-            mb_strlen($path) > 0 &&
-            ($l = count($route = preg_split('/\./', $path))) > 0
-        ) {
+        if (!$this->isEmpty() && ($l = $this->splitPath($path, $route)) > 0) {
             $p = &$this->data;
             for ($i = 0; $i < $l; $i++) {
                 if (is_array($p) && array_key_exists($route[$i], $p)) {
@@ -114,11 +125,9 @@ trait TNabuNestedData
     public function hasValue(string $path): bool
     {
         $retval = false;
+        $route = array();
 
-        if (!$this->isEmpty() &&
-            mb_strlen($path) > 0 &&
-            ($l = count($route = preg_split('/\./', $path))) > 0
-        ) {
+        if (!$this->isEmpty() && ($l = $this->splitPath($path, $route)) > 0) {
             $p = &$this->data;
             for ($i = 0; $i < $l; $i++) {
                 if (is_array($p) && array_key_exists($route[$i], $p)) {
@@ -146,23 +155,40 @@ trait TNabuNestedData
         $retval = false;
 
         if ($this instanceof CNabuDataObject && $this->isEditable()) {
-            if (($l = count($route = preg_split('/\./', $path))) > 0) {
-                $p = &$this->data;
-                $retval = true;
-                for ($i = 0; $i < $l; $i++) {
-                    if (is_null($p) || (!is_array($p) && $flags | TRAIT_NESTED_REPLACE_EXISTING)) {
-                        $p = array($route[$i] => null);
-                    } elseif (!is_array($p)) {
-                        $retval = false;
-                        break;
-                    } elseif (!array_key_exists($route[$i], $p)) {
-                        $p[$route[$i]] = null;
-                    }
-                    $p = &$p[$route[$i]];
-                }
-            }
+            $retval = $this->grantPathInternal($path, $flags);
         } else {
             trigger_error(TRIGGER_ERROR_READ_ONLY_MODE, E_USER_ERROR);
+        }
+
+        return $retval;
+    }
+
+    /**
+     * Process the deepest loop to grant a Path creating missed nested levels.
+     * This method is called internally by @see { grantPath() } method.
+     * @param string $path Path to check.
+     * @param int $flags Flags to modify behavior of this method. Only TRAIT_NESTED_REPLACE_EXISTING is allowed.
+     * @return bool Returns true if the path is granted.
+     */
+    private function grantPathInternal(string $path, int $flags)
+    {
+        $retval = false;
+        $route = array();
+
+        if (($l = $this->splitPath($path, $route)) > 0) {
+            $p = &$this->data;
+            $retval = true;
+            for ($i = 0; $i < $l; $i++) {
+                if (is_null($p) || (!is_array($p) && $flags | TRAIT_NESTED_REPLACE_EXISTING)) {
+                    $p = array($route[$i] => null);
+                } elseif (!is_array($p)) {
+                    $retval = false;
+                    break;
+                } elseif (!array_key_exists($route[$i], $p)) {
+                    $p[$route[$i]] = null;
+                }
+                $p = &$p[$route[$i]];
+            }
         }
 
         return $retval;
@@ -177,28 +203,14 @@ trait TNabuNestedData
      */
     public function setValue(string $path, $value = null, int $flags = TRAIT_NESTED_GRANT_PATH): CNabuDataObject
     {
-        if ($this instanceof CNabuDataObject && $this->isEditable()) {
-            if (mb_strlen($path) > 0 && ($l = count($route = preg_split('/\./', $path))) > 0) {
+        if ($this instanceof  CNabuDataObject && $this->isEditable()) {
+            if ($flags & TRAIT_NESTED_GRANT_PATH && $this->grantPath($path)) {
+                $route = array();
                 $p = &$this->data;
-                for ($i = 0; $i < $l; $i++) {
-                    if (is_array($p)) {
-                        if (!array_key_exists($route[$i], $p)) {
-                            if ($flags & TRAIT_NESTED_GRANT_PATH) {
-                                $p[$route[$i]] = null;
-                            } else {
-                                break;
-                            }
-                        }
-                    } elseif (($p === null && ($flags & TRAIT_NESTED_GRANT_PATH)) || $flags & TRAIT_NESTED_REPLACE_EXISTING) {
-                        $p = array($route[$i] => null);
-                    } else {
-                        break;
-                    }
+                for ($i = 0, $l = $this->splitPath($path, $route); $i < $l; $i++) {
                     $p = &$p[$route[$i]];
                 }
-                if ($i === $l) {
-                    $p = $value;
-                }
+                $p = $value;
             }
         } else {
             trigger_error(TRIGGER_ERROR_READ_ONLY_MODE, E_USER_ERROR);
