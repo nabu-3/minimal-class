@@ -118,7 +118,20 @@ abstract class CNabuRODataObject extends CNabuObject
     public function isValueFloat(string $name): bool
     {
         $value = $this->getValue($name);
+
         return $this->hasValue($name) && (is_numeric($value) || is_float($value));
+    }
+
+    /**
+     * CHeck if a value is boolean.
+     * @param string $name Name of the value to check.
+     * @return bool Returns true if the value exists and is a boolean.
+     */
+    public function isValueBool(string $name): bool
+    {
+        $value = $this->getValue($name);
+
+        return $this->hasValue($name) && is_bool($value);
     }
 
     /**
@@ -144,6 +157,30 @@ abstract class CNabuRODataObject extends CNabuObject
     }
 
     /**
+     * Check if a value is an array.
+     * @param string $name Name of the value to check.
+     * @return bool Returns true if the value exists and is an empty string.
+     */
+    public function isValueArray(string $name): bool
+    {
+        $value = $this->getValue($name);
+
+        return $this->hasValue($name) && is_array($value);
+    }
+
+    /**
+     * Check if a value is an empty array.
+     * @param string $name Name of the value to check.
+     * @return bool Returns true if the value exists and is an empty array.
+     */
+    public function isValueEmptyArray(string $name): bool
+    {
+        $value = $this->getValue($name);
+
+        return $this->hasValue($name) && is_array($value) && count($value) === 0;
+    }
+
+    /**
      * Check if a value is null.
      * @param string $name Name of the value to check.
      * @return bool Returns true if the value exists and is null.
@@ -166,7 +203,8 @@ abstract class CNabuRODataObject extends CNabuObject
                ($value === null ||
                 $value === false ||
                 $value === 0 ||
-                mb_strlen($value) === 0
+                (is_string($value) && mb_strlen($value) === 0) ||
+                (is_array($value) && count($value) == 0)
                )
         ;
     }
