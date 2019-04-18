@@ -166,12 +166,17 @@ class TNabuNestedDataTest extends TestCase
         $this->assertTrue($object->isValueNull('b'));
         $this->assertFalse($object->isValueNull('c'));
         $this->assertTrue($object->isValueNull('c.d'));
+        $this->assertTrue($object->isValueArray('c'));
+        $this->assertFalse($object->isValueArray('c.d'));
 
         $this->assertTrue($object->grantPath('c.d.e'));
         $this->assertTrue($object->hasValue('c.d'));
         $this->assertTrue($object->hasValue('c.d.e'));
         $this->assertSame(array('d' => array('e' => null)), $object->getValue('c'));
         $this->assertSame(array('e' => null), $object->getValue('c.d'));
+        $this->assertTrue($object->isValueArray('c'));
+        $this->assertTrue($object->isValueArray('c.d'));
+        $this->assertFalse($object->isValueArray('c.d.e'));
         $this->assertNull($object->getValue('c.d.e'));
         $this->assertTrue($object->isValueNull('c.d.e'));
         $this->assertTrue($object->hasValue('a'));
@@ -188,6 +193,9 @@ class TNabuNestedDataTest extends TestCase
         $this->assertSame(array('z' => null), $object->getValue('b.x'));
         $this->assertNull($object->getValue('b.x.z'));
         $this->assertTrue($object->isValueNull('b.x.z'));
+        $this->assertTrue($object->isValueArray('b'));
+        $this->assertTrue($object->isValueArray('b.x'));
+        $this->assertFalse($object->isValueArray('b.x.z'));
         $this->assertTrue($object->hasValue('a'));
         $this->assertTrue($object->hasValue('b'));
         $this->assertTrue($object->isValueNull('a'));
@@ -259,6 +267,8 @@ class TNabuNestedDataTest extends TestCase
      * @test CNabuRODataObject::isValueString
      * @test CNabuRODataObject::isValueEmptyString
      * @test CNabuRODataObject::isValueGUID
+     * @test CNabuRODataObject::isValueArray
+     * @test CNabuRODataObject::isValueEmptyArray
      */
     public function testInheritedIsValueXMethods()
     {
@@ -274,6 +284,8 @@ class TNabuNestedDataTest extends TestCase
         $this->assertFalse($object->isValueString('test.null'));
         $this->assertFalse($object->isValueEmptyString('test.null'));
         $this->assertFalse($object->isValueGUID('test.null'));
+        $this->assertFalse($object->isValueArray('test.null'));
+        $this->assertFalse($object->isValueEmptyArray('test.null'));
 
         $object->setValue('test.numeric', 0);
         $this->assertFalse($object->isValueNull('test.numeric'));
@@ -284,6 +296,8 @@ class TNabuNestedDataTest extends TestCase
         $this->assertFalse($object->isValueString('test.numeric'));
         $this->assertFalse($object->isValueEmptyString('test.numeric'));
         $this->assertFalse($object->isValueGUID('test.numeric'));
+        $this->assertFalse($object->isValueArray('test.numeric'));
+        $this->assertFalse($object->isValueEmptyArray('test.numeric'));
 
         $object->setValue('test.numeric', 10);
         $this->assertFalse($object->isValueNull('test.numeric'));
@@ -294,6 +308,8 @@ class TNabuNestedDataTest extends TestCase
         $this->assertFalse($object->isValueString('test.numeric'));
         $this->assertFalse($object->isValueEmptyString('test.numeric'));
         $this->assertFalse($object->isValueGUID('test.numeric'));
+        $this->assertFalse($object->isValueArray('test.numeric'));
+        $this->assertFalse($object->isValueEmptyArray('test.numeric'));
 
         $object->setValue('test.float', 10.5);
         $this->assertFalse($object->isValueNull('test.float'));
@@ -304,6 +320,8 @@ class TNabuNestedDataTest extends TestCase
         $this->assertFalse($object->isValueString('test.float'));
         $this->assertFalse($object->isValueEmptyString('test.float'));
         $this->assertFalse($object->isValueGUID('test.float'));
+        $this->assertFalse($object->isValueArray('test.float'));
+        $this->assertFalse($object->isValueEmptyArray('test.float'));
 
         $object->setValue('test.bool', false);
         $this->assertFalse($object->isValueNull('test.bool'));
@@ -314,6 +332,8 @@ class TNabuNestedDataTest extends TestCase
         $this->assertFalse($object->isValueString('test.bool'));
         $this->assertFalse($object->isValueEmptyString('test.bool'));
         $this->assertFalse($object->isValueGUID('test.bool'));
+        $this->assertFalse($object->isValueArray('test.bool'));
+        $this->assertFalse($object->isValueEmptyArray('test.bool'));
 
         $object->setValue('test.bool', true);
         $this->assertFalse($object->isValueNull('test.bool'));
@@ -324,6 +344,8 @@ class TNabuNestedDataTest extends TestCase
         $this->assertFalse($object->isValueString('test.bool'));
         $this->assertFalse($object->isValueEmptyString('test.bool'));
         $this->assertFalse($object->isValueGUID('test.bool'));
+        $this->assertFalse($object->isValueArray('test.bool'));
+        $this->assertFalse($object->isValueEmptyArray('test.bool'));
 
         $object->setValue('test.string', '');
         $this->assertFalse($object->isValueNull('test.string'));
@@ -334,76 +356,149 @@ class TNabuNestedDataTest extends TestCase
         $this->assertTrue($object->isValueString('test.string'));
         $this->assertTrue($object->isValueEmptyString('test.string'));
         $this->assertFalse($object->isValueGUID('test.string'));
+        $this->assertFalse($object->isValueArray('test.string'));
+        $this->assertFalse($object->isValueEmptyArray('test.string'));
 
         $object->setValue('test.string', 'test value');
         $this->assertFalse($object->isValueNull('test.string'));
-        $this->assertfalse($object->isValueEmpty('test.string'));
+        $this->assertFalse($object->isValueEmpty('test.string'));
         $this->assertFalse($object->isValueNumeric('test.string'));
         $this->assertFalse($object->isValueFloat('test.string'));
         $this->assertFalse($object->isValueBool('test.string'));
         $this->assertTrue($object->isValueString('test.string'));
         $this->assertFalse($object->isValueEmptyString('test.string'));
         $this->assertFalse($object->isValueGUID('test.string'));
+        $this->assertFalse($object->isValueArray('test.string'));
+        $this->assertFalse($object->isValueEmptyArray('test.string'));
 
         $object->setValue('test.string', 'null');
         $this->assertFalse($object->isValueNull('test.string'));
-        $this->assertfalse($object->isValueEmpty('test.string'));
+        $this->assertFalse($object->isValueEmpty('test.string'));
         $this->assertFalse($object->isValueNumeric('test.string'));
         $this->assertFalse($object->isValueFloat('test.string'));
         $this->assertFalse($object->isValueBool('test.string'));
         $this->assertTrue($object->isValueString('test.string'));
         $this->assertFalse($object->isValueEmptyString('test.string'));
         $this->assertFalse($object->isValueGUID('test.string'));
+        $this->assertFalse($object->isValueArray('test.string'));
+        $this->assertFalse($object->isValueEmptyArray('test.string'));
 
         $object->setValue('test.string', 'false');
         $this->assertFalse($object->isValueNull('test.string'));
-        $this->assertfalse($object->isValueEmpty('test.string'));
+        $this->assertFalse($object->isValueEmpty('test.string'));
         $this->assertFalse($object->isValueNumeric('test.string'));
         $this->assertFalse($object->isValueFloat('test.string'));
         $this->assertFalse($object->isValueBool('test.string'));
         $this->assertTrue($object->isValueString('test.string'));
         $this->assertFalse($object->isValueEmptyString('test.string'));
         $this->assertFalse($object->isValueGUID('test.string'));
+        $this->assertFalse($object->isValueArray('test.string'));
+        $this->assertFalse($object->isValueEmptyArray('test.string'));
 
         $object->setValue('test.string', '0');
         $this->assertFalse($object->isValueNull('test.string'));
-        $this->assertfalse($object->isValueEmpty('test.string'));
+        $this->assertFalse($object->isValueEmpty('test.string'));
         $this->assertTrue($object->isValueNumeric('test.string'));
         $this->assertTrue($object->isValueFloat('test.string'));
         $this->assertFalse($object->isValueBool('test.string'));
         $this->assertTrue($object->isValueString('test.string'));
         $this->assertFalse($object->isValueEmptyString('test.string'));
         $this->assertFalse($object->isValueGUID('test.string'));
+        $this->assertFalse($object->isValueArray('test.string'));
+        $this->assertFalse($object->isValueEmptyArray('test.string'));
 
         $object->setValue('test.string', '10');
         $this->assertFalse($object->isValueNull('test.string'));
-        $this->assertfalse($object->isValueEmpty('test.string'));
+        $this->assertFalse($object->isValueEmpty('test.string'));
         $this->assertTrue($object->isValueNumeric('test.string'));
         $this->assertTrue($object->isValueFloat('test.string'));
         $this->assertFalse($object->isValueBool('test.string'));
         $this->assertTrue($object->isValueString('test.string'));
         $this->assertFalse($object->isValueEmptyString('test.string'));
         $this->assertFalse($object->isValueGUID('test.string'));
+        $this->assertFalse($object->isValueArray('test.string'));
+        $this->assertFalse($object->isValueEmptyArray('test.string'));
 
         $object->setValue('test.string', '22.659');
         $this->assertFalse($object->isValueNull('test.string'));
-        $this->assertfalse($object->isValueEmpty('test.string'));
+        $this->assertFalse($object->isValueEmpty('test.string'));
         $this->assertTrue($object->isValueNumeric('test.string'));
         $this->assertTrue($object->isValueFloat('test.string'));
         $this->assertFalse($object->isValueBool('test.string'));
         $this->assertTrue($object->isValueString('test.string'));
         $this->assertFalse($object->isValueEmptyString('test.string'));
         $this->assertFalse($object->isValueGUID('test.string'));
+        $this->assertFalse($object->isValueArray('test.string'));
+        $this->assertFalse($object->isValueEmptyArray('test.string'));
 
         $object->setValue('test.guid', nb_generateGUID());
         $this->assertFalse($object->isValueNull('test.guid'));
-        $this->assertfalse($object->isValueEmpty('test.guid'));
+        $this->assertFalse($object->isValueEmpty('test.guid'));
         $this->assertFalse($object->isValueNumeric('test.guid'));
         $this->assertFalse($object->isValueFloat('test.guid'));
         $this->assertFalse($object->isValueBool('test.string'));
         $this->assertTrue($object->isValueString('test.guid'));
         $this->assertFalse($object->isValueEmptyString('test.guid'));
         $this->assertTrue($object->isValueGUID('test.guid'));
+        $this->assertFalse($object->isValueArray('test.guid'));
+        $this->assertFalse($object->isValueEmptyArray('test.guid'));
+
+        $object->setValue('test.array', array());
+        $this->assertFalse($object->isValueNull('test.array'));
+        $this->assertTrue($object->isValueEmpty('test.array'));
+        $this->assertFalse($object->isValueNumeric('test.array'));
+        $this->assertFalse($object->isValueFloat('test.array'));
+        $this->assertFalse($object->isValueBool('test.array'));
+        $this->assertFalse($object->isValueString('test.array'));
+        $this->assertFalse($object->isValueEmptyString('test.array'));
+        $this->assertFalse($object->isValueGUID('test.array'));
+        $this->assertTrue($object->isValueArray('test.array'));
+        $this->assertTrue($object->isValueEmptyArray('test.array'));
+
+        $object->setValue('test.array', array('a' => 1, 'b' => 2));
+        $this->assertFalse($object->isValueNull('test.array'));
+        $this->assertFalse($object->isValueEmpty('test.array'));
+        $this->assertFalse($object->isValueNumeric('test.array'));
+        $this->assertFalse($object->isValueFloat('test.array'));
+        $this->assertFalse($object->isValueBool('test.array'));
+        $this->assertFalse($object->isValueString('test.array'));
+        $this->assertFalse($object->isValueEmptyString('test.array'));
+        $this->assertFalse($object->isValueGUID('test.array'));
+        $this->assertTrue($object->isValueArray('test.array'));
+        $this->assertFalse($object->isValueEmptyArray('test.array'));
+    }
+
+    /**
+     * @test setValue
+     * @test hasValue
+     * @test grantPath
+     */
+    public function testCombinedArrayAndNestedMethods()
+    {
+        $object = new CNabuNestedDataTestingWR();
+        $this->assertTrue($object->isEditable());
+
+        $object->grantPath('a.b.c');
+        $this->assertTrue($object->hasValue('a.b.c'));
+
+        $object->setValue('d', array('e' => array('f' => null)));
+        $this->assertTrue($object->hasValue('d.e.f'));
+
+        $object->setValue('d.e.g', 'check');
+        $this->assertTrue($object->hasValue('d.e.f'));
+        $this->assertTrue($object->hasValue('d.e.g'));
+
+        $object->setValue('h.i', array('v-1', 'v2', 'v-3'));
+        $this->assertTrue($object->hasValue('h.i.0'));
+        $this->assertTrue($object->isValueEqualTo('h.i.0', 'v-1'));
+        $this->assertTrue($object->hasValue('h.i.1'));
+        $this->assertTrue($object->isValueEqualTo('h.i.1', 'v2'));
+        $this->assertTrue($object->hasValue('h.i.2'));
+        $this->assertTrue($object->isValueEqualTo('h.i.2', 'v-3'));
+
+        $object->setValue('h.i.j', 'v-4');
+        $this->assertTrue($object->hasValue('h.i.j'));
+        $this->assertTrue($object->isValueEqualTo('h.i.j', 'v-4'));
     }
 }
 
