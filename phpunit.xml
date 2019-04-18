@@ -41,11 +41,8 @@
         </whitelist>
     </filter>
     <php>
-        <includePath>.</includePath>
         <includePath>src</includePath>
-        <includePath>sdk</includePath>
-        <includePath>pub</includePath>
-        <includePath>lib</includePath>
+        <includePath>tests</includePath>
         <includePath>vendor</includePath>
     </php>
 </phpunit>

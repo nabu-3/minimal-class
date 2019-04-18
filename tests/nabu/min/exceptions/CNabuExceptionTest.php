@@ -19,7 +19,7 @@
  *  limitations under the License.
  */
 
-namespace tests\nabu\min\exceptions;
+namespace nabu\min\exceptions;
 
 use PHPUnit\Framework\TestCase;
 
@@ -30,7 +30,7 @@ use nabu\min\exceptions\ENabuException;
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
  * @since 3.0.0 Surface
  * @version 3.0.0 Surface
- * @package tests\nabu\min\exceptions
+ * @package nabu\min\exceptions
  */
 class CNabuExceptionTest extends TestCase
 {
