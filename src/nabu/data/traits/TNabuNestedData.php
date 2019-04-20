@@ -23,8 +23,11 @@ namespace nabu\data\traits;
 
 use nabu\data\CNabuDataObject;
 
+use nabu\data\interfaces\INabuDataWritable;
+
 /**
- * Trait to manage a @see { TNabuDataObject } or a @see { TNabuRODataObject } as a nested or multilevel data.
+ * Trait to manage a @see { INabuDataWritable } or a @see { INabuDataReadable } derived classes as a nested
+ * or multilevel data.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
  * @since 3.0.2
  * @version 3.0.2
@@ -64,7 +67,7 @@ trait TNabuNestedData
      */
     public function setValueAsJSONEncoded(string $name, $value = null): CNabuDataObject
     {
-        if ($this instanceof CNabuDataObject && $this->isEditable()) {
+        if ($this instanceof INabuDataWritable && $this->isEditable()) {
             if ($value === null) {
                 $this->setValue($name, null);
             } elseif (is_string($value)) {
@@ -154,7 +157,7 @@ trait TNabuNestedData
     {
         $retval = false;
 
-        if ($this instanceof CNabuDataObject && $this->isEditable()) {
+        if ($this instanceof INabuDataWritable && $this->isEditable()) {
             $retval = $this->grantPathInternal($path, $replace);
         } else {
             trigger_error(TRIGGER_ERROR_READ_ONLY_MODE, E_USER_ERROR);
@@ -199,11 +202,11 @@ trait TNabuNestedData
      * @param string $path Path of the value to be setted.
      * @param mixed|null $value Value to be setted.
      * @param bool $replace If true, forces to grant unexistent path replacing existing values if needed.
-     * @return CNabuDataObject Returns self pointer for convenience.
+     * @return INabuDataWritable Returns self pointer for convenience.
      */
-    public function setValue(string $path, $value = null, bool $replace = true): CNabuDataObject
+    public function setValue(string $path, $value = null, bool $replace = true): INabuDataWritable
     {
-        if ($this instanceof  CNabuDataObject && $this->isEditable()) {
+        if ($this instanceof  INabuDataWritable && $this->isEditable()) {
             if ($this->grantPath($path, $replace)) {
                 $route = array();
                 $p = &$this->data;
