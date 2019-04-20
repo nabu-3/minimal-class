@@ -29,8 +29,8 @@ use \nabu\min\CNabuObject;
  * Abstract class to implement read only data objects of nabu-3.
  * This class can also be extended by third party classes to inherit his functionality.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
- * @since 3.0.0 Surface
- * @version 3.0.2 Surface
+ * @since 3.0.2
+ * @version 3.0.2
  * @package \nabu\data
  */
 abstract class CNabuRODataObject extends CNabuObject implements INabuDataReadable
