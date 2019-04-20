@@ -66,7 +66,7 @@ interface INabuDataWritable
      * Sets data array from another source.
      * If $object is an object of class CNabuDataObject or any inherited class then copy his $data array.
      * If $object is an array then apply directly this array
-     * @param INabuDataWritable $object
+     * @param INabuDataReadable $object
      */
-    public function copyData(INabuDataWritable $object);
+    public function copyData(INabuDataReadable $object);
 }

@@ -21,6 +21,7 @@
 
 namespace nabu\data;
 
+use nabu\data\interfaces\INabuDataReadable;
 use nabu\data\interfaces\INabuDataWritable;
 
 /**
@@ -110,7 +111,7 @@ abstract class CNabuDataObject extends CNabuRODataObject implements INabuDataWri
         return $this;
     }
 
-    public function copyData(INabuDataWritable $object)
+    public function copyData(INabuDataReadable $object)
     {
         if ($this->isEditable()) {
             $this->data = $object->data;
@@ -144,15 +145,15 @@ abstract class CNabuDataObject extends CNabuRODataObject implements INabuDataWri
     /**
      * Transfer a value from $object to this instance. If $target_name is omitted then $source_name is used for both
      * field names.
-     * @param CNabuDataObject|null $object Object instance where is stored the value to be transferred.
+     * @param INabuDataReadable|null $object Object instance where is stored the value to be transferred.
      * @param string|null $source_name Name of field in $object that contains the value.
      * @param string|null $target_name Name of field in this instance where the value will be stored. If null,
      * then usees $source_name.
      */
-    public function transferValue(CNabuDataObject $object = null, string $source_name = null, string $target_name = null)
+    public function transferValue(INabuDataReadable $object = null, string $source_name = null, string $target_name = null)
     {
         if ($this->isEditable()) {
-            if ($object instanceof CNabuDataObject && is_string($source_name)) {
+            if ($object instanceof INabuDataReadable && is_string($source_name)) {
                 $target_name = (is_string($target_name) ? $target_name : $source_name);
                 $this->setValue($target_name, $object->getValue($source_name));
             }
@@ -175,7 +176,9 @@ abstract class CNabuDataObject extends CNabuRODataObject implements INabuDataWri
     {
         if ($this->isEditable()) {
             $target_name = (is_string($target_name) ? $target_name : $source_name);
-            if (($object instanceof CNabuDataObject) && ($type === null || ($object instanceof $type))) {
+            if (($object instanceof INabuDataWritable && $object->isEditable()) &&
+                ($type === null || ($object instanceof $type))
+            ) {
                 $this->setValue($target_name, $object->getValue($source_name));
             } elseif (is_scalar($object) || is_array($object) || is_null($object)) {
                 $this->setValue($target_name, $object);
@@ -187,14 +190,14 @@ abstract class CNabuDataObject extends CNabuRODataObject implements INabuDataWri
 
     /**
      * Echange values between this instance and another instance derived from CNabuDataObject.
-     * @param CNabuDataObject|null $object Object instance to exchange values.
+     * @param INabuDataWritable|null $object Object instance to exchange values.
      * @param string|null $source_name Source name of value to exchange.
      * @param string|null $target_name Target name in $object to exchange values. If null, then usees $source_name.
      */
-    public function exchangeValue(CNabuDataObject $object = null, string $source_name = null, string $target_name = null)
+    public function exchangeValue(INabuDataWritable $object = null, string $source_name = null, string $target_name = null)
     {
         if ($this->isEditable()) {
-            if ($object instanceof CNabuDataObject && is_string($source_name)) {
+            if ($object instanceof INabuDataWritable && $object->isEditable() && is_string($source_name)) {
                 $target_name = (is_string($target_name) ? $target_name : $source_name);
                 $aux = $object->getValue($source_name);
                 $object->setValue($source_name, $this->getValue($target_name));
