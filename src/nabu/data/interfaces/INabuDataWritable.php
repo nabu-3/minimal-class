@@ -22,12 +22,11 @@
 namespace nabu\data\interfaces;
 
 /**
- * Abstract class to implement editable data objects of nabu-3.
- * This class can also be extended by third party classes to inherit his functionality.
+ * Interface to implement readable data objects of nabu-3.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
  * @since 3.0.2
  * @version 3.0.2
- * @package \nabu\data
+ * @package \nabu\data\interfaces
  */
 interface INabuDataWritable
 {

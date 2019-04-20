@@ -26,7 +26,8 @@ use nabu\data\CNabuDataObject;
 use nabu\data\interfaces\INabuDataWritable;
 
 /**
- * Trait to manage a @see { TNabuDataObject } or a @see { TNabuRODataObject } as a nested or multilevel data.
+ * Trait to manage a @see { INabuDataWritable } or a @see { INabuDataReadable } derived classes as a nested
+ * or multilevel data.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
  * @since 3.0.2
  * @version 3.0.2
