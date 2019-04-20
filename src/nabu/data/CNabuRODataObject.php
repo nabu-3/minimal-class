@@ -21,6 +21,8 @@
 
 namespace nabu\data;
 
+use nabu\data\interfaces\INabuDataReadable;
+
 use \nabu\min\CNabuObject;
 
 /**
@@ -30,7 +32,7 @@ use \nabu\min\CNabuObject;
  * @version 3.0.0 Surface
  * @package \nabu\data
  */
-abstract class CNabuRODataObject extends CNabuObject
+abstract class CNabuRODataObject extends CNabuObject implements INabuDataReadable
 {
     /** @var array|null Data stored in the instance. Functions that applies to set data in this instance modifies this
      * array. */
@@ -43,6 +45,21 @@ abstract class CNabuRODataObject extends CNabuObject
         $this->data = $data;
     }
 
+    public function isEmpty(): bool
+    {
+        return ($this->data === null) || (count($this->data) == 0);
+    }
+
+    public function hasValue(string $name): bool
+    {
+        return ($this->data !== null && array_key_exists($name, $this->data));
+    }
+
+    public function getValue(string $name)
+    {
+        return ($this->data == null || !array_key_exists($name, $this->data) ? null : $this->data[$name]);
+    }
+
     /**
      * Dumps data to an string using var_export. Data string is in PHP format.
      * @return string Returns data as string in PHP format.
@@ -50,16 +67,6 @@ abstract class CNabuRODataObject extends CNabuObject
     public function dump()
     {
         return var_export($this->data, true);
-    }
-
-    /**
-     * Get a value identified by his name.
-     * @param string $name Name of the value to get.
-     * @return mixed|null Returns the stored value if exists or null otherwise.
-     */
-    public function getValue(string $name)
-    {
-        return ($this->data == null || !array_key_exists($name, $this->data) ? null : $this->data[$name]);
     }
 
     /**
@@ -79,25 +86,6 @@ abstract class CNabuRODataObject extends CNabuObject
         }
 
         return $value;
-    }
-
-    /**
-     * Check if a value name exists.
-     * @param string $name Name of the value to check.
-     * @return bool Returns true if the value name exists.
-     */
-    public function hasValue(string $name): bool
-    {
-        return ($this->data !== null && array_key_exists($name, $this->data));
-    }
-
-    /**
-     * Check if none values are stored.
-     * @return bool Returns true if data storage is empty.
-     */
-    public function isEmpty(): bool
-    {
-        return ($this->data === null) || (count($this->data) == 0);
     }
 
     /**

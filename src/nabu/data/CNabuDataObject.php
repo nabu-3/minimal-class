@@ -21,14 +21,17 @@
 
 namespace nabu\data;
 
+use nabu\data\interfaces\INabuDataWritable;
+
 /**
  * Abstract class to implement editable data objects of nabu-3.
  * This class can also be extended by third party classes to inherit his functionality.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
+ * @since 3.0.2
  * @version 3.0.2
  * @package \nabu\data
  */
-abstract class CNabuDataObject extends CNabuRODataObject
+abstract class CNabuDataObject extends CNabuRODataObject implements INabuDataWritable
 {
     /** @var int MODE_READONLY Constant value to determine if the instance is in read only mode. */
     const MODE_READONLY = 0;
@@ -45,50 +48,30 @@ abstract class CNabuDataObject extends CNabuRODataObject
     /** @var int Current Edit mode. */
     protected $edit_mode = CNabuDataObject::MODE_EDITABLE;
 
-    /**
-     * Check if the instance is editable.
-     * @return bool Returns true if instance is editable.
-     */
     public function isEditable(): bool
     {
         return $this->edit_mode === self::MODE_EDITABLE;
     }
 
-    /**
-     * Entry instance in edit mode.
-     * @return CNabuDataObject Returns the self pointer for convenience to use in cascade setters call.
-     */
-    public function setAsEditable(): CNabuDataObject
+    public function setAsEditable(): INabuDataWritable
     {
         $this->edit_mode = self::MODE_EDITABLE;
 
         return $this;
     }
 
-    /**
-     * Check if the instance is read only.
-     * @return bool Returns true if instance is read only.
-     */
     public function isReadOnly(): bool
     {
         return $this->edit_mode === self::MODE_READONLY;
     }
 
-    /**
-     * Entry instance in read only mode.
-     * @return CNabuDataObject Returns the self pointer for convenience to use in cascade setters call.
-     */
-    public function setAsReadOnly(): CNabuDataObject
+    public function setAsReadOnly(): INabuDataWritable
     {
         $this->edit_mode = self::MODE_READONLY;
 
         return $this;
     }
 
-    /**
-     * Reset the data content stored in the instance and empty internal storage, lossing all previous stored data.
-     * @return bool Returns true if the instance is reseted.
-     */
     public function reset(): bool
     {
         $retval = false;
@@ -105,13 +88,7 @@ abstract class CNabuDataObject extends CNabuRODataObject
         return $retval;
     }
 
-    /**
-     * Sets a Value associated to a name.
-     * @param string $name Name of the value to set.
-     * @param mixed $value Value to be setted.
-     * @return CNabuDataObject Returns the self pointer for convenience to call cascade setters.
-     */
-    public function setValue(string $name, $value): CNabuDataObject
+    public function setValue(string $name, $value): INabuDataWritable
     {
         if ($this->isEditable()) {
             if ($this->data === null) {
@@ -131,6 +108,15 @@ abstract class CNabuDataObject extends CNabuRODataObject
         }
 
         return $this;
+    }
+
+    public function copyData(INabuDataWritable $object)
+    {
+        if ($this->isEditable()) {
+            $this->data = $object->data;
+        } else {
+            trigger_error(TRIGGER_ERROR_READ_ONLY_MODE, E_USER_ERROR);
+        }
     }
 
     /**
@@ -214,21 +200,6 @@ abstract class CNabuDataObject extends CNabuRODataObject
                 $object->setValue($source_name, $this->getValue($target_name));
                 $this->setValue($target_name, $aux);
             }
-        } else {
-            trigger_error(TRIGGER_ERROR_READ_ONLY_MODE, E_USER_ERROR);
-        }
-    }
-
-    /**
-     * Sets data array from another source.
-     * If $object is an object of class CNabuDataObject or any inherited class then copy his $data array.
-     * If $object is an array then apply directly this array
-     * @param CNabuDataObject $object
-     */
-    public function copyData(CNabuDataObject $object)
-    {
-        if ($this->isEditable()) {
-            $this->data = $object->data;
         } else {
             trigger_error(TRIGGER_ERROR_READ_ONLY_MODE, E_USER_ERROR);
         }
