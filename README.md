@@ -10,7 +10,7 @@ The package is deployed using composer and packagist and you can install it with
 composer require nabu-3/minimal-class
 ```
 ## How to use in your project
-To use this packages, you only need to include the autoload file of vendor folder:
+To use this package, you only need to include the autoload file of vendor folder:
 ```php
 require_once 'vendor/autoload.php'
 ```
