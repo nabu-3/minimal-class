@@ -297,6 +297,29 @@ class CNabuRODataObjectTest extends TestCase
         $object = new CNabuDataObjectTestingRO();
         $this->assertTrue($object->isEmpty());
     }
+
+    /**
+     * @test count
+     * @test getValuesAsArray
+     */
+    public function testGetValuesAsArray()
+    {
+        $object = new CNabuDataObjectTestingRO(
+            array(
+                'field_1' => 'value 1',
+                'field_2' => 'value 2'
+            )
+        );
+        $this->assertSame(2, $object->count());
+        $this->assertSame(2, count($object));
+        $this->assertSame(
+            array(
+                'field_1' => 'value 1',
+                'field_2' => 'value 2'
+            ),
+            $object->getValuesAsArray()
+        );
+    }
 }
 
 class CNabuDataObjectTestingRO extends CNabuRODataObject

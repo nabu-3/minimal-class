@@ -61,6 +61,16 @@ abstract class CNabuRODataObject extends CNabuObject implements INabuDataReadabl
         return ($this->data == null || !array_key_exists($name, $this->data) ? null : $this->data[$name]);
     }
 
+    public function count(): int
+    {
+        return is_array($this->data) ? count($this->data) : 0;
+    }
+
+    public function getValuesAsArray(): ?array
+    {
+        return $this->data;
+    }
+
     /**
      * Dumps data to an string using var_export. Data string is in PHP format.
      * @return string Returns data as string in PHP format.
