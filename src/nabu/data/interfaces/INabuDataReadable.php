@@ -21,6 +21,8 @@
 
 namespace nabu\data\interfaces;
 
+use Countable;
+
 /**
  * Interface to implement editable data objects of nabu-3.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
@@ -28,7 +30,7 @@ namespace nabu\data\interfaces;
  * @version 3.0.2
  * @package \nabu\data\interfaces
  */
-interface INabuDataReadable
+interface INabuDataReadable extends Countable
 {
     /**
      * Check if none values are stored.
@@ -47,4 +49,9 @@ interface INabuDataReadable
      * @return mixed|null Returns the stored value if exists or null otherwise.
      */
     public function getValue(string $name);
+    /**
+     * Get all values stored in this instance as an associative array.
+     * @return array|null If values exists returns an associative array. If none value exists, returns null.
+     */
+    public function getValuesAsArray(): ?array;
 }

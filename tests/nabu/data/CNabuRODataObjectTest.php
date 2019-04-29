@@ -1,7 +1,7 @@
 <?php
 
 /** @license
- *  Copyright 2019-2011 Rafael Gutierrez Martinez
+ *  Copyright 2009-2011 Rafael Gutierrez Martinez
  *  Copyright 2012-2013 Welma WEB MKT LABS, S.L.
  *  Copyright 2014-2016 Where Ideas Simply Come True, S.L.
  *  Copyright 2017 nabu-3 Group
@@ -296,6 +296,29 @@ class CNabuRODataObjectTest extends TestCase
 
         $object = new CNabuDataObjectTestingRO();
         $this->assertTrue($object->isEmpty());
+    }
+
+    /**
+     * @test count
+     * @test getValuesAsArray
+     */
+    public function testGetValuesAsArray()
+    {
+        $object = new CNabuDataObjectTestingRO(
+            array(
+                'field_1' => 'value 1',
+                'field_2' => 'value 2'
+            )
+        );
+        $this->assertSame(2, $object->count());
+        $this->assertSame(2, count($object));
+        $this->assertSame(
+            array(
+                'field_1' => 'value 1',
+                'field_2' => 'value 2'
+            ),
+            $object->getValuesAsArray()
+        );
     }
 }
 

@@ -1,5 +1,9 @@
 # nabu-3 Minimal Class library
 [![Build Status](https://travis-ci.org/nabu-3/minimal-class.svg?branch=master)](https://travis-ci.org/nabu-3/minimal-class)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=nabu-3_minimal-class&metric=alert_status)](https://sonarcloud.io/dashboard?id=nabu-3_minimal-class)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=nabu-3_minimal-class&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=nabu-3_minimal-class)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=nabu-3_minimal-class&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=nabu-3_minimal-class)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=nabu-3_minimal-class&metric=security_rating)](https://sonarcloud.io/dashboard?id=nabu-3_minimal-class)
 
 This is a base implementation of classes, interfaces and traits used to build all the other libraries provided by nabu-3 project. You can use this library at your convenience and stay out of the nabu-3 core framework to allow other nabu-3 projects to live independently and to be used outside this framework.
 
