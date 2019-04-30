@@ -109,13 +109,19 @@ trait TNabuNestedData
         if (is_string($preffix)) {
             $parts = preg_split('/\\./', $preffix);
             $preffix = implode('.', $parts);
-            if (mb_strlen($preffix) > 0) {
-                $preffix .= '.';
-            }
         }
         $this->with_preffix = $preffix;
 
         return $this;
+    }
+
+    /**
+     * Get current 'with' preffix.
+     * @return string|null Returns the 'with' preffix if setted or null otherwise.
+     */
+    public function getWithPreffix(): ?string
+    {
+        return $this->with_preffix;
     }
 
     /**
@@ -125,7 +131,7 @@ trait TNabuNestedData
      */
     protected function translatePath(?string $path): ?string
     {
-        return is_string($this->with_preffix) && is_string($path) ? $this->with_preffix . $path : $path;
+        return is_string($this->with_preffix) && is_string($path) ? $this->with_preffix . '.' . $path : $path;
     }
 
     /**

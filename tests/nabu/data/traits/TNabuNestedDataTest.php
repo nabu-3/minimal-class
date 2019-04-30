@@ -503,6 +503,7 @@ class TNabuNestedDataTest extends TestCase
 
     /**
      * @test with
+     * @test getWithPreffix
      * @test translatePath
      * @test getValue
      * @test hasValue
@@ -519,16 +520,20 @@ class TNabuNestedDataTest extends TestCase
 
         $object->with('a.b.c')->setValue('d', 25)->with();
         $this->assertSame(25, $object->getValue('a.b.c.d'));
+        $this->assertNull($object->getWithPreffix());
 
         $object->with('a.b.c')->grantPath('e');
         $this->assertTrue($object->hasValue('e'));
         $object->setValue('e', 80);
         $this->assertSame(80, $object->getValue('e'));
+        $this->assertSame('a.b.c', $object->getWithPreffix());
         $object->with();
+        $this->assertNull($object->getWithPreffix());
         $this->assertTrue($object->hasValue('a.b.c.e'));
         $this->assertSame(80, $object->getValue('a.b.c.e'));
         $this->assertSame(25, $object->getValue('a.b.c.d'));
         $object->with('a.b')->setValue('f.g', 48)->with();
+        $this->assertNull($object->getWithPreffix());
         $this->assertTrue($object->hasValue('a.b.f.g'));
         $this->assertSame(48, $object->getValue('a.b.f.g'));
         $this->assertTrue($object->grantPath('a.b.c.d'));
