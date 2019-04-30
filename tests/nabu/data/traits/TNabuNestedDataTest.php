@@ -500,6 +500,58 @@ class TNabuNestedDataTest extends TestCase
         $this->assertTrue($object->hasValue('h.i.j'));
         $this->assertTrue($object->isValueEqualTo('h.i.j', 'v-4'));
     }
+
+    /**
+     * @test with
+     * @test translatePath
+     * @test getValue
+     * @test hasValue
+     * @test setValue
+     * @test grantPath
+     */
+    public function testWidth()
+    {
+        $object = new CNabuNestedDataTestingWR();
+        $this->assertTrue($object->isEditable());
+
+        $object->grantPath('a.b');
+        $this->assertTrue($object->hasValue('a.b'));
+
+        $object->with('a.b.c')->setValue('d', 25)->with();
+        $this->assertSame(25, $object->getValue('a.b.c.d'));
+
+        $object->with('a.b.c')->grantPath('e');
+        $this->assertTrue($object->hasValue('e'));
+        $object->setValue('e', 80);
+        $this->assertSame(80, $object->getValue('e'));
+        $object->with();
+        $this->assertTrue($object->hasValue('a.b.c.e'));
+        $this->assertSame(80, $object->getValue('a.b.c.e'));
+        $this->assertSame(25, $object->getValue('a.b.c.d'));
+        $object->with('a.b')->setValue('f.g', 48)->with();
+        $this->assertTrue($object->hasValue('a.b.f.g'));
+        $this->assertSame(48, $object->getValue('a.b.f.g'));
+        $this->assertTrue($object->grantPath('a.b.c.d'));
+        $this->assertTrue($object->grantPath('a.b.c.e'));
+        $this->assertTrue($object->grantPath('a.b.f.g'));
+
+        $this->assertSame(
+            array(
+                'a' => array(
+                    'b' => array(
+                        'c' => array(
+                            'd' => 25,
+                            'e' => 80
+                        ),
+                        'f' => array(
+                            'g' => 48
+                        )
+                    )
+                )
+            ),
+            $object->getValuesAsArray()
+        );
+    }
 }
 
 class CNabuNestedDataTestingRO extends CNabuRODataObject
