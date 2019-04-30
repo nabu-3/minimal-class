@@ -23,6 +23,7 @@ namespace nabu\data\traits;
 
 use nabu\data\CNabuDataObject;
 
+use nabu\data\interfaces\INabuDataReadable;
 use nabu\data\interfaces\INabuDataWritable;
 
 /**
@@ -35,6 +36,9 @@ use nabu\data\interfaces\INabuDataWritable;
  */
 trait TNabuNestedData
 {
+    /** @var string|null Nested path to be used after call @see { with() } method. */
+    private $with_preffix = null;
+
     /**
      * Try to parse value as a JSON data descriptor. If success returns an array with parsed structure. If fails,
      * then returns the original value.
@@ -88,11 +92,40 @@ trait TNabuNestedData
      * @param array &$route If $path is splitted, overwrites $route with the array of levels.
      * @return int Returns the size or $route (number of elements). If $path cannot be splitted then returns 0.
      */
-    private function splitPath(string $path, array &$route): int
+    protected function splitPath(string $path, array &$route): int
     {
         $route = mb_strlen($path) > 0 ? preg_split('/\./', $path) : null;
 
         return is_array($route) ? count($route) : 0;
+    }
+
+    /**
+     * Set a preffix path to be used in subsequent calls to affected methods in this trait.
+     * @param string|null $preffix Preffix to be setted.
+     * @return INabuDataReadable Returns the self pointer to grant fluent interfaces.
+     */
+    public function with(string $preffix = null): INabuDataReadable
+    {
+        if (is_string($preffix)) {
+            $parts = preg_split('/\\./', $preffix);
+            $preffix = implode('.', $parts);
+            if (mb_strlen($preffix) > 0) {
+                $preffix .= '.';
+            }
+        }
+        $this->with_preffix = $preffix;
+
+        return $this;
+    }
+
+    /**
+     * Translate path into final path applying preffix if exists.
+     * @param string|null $path Path to translate.
+     * @return string|null If $path is a valid path returns the final path. Otherwise returns null.
+     */
+    protected function translatePath(?string $path): ?string
+    {
+        return is_string($this->with_preffix) && is_string($path) ? $this->with_preffix . $path : $path;
     }
 
     /**
@@ -104,6 +137,7 @@ trait TNabuNestedData
     {
         $retval = null;
         $route = array();
+        $path = $this->translatePath($path);
 
         if (!$this->isEmpty() && ($l = $this->splitPath($path, $route)) > 0) {
             $p = &$this->data;
@@ -129,6 +163,7 @@ trait TNabuNestedData
     {
         $retval = false;
         $route = array();
+        $path = $this->translatePath($path);
 
         if (!$this->isEmpty() && ($l = $this->splitPath($path, $route)) > 0) {
             $p = &$this->data;
@@ -156,6 +191,7 @@ trait TNabuNestedData
     public function grantPath(string $path, bool $replace = true)
     {
         $retval = false;
+        $path = $this->translatePath($path);
 
         if ($this instanceof INabuDataWritable && $this->isEditable()) {
             $retval = $this->grantPathInternal($path, $replace);
@@ -207,10 +243,11 @@ trait TNabuNestedData
     public function setValue(string $path, $value = null, bool $replace = true): INabuDataWritable
     {
         if ($this instanceof  INabuDataWritable && $this->isEditable()) {
+            $real_path = $this->translatePath($path);
             if ($this->grantPath($path, $replace)) {
                 $route = array();
                 $p = &$this->data;
-                for ($i = 0, $l = $this->splitPath($path, $route); $i < $l; $i++) {
+                for ($i = 0, $l = $this->splitPath($real_path, $route); $i < $l; $i++) {
                     $p = &$p[$route[$i]];
                 }
                 $p = $value;
