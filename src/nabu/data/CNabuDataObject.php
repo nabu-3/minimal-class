@@ -111,6 +111,30 @@ abstract class CNabuDataObject extends CNabuRODataObject implements INabuDataWri
         return $this;
     }
 
+    public function removeValue(string $name): INabuDataWritable
+    {
+        if ($this->hasValue($name)) {
+            unset($this->data[$name]);
+        }
+
+        return $this;
+    }
+
+    public function renameValue(string $current_name, string $new_name): INabuDataWritable
+    {
+        if (strlen($current_name) > 0 &&
+            strlen($new_name) > 0 &&
+            $current_name !== $new_name &&
+            $this->hasValue($current_name)
+        ) {
+            $value = $this->getValue($current_name);
+            $this->removeValue($current_name);
+            $this->setValue($new_name, $value);
+        }
+
+        return $this;
+    }
+
     public function copyData(INabuDataReadable $object)
     {
         if ($this->isEditable()) {

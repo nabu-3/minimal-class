@@ -87,6 +87,8 @@ class CNabuDataObjectTest extends TestCase
      * @test setValue
      * @test setAsEditable
      * @test setAsReadOnly
+     * @test removeValue
+     * @test renameValue
      */
     public function testSetValueScalar()
     {
@@ -96,6 +98,12 @@ class CNabuDataObjectTest extends TestCase
         $this->assertSame('test_value', $object->getValue('test_name'));
         $this->assertSame($object, $object->setValue('other_name', 10));
         $this->assertSame(10, $object->getValue('other_name'));
+        $this->assertSame($object, $object->removeValue('test_name'));
+        $this->assertFalse($object->hasValue('test_name'));
+        $this->assertSame($object, $object->renameValue('other_name', 'new_name'));
+        $this->assertFalse($object->hasValue('other_name'));
+        $this->assertTrue($object->hasValue('new_name'));
+        $this->assertSame(10, $object->getValue('new_name'));
 
         $this->assertSame($object, $object->setAsReadOnly());
         $this->expectException(Error::class);
