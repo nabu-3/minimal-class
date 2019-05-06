@@ -264,4 +264,37 @@ trait TNabuNestedData
 
         return $this;
     }
+
+    public function removeValue(string $path): INabuDataWritable
+    {
+        if ($this instanceof INabuDataWritable && $this->isEditable()) {
+            if ($this->hasValue($path)) {
+                $real_path = $this->translatePath($path);
+                $route = array();
+                $l = $this->splitPath($real_path, $route);
+                if ($l === 1) {
+                    parent::removeValue($route[0]);
+                } elseif ($l > 1) {
+                    $this->removeValueInternal($route);
+                }
+            }
+        } else {
+            trigger_error(TRIGGER_ERROR_READ_ONLY_MODE, E_USER_ERROR);
+        }
+
+        return $this;
+    }
+
+    private function removeValueInternal(array $route)
+    {
+        $l = count($route);
+
+        for ($i = 0, $p = &$this->data; $i < $l; $i++) {
+            if (($i + 1) < $l) {
+                $p = &$p[$route[$i]];
+            } else {
+                unset($p[$route[$i]]);
+            }
+        }
+    }
 }

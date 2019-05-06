@@ -141,6 +141,8 @@ class TNabuNestedDataTest extends TestCase
      * @test hasValue
      * @test grantPath
      * @test hasValue
+     * @test removeValue
+     * @test renameValue
      */
     public function testGrantPathWR()
     {
@@ -205,6 +207,32 @@ class TNabuNestedDataTest extends TestCase
         $this->assertSame(array('d' => array('e' => null)), $object->getValue('c'));
         $this->assertSame(array('e' => null), $object->getValue('c.d'));
         $this->assertTrue($object->isValueNull('c.d.e'));
+
+        $this->assertSame($object, $object->removeValue('c.d.e'));
+        $this->assertTrue($object->hasValue('c.d'));
+        $this->assertFalse($object->hasValue('c.d.e'));
+        $this->assertSame($object, $object->removeValue('c'));
+        $this->assertFalse($object->hasValue('c'));
+        $object->with('b.x');
+        $this->assertSame($object, $object->removeValue('z'));
+        $this->assertFalse($object->hasValue('z'));
+        $object->with();
+        $this->assertTrue($object->hasValue('b.x'));
+        $this->assertFalse($object->hasValue('b.x.z'));
+
+        $this->assertSame($object, $object->renameValue('b.x', 'k.x'));
+        $this->assertFalse($object->hasValue('b.x'));
+        $this->assertTrue($object->hasValue('k.x'));
+        $object->with('k');
+        $this->assertSame($object, $object->renameValue('x', 'm'));
+        $this->assertTrue($object->hasValue('m'));
+        $this->assertFalse($object->hasValue('x'));
+        $object->with();
+        $this->assertTrue($object->hasValue('k.m'));
+        $this->assertFalse($object->hasValue('k.x'));
+        $this->assertSame($object, $object->renameValue('k.m', 'k.z'));
+        $this->assertTrue($object->hasValue('k.z'));
+        $this->assertFalse($object->hasValue('k.m'));
     }
 
     /**
@@ -215,6 +243,20 @@ class TNabuNestedDataTest extends TestCase
     {
         $object = new CNabuNestedDataTestingRO();
         $this->expectException(Error::class);
+        $this->expectExceptionMessage(TRIGGER_ERROR_READ_ONLY_MODE);
+        $object->setValue('a', 1);
+    }
+
+    /**
+     * @test setValue
+     * @test removeValue
+     * @test hasValue
+     */
+    public function testRemoveValueRO()
+    {
+        $object = new CNabuNestedDataTestingRO();
+        $this->expectException(Error::class);
+        $this->expectExceptionMessage(TRIGGER_ERROR_READ_ONLY_MODE);
         $object->setValue('a', 1);
     }
 
