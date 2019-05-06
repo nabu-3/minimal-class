@@ -243,6 +243,7 @@ class TNabuNestedDataTest extends TestCase
     {
         $object = new CNabuNestedDataTestingRO();
         $this->expectException(Error::class);
+        $this->expectExceptionMessage(TRIGGER_ERROR_READ_ONLY_MODE);
         $object->setValue('a', 1);
     }
 
@@ -255,6 +256,7 @@ class TNabuNestedDataTest extends TestCase
     {
         $object = new CNabuNestedDataTestingRO();
         $this->expectException(Error::class);
+        $this->expectExceptionMessage(TRIGGER_ERROR_READ_ONLY_MODE);
         $object->setValue('a', 1);
     }
 
