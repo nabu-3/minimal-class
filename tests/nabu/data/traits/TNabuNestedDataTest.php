@@ -254,10 +254,12 @@ class TNabuNestedDataTest extends TestCase
      */
     public function testRemoveValueRO()
     {
-        $object = new CNabuNestedDataTestingRO();
+        $object = new CNabuNestedDataTestingRO(array(
+            'a' => 1
+        ));
         $this->expectException(Error::class);
         $this->expectExceptionMessage(TRIGGER_ERROR_READ_ONLY_MODE);
-        $object->setValue('a', 1);
+        $object->removeValue('a');
     }
 
     /**
