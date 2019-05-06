@@ -248,6 +248,18 @@ class TNabuNestedDataTest extends TestCase
 
     /**
      * @test setValue
+     * @test removeValue
+     * @test hasValue
+     */
+    public function testRemoveValueRO()
+    {
+        $object = new CNabuNestedDataTestingRO();
+        $this->expectException(Error::class);
+        $object->setValue('a', 1);
+    }
+
+    /**
+     * @test setValue
      * @test hasValue
      * @test getValue
      * @test CNabuRODataObject::isValueEqualTo
