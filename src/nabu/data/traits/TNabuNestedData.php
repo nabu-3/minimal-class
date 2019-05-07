@@ -21,8 +21,6 @@
 
 namespace nabu\data\traits;
 
-use nabu\data\CNabuDataObject;
-
 use nabu\data\interfaces\INabuDataReadable;
 use nabu\data\interfaces\INabuDataWritable;
 
@@ -38,53 +36,6 @@ trait TNabuNestedData
 {
     /** @var string|null Nested path to be used after call @see { with() } method. */
     private $with_preffix = null;
-
-    /**
-     * Try to parse value as a JSON data descriptor. If success returns an array with parsed structure. If fails,
-     * then returns the original value.
-     * @param string $name Name of the value to get.
-     * @return array|null Returns the array as result of decode the JSON, the original value if cannot be decoded,
-     * or null if data value is empty or not exists.
-     */
-    public function getValueAsJSONDecoded(string $name)
-    {
-        $value = $this->getValue($name);
-
-        if ($value !== null &&
-            is_string($value) &&
-            is_null($json = json_decode($value, true))
-        ) {
-            $json = array($value);
-        }
-        if (isset($json)) {
-            $value = $json;
-        }
-
-        return $value;
-    }
-
-    /**
-     * Stores a value as a JSON encoded string.
-     * @param string $name Name of the value to set.
-     * @param mixed|null $value Value to be setted.
-     * @return CNabuDataObject Returns self pointer for convenience for cascade calls.
-     */
-    public function setValueAsJSONEncoded(string $name, $value = null): CNabuDataObject
-    {
-        if ($this instanceof INabuDataWritable && $this->isEditable()) {
-            if ($value === null) {
-                $this->setValue($name, null);
-            } elseif (is_string($value)) {
-                $this->setValue($name, $value);
-            } elseif (is_array($value) || is_object($value)) {
-                $this->setValue($name, json_encode($value));
-            }
-        } else {
-            trigger_error(TRIGGER_ERROR_READ_ONLY_MODE, E_USER_ERROR);
-        }
-
-        return $this;
-    }
 
     /**
      * Splits an string Path in dot style into an array with each level in order from top to down.
