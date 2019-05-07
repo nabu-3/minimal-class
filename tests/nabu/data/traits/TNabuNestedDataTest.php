@@ -21,8 +21,6 @@
 
 namespace nabu\data\traits;
 
-use stdClass;
-
 use PHPUnit\Framework\Error\Error;
 
 use PHPUnit\Framework\TestCase;
@@ -31,7 +29,7 @@ use nabu\data\CNabuDataObject;
 use nabu\data\CNabuRODataObject;
 
 /**
- * PHPUnit tests to verify functionality of class @see { TNabuJSONData }.
+ * PHPUnit tests to verify functionality of trait @see { TNabuNestedData }.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
  * @since 3.0.2
  * @version 3.0.2
@@ -39,65 +37,6 @@ use nabu\data\CNabuRODataObject;
  */
 class TNabuNestedDataTest extends TestCase
 {
-    /**
-     * @test getValueAsJSONDecoded
-     * @test setValueAsJSONEncoded
-     */
-    public function testGetValueAsJSONDecoded()
-    {
-        $array = array('a' => 1, 'b' => '2');
-        $object = new CNabuNestedDataTestingRO(
-            array(
-                'json_name' => json_encode(array('a' => 1, 'b' => '2'), JSON_OBJECT_AS_ARRAY)
-            )
-        );
-        $this->assertSame($array, $object->getValueAsJSONDecoded('json_name'));
-        $this->expectException(Error::class);
-        $object->setValueAsJSONEncoded('json_name', '{}');
-    }
-
-    /**
-     * @test getValueAsJSONDecoded
-     * @test setValueAsJSONEncoded
-     */
-    public function testSetValueAsJSONDecoded()
-    {
-        $array = array('a' => 1, 'b' => '2');
-        $arrtxt = json_encode($array, JSON_OBJECT_AS_ARRAY);
-        $object = new CNabuNestedDataTestingWR();
-
-        $object->setValueAsJSONEncoded('json_name', null);
-        $this->assertNull($object->getValueAsJSONDecoded('json_name'));
-
-        $object->setValueAsJSONEncoded('json_name', array());
-        $this->assertSame(array(), $object->getValueAsJSONDecoded('json_name'));
-
-        $object->setValueAsJSONEncoded('json_name', 'no_json_string');
-        $this->assertSame(array('no_json_string'), $object->getValueAsJSONDecoded('json_name'));
-
-        $object->setValueAsJSONEncoded('json_name', $arrtxt);
-        $this->assertSame($array, $object->getValueAsJSONDecoded('json_name'));
-        $this->assertSame($arrtxt, $object->getValue('json_name'));
-
-        $object->setValueAsJSONEncoded('json_name', $array);
-        $this->assertSame($array, $object->getValueAsJSONDecoded('json_name'));
-        $this->assertSame($arrtxt, $object->getValue('json_name'));
-
-        $arrobj = new stdClass();
-        $object->setValueAsJSONEncoded('json_name', $arrobj);
-        $this->assertSame(array(), $object->getValueAsJSONDecoded('json_name'));
-
-        $arrobj->a = 1;
-        $arrobj->b = '2';
-        $object->setValueAsJSONEncoded('json_name', $arrobj);
-        $this->assertSame($array, $object->getValueAsJSONDecoded('json_name'));
-        $this->assertSame($arrtxt, $object->getValue('json_name'));
-
-        $object->setAsReadOnly();
-        $this->expectException(Error::class);
-        $object->setValueAsJSONEncoded('json_name', '{}');
-    }
-
     /**
      * @test getValue
      * @test hasValue
