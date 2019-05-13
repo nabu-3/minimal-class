@@ -50,16 +50,6 @@ interface INabuDataListIndex
     public function getIndexedFieldName(): string;
     /**
      * Gets keys of this index as an array.
-     * @return array|null Returns the array of keys.
-     */
-    public function getKeys(): ?array;
-    /**
-     * Gets the field index name.
-     * @return string Returns the field index name.
-     */
-    public function getIndexedFieldName(): string;
-    /**
-     * Gets keys of this index as an array.
      * @return array|null Returns the array of keys if the list is filled or null if the list is empty.
      */
     public function getKeys(): ?array;
