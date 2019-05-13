@@ -231,6 +231,70 @@ class CNabuDataListTest extends TestCase
         $this->expectExceptionMessage(sprintf(TRIGGER_ERROR_INVALID_KEY, var_export(array('check_key'), true)));
         $list->hasKey(array('check_key'));
     }
+
+    /**
+     * @test merge
+     */
+    public function testMerge()
+    {
+        $list_left = new CNabuDataListTesting('key_field');
+        for ($i = 1; $i < 21; $i = $i + 2) {
+            $list_left->addItem(new CNabuDataListObjectTesting(
+                array(
+                    'key_field' => $i,
+                    'key_value' => "value $i"
+                )
+            ));
+        }
+
+        $list_right = new CNabuDataListTesting('key_field');
+        for ($i = 2; $i < 22; $i = $i + 2) {
+            $list_right->addItem(new CNabuDataListObjectTesting(
+                array(
+                    'key_field' => $i,
+                    'key_value' => "value $i"
+                )
+            ));
+        }
+
+        $merge_list = new CNabuDataListTesting('key_field');
+        $merge_list->merge($list_left);
+        $merge_list->merge($list_right);
+
+        $this->assertSame(20, count($merge_list));
+    }
+
+    /**
+     * @test mergeArray
+     */
+    public function testMergeArray()
+    {
+        $list_left = array();
+        for ($i = 1; $i < 21; $i = $i + 2) {
+            $list_left[$i] = new CNabuDataListObjectTesting(
+                array(
+                    'key_field' => $i,
+                    'key_value' => "value $i"
+                )
+            );
+        }
+
+        $list_right = array();
+        for ($i = 2; $i < 22; $i = $i + 2) {
+            $list_right[$i] = new CNabuDataListObjectTesting(
+                array(
+                    'key_field' => $i,
+                    'key_value' => "value $i"
+                )
+            );
+        }
+
+        $merge_list = new CNabuDataListTesting('key_field');
+        $merge_list->mergeArray($list_left);
+        $merge_list->mergeArray($list_right);
+
+        $this->assertSame(20, count($merge_list));
+    }
 }
 
 class CNabuDataListTesting extends CNabuDataList

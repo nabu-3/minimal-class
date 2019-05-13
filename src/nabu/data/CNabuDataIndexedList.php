@@ -152,6 +152,19 @@ abstract class CNabuDataIndexedList extends CNabuDataList implements INabuDataIn
         return $retval;
     }
 
+    public function merge(?INabuDataList $list): int
+    {
+        if ($list->isFilled()) {
+            $count = parent::merge($list);
+        } else {
+            $this->list = $list->list;
+            $this->secondary_indexes = $list->secondary_indexes;
+            $count = is_array($list->list) ? count($list->list) : 0;
+        }
+
+        return $count;
+    }
+
     /**
      * Private method to get an Item as part of a Secondary Index.
      * @param string $key Id of searched instance.

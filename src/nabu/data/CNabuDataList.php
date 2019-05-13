@@ -239,7 +239,6 @@ abstract class CNabuDataList extends CNabuObject implements INabuDataList
             }
         } else {
             $this->list = $list->list;
-            $this->secondary_indexes = $list->secondary_indexes;
             $count = is_array($list->list) ? count($list->list) : 0;
         }
 
