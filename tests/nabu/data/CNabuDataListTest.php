@@ -113,7 +113,7 @@ class CNabuDataListTest extends TestCase
         $this->assertNull($list->getItem($i));
 
         $i = (int)(count($list) / 3);
-        $item = $list->removeItem($i);
+        $item = $list->removeItem($list->getItem($i));
         $this->assertInstanceOf(INabuDataReadable::class, $item);
         $this->assertSame(count($arrobj) - 2, count($list));
         $this->assertNull($list->getItem($i));

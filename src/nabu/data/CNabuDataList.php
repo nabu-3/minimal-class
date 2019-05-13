@@ -145,7 +145,7 @@ abstract class CNabuDataList extends CNabuObject implements INabuDataList
     public function hasKey($key, ?string $index = null): bool
     {
         $retval = false;
-        
+
         if (is_scalar($key)) {
             $retval = is_array($this->list) && array_key_exists($key, $this->list);
         } else {
@@ -213,6 +213,7 @@ abstract class CNabuDataList extends CNabuObject implements INabuDataList
                 foreach ($keys as $key) {
                     unset($this->list[$key]);
                 }
+                $retval = $item;
             }
         } else {
             $nb_index_id = nb_getMixedValue($item, $this->index_field);
