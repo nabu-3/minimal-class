@@ -43,6 +43,11 @@ interface INabuDataIndexedList extends INabuDataList
      */
     protected function createSecondaryIndexes();
     /**
+     * Empty the list and reset all indexes.
+     * @return INabuDataIndexedList Return the self pointer to grant fluent interfaces.
+     */
+    public function clear(): INabuDataIndexedList;
+    /**
      * Gets keys of this index as an array.
      * @param string $index Alternate index to get keys.
      * @return array|null Returns the array of keys if the list is filled or null if the list is empty.

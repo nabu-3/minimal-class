@@ -101,7 +101,7 @@ function nb_isValidGUID($guid)
  * @return mixed|null Return the value of the field if $object is an instance and $field
  * exists inside it, or $object directly if is an scalar value.
  */
-function nb_getMixedValue($object, string $field, ?string $type)
+function nb_getMixedValue($object, string $field, ?string $type = null)
 {
     $value = null;
 

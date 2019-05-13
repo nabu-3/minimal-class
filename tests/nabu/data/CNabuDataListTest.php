@@ -36,8 +36,13 @@ class CNabuDataListTest extends TestCase
 {
     /**
      * @test __construct
-     * @test getMainIndexFieldName
+     * @test count
+     * @test current
+     * @test next
+     * @test key
      * @test valid
+     * @test rewind
+     * @test getMainIndexFieldName
      * @test isEmpty
      * @test isFilled
      * @test getKeys
@@ -78,6 +83,7 @@ class CNabuDataListTest extends TestCase
             $this->assertSame($accumindex, $list->getKeys());
             $this->assertIsArray($list->getItems());
             $this->assertSame($i, count($list->getItems()));
+            $this->assertTrue($list->hasKey($currarr['key_field']));
             $object = $list->getItem($i);
             $this->assertInstanceOf(INabuDataReadable::class, $object);
             $this->assertSame($currarr, $object->getValuesAsArray());
@@ -96,6 +102,26 @@ class CNabuDataListTest extends TestCase
         $this->assertFalse($list->valid());
         $list->rewind();
         $this->assertTrue($list->valid());
+
+        $item = $list->removeItem((int)(count($list) / 2));
+        $this->assertInstanceOf(INabuDataReadable::class, $item);
+        $this->assertSame(count($arrobj) - 1, count($list));
+        $this->assertNull($list->getItem($item->getValue('key_field')));
+
+        $item = $list->removeItem((int)(count($list) / 3));
+        $this->assertInstanceOf(INabuDataReadable::class, $item);
+        $this->assertSame(count($arrobj) - 2, count($list));
+        $this->assertNull($list->getItem($item->getValue('key_field')));
+
+        $list->clear();
+        $this->assertSame(0, count($list));
+        $this->assertFalse($list->valid());
+        $this->assertTrue($list->isEmpty());
+        $this->assertFalse($list->isFilled());
+        $this->assertNull($list->getKeys());
+        $this->assertNull($list->getItems());
+
+        $this->assertNull($list->getItem(1));
     }
 }
 

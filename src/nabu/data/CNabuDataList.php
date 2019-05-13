@@ -127,11 +127,7 @@ abstract class CNabuDataList extends CNabuObject implements INabuDataList
     public function clear(): INabuDataList
     {
         $this->list = null;
-        if (is_array($this->secondary_indexes)) {
-            foreach ($this->secondary_indexes as $index) {
-                $index->clear();
-            }
-        }
+        $this->rewind();
 
         return $this;
     }
@@ -202,15 +198,15 @@ abstract class CNabuDataList extends CNabuObject implements INabuDataList
 
     public function removeItem($item): ?INabuDataReadable
     {
+        $retval = null;
+
         $nb_index_id = nb_getMixedValue($item, $this->index_field);
-        if (!is_null($nb_index_id) && $this->containsKey($nb_index_id)) {
+        if (!is_null($nb_index_id) && $this->hasKey($nb_index_id)) {
+            $retval = $this->list[$nb_index_id];
             unset($this->list[$nb_index_id]);
-            if (is_array($this->secondary_indexes)) {
-                foreach ($this->secondary_indexes as $index) {
-                    $index->removeItem($item->getValue($this->index_field));
-                }
-            }
         }
+
+        return $retval;
     }
 
     public function merge(?INabuDataList $list): int

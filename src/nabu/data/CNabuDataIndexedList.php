@@ -21,6 +21,7 @@
 
 namespace nabu\data;
 
+use nabu\data\interfaces\INabuDataList;
 use nabu\data\interfaces\INabuDataReadable;
 use nabu\data\interfaces\INabuDataListIndex;
 use nabu\data\interfaces\INabuDataIndexedList;
@@ -50,6 +51,19 @@ abstract class CNabuDataIndexedList extends CNabuDataList implements INabuDataIn
         parent::__construct();
 
         $this->createSecondaryIndexes();
+    }
+
+    public function clear(): INabuDataIndexedList
+    {
+        parent::clear();
+
+        if (is_array($this->secondary_indexes)) {
+            foreach ($this->secondary_indexes as $index) {
+                $index->clear();
+            }
+        }
+
+        return $this;
     }
 
     public function getKeys(string $index = null): ?array
@@ -103,6 +117,23 @@ abstract class CNabuDataIndexedList extends CNabuDataList implements INabuDataIn
             $retval = parent::getIndex($key);
         } else {
             $retval = $this->getItemInternal($key, $index);
+        }
+
+        return $retval;
+    }
+
+    public function removeItem($item): ?INabuDataReadable
+    {
+        $retval = null;
+
+        $nb_index_id = nb_getMixedValue($item, $this->index_field);
+        if (!is_null($nb_index_id) && $this->hasKey($nb_index_id)) {
+            $retval = parent::removeItem($nb_index_id);
+            if ($retval instanceof INabuDataReadable && is_array($this->secondary_indexes)) {
+                foreach ($this->secondary_indexes as $index) {
+                    $index->removeItem($nb_index_id);
+                }
+            }
         }
 
         return $retval;
