@@ -52,10 +52,10 @@ abstract class CNabuDataList extends CNabuObject implements INabuDataList
     abstract protected function acquireItem($key): ?INabuDataReadable;
 
     /**
-     * Creates the instance and initiates the secondary index list.
-     * @param string $index_field Field index to be used for main indexation.
+     * Creates the instance.
+     * @param string|null $index_field Field index to be used for main indexation.
      */
-    public function __construct(string $index_field)
+    public function __construct(?string $index_field = null)
     {
         parent::__construct();
 
