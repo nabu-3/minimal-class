@@ -216,6 +216,11 @@ trait TNabuNestedData
         return $this;
     }
 
+    /**
+     * Remove a Nested data value and all their children.
+     * @param string $path Path of the value to be removed.
+     * @return INabuDataWritable Returns the self pointer to grant fluent interface.
+     */
     public function removeValue(string $path): INabuDataWritable
     {
         if ($this instanceof INabuDataWritable && $this->isEditable()) {
@@ -236,7 +241,11 @@ trait TNabuNestedData
         return $this;
     }
 
-    private function removeValueInternal(array $route)
+    /**
+     * Internal subprocess to remove the data value in @see { removeValue() }.
+     * @param array $route Route as array of the value to be removed.
+     */
+    private function removeValueInternal(array $route): void
     {
         $l = count($route);
 
