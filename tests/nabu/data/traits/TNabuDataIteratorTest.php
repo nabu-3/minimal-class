@@ -22,6 +22,7 @@
 namespace nabu\data\traits;
 
 use Iterator;
+use Exception;
 
 use PHPUnit\Framework\TestCase;
 
@@ -43,6 +44,63 @@ class TNabuDataIteratorTest extends TestCase
      * @test rewind
      * @test key
      */
+    public function testIteratorInterface()
+    {
+        $initial = array(
+            "a" => 3,
+            "b" => 10,
+            "c" => 4,
+            "d" => 8,
+            "f" => null
+        );
+
+        $object = new CNabuDataIteratorTesting($initial);
+        $this->assertSame($initial, $object->getValuesAsArray());
+
+        $iterated = array();
+
+        $object->rewind();
+        $i = 0;
+        foreach ($initial as $key => $value) {
+            $currval = $object->current();
+            $currkey = $object->key();
+            $this->assertSame($key, $currkey);
+            $this->assertSame($value, $currval);
+            $this->assertTrue($object->valid());
+            $object->next();
+        }
+        $this->assertFalse($object->valid());
+    }
+
+    /**
+     * @test current
+     * @test valid
+     * @test next
+     * @test rewind
+     * @test key
+     */
+    public function testIteratorROEmpty()
+    {
+        $object = new CNabuDataIteratorTesting();
+
+        $this->assertFalse($object->valid());
+        $object->rewind();
+        $this->assertNull($object->current());
+        $this->assertNull($object->key());
+        $object->next();
+
+        foreach ($object as $key => $value) {
+            throw new Exception('Invalid interation');
+        }
+    }
+
+    /**
+     * @test current
+     * @test valid
+     * @test next
+     * @test rewind
+     * @test key
+     */
     public function testIteratorRO()
     {
         $initial = array(
@@ -54,7 +112,6 @@ class TNabuDataIteratorTest extends TestCase
         );
 
         $object = new CNabuDataIteratorTesting($initial);
-
         $this->assertSame($initial, $object->getValuesAsArray());
 
         $iterated = array();
