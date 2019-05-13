@@ -132,7 +132,7 @@ abstract class CNabuDataList extends CNabuObject implements INabuDataList
         return $this;
     }
 
-    public function getKeys(): ?array
+    public function getKeys(string $index = null): ?array
     {
         return is_array($this->list) ? array_keys($this->list) : null;
     }
@@ -142,7 +142,7 @@ abstract class CNabuDataList extends CNabuObject implements INabuDataList
         return $this->list;
     }
 
-    public function hasKey($key): bool
+    public function hasKey($key, ?string $index = null): bool
     {
         if (is_scalar($key)) {
             return is_array($this->list) && array_key_exists($key, $this->list);
@@ -180,7 +180,7 @@ abstract class CNabuDataList extends CNabuObject implements INabuDataList
         return $retval;
     }
 
-    public function getItem(string $key): ?INabuDataReadable
+    public function getItem(string $key, ?string $index = null): ?INabuDataReadable
     {
         $retval = null;
 

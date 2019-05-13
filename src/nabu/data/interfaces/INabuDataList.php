@@ -55,9 +55,10 @@ interface INabuDataList extends Countable, Iterator
     public function clear(): INabuDataList;
     /**
      * Gets keys of this index as an array.
+     * @param string|null $index Alternate index to get keys.
      * @return array|null Returns the array of keys if the list is filled or null if the list is empty.
      */
-    public function getKeys(): ?array;
+    public function getKeys(?string $index = null): ?array;
     /**
      * Gets all items of the list as an array.
      * @return array|null Returns the array of items or null if the list is empty.
@@ -66,9 +67,10 @@ interface INabuDataList extends Countable, Iterator
     /**
      * Check if a key exists.
      * @param mixed $key Key to check.
+     * @param string|null $index Alternative index to be used.
      * @return bool Returns true if the key exists in the required index.
      */
-    public function hasKey($key): bool;
+    public function hasKey($key, ?string $index = null): bool;
     /**
      * Adds a new item to the list.
      * @param INabuDataReadable $item Object item to be added.
@@ -79,9 +81,10 @@ interface INabuDataList extends Countable, Iterator
      * Gets an item from the collection indexed by $key. If the list does not contain the item, calls internally
      * the protected method @see { acquireItem() } to retrieve the item from the storage.
      * @param string $key Id of searched instance.
+     * @param string|null $index If null then uses the main index and otherwise specifies an alternate index to use.
      * @return INabuDataReadable|null Returns the instance indexed by $key in selected index or null if not exists.
      */
-    public function getItem(string $key): ?INabuDataReadable;
+    public function getItem(string $key, ?string $index = null): ?INabuDataReadable;
     /**
      * Removes an item from the list.
      * @param mixed $item An INabuDataReadable instance containing a field matching the main index field name

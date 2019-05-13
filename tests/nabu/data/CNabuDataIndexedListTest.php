@@ -32,7 +32,7 @@ use nabu\data\interfaces\INabuDataReadable;
  * @version 3.0.2
  * @package nabu\data
  */
-class CNabuDataListTest extends TestCase
+class CNabuDataIndexedListTest extends TestCase
 {
     /**
      * @test __construct
@@ -48,7 +48,6 @@ class CNabuDataListTest extends TestCase
      * @test getKeys
      * @test getItems
      * @test addItem
-     * @test nb_getMixedValue
      */
     public function testAddItem()
     {
@@ -61,7 +60,7 @@ class CNabuDataListTest extends TestCase
             );
         }
 
-        $list = new CNabuDataListTesting('key_field');
+        $list = new CNabuDataIndexedListTesting('key_field');
         $this->assertSame('key_field', $list->getMainIndexFieldName());
         $this->assertSame(0, count($list));
         $this->assertFalse($list->valid());
@@ -75,7 +74,7 @@ class CNabuDataListTest extends TestCase
         for ($i = 1; $i <= count($arrobj); $i++) {
             $currarr = $arrobj[$i - 1];
             $accumindex[] = $currarr['key_field'];
-            $payload = new CNabuDataListObjectTesting($currarr);
+            $payload = new CNabuDataIndexedListObjectTesting($currarr);
             $list->addItem($payload);
             $this->assertSame($i, count($list));
             $this->assertTrue($list->valid());
@@ -126,15 +125,20 @@ class CNabuDataListTest extends TestCase
     }
 }
 
-class CNabuDataListTesting extends CNabuDataList
+class CNabuDataIndexedListTesting extends CNabuDataIndexedList
 {
-    protected function acquireItem($key): ?INabuDataReadable
+    protected function acquireItem($key, ?string $index = null): ?INabuDataReadable
     {
         return null;
     }
+
+    protected function createSecondaryIndexes()
+    {
+        
+    }
 }
 
-class CNabuDataListObjectTesting extends CNabuDataObject
+class CNabuDataIndexedListObjectTesting extends CNabuDataObject
 {
 
 }

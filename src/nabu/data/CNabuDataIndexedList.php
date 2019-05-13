@@ -43,17 +43,30 @@ abstract class CNabuDataIndexedList extends CNabuDataList implements INabuDataIn
     private $secondary_indexes = false;
 
     /**
+     * This method is called internally by getItem() or findByIndex() when the item does not exists
+     * in the list. If we do not want to acquire/retrieve an object, only return null as result.
+     * @param string $key Id of the item to be acquired.
+     * @param string|null $index Secondary index to be used if needed.
+     * @return INabuDataReadable|null Returns a @see { INabuDataReadable } instance if acquired or null if not.
+     */
+    abstract protected function acquireItem($key, ?string $index = null): ?INabuDataReadable;
+    /**
+     * Creates secondary indexes if needed.
+     */
+    abstract protected function createSecondaryIndexes();
+
+    /**
      * Creates the instance and initiates the secondary index list.
      * @param string $index_field Field index to be used for main indexation.
      */
     public function __construct(string $index_field)
     {
-        parent::__construct();
+        parent::__construct($index_field);
 
         $this->createSecondaryIndexes();
     }
 
-    public function clear(): INabuDataIndexedList
+    public function clear(): INabuDataList
     {
         parent::clear();
 
@@ -66,7 +79,7 @@ abstract class CNabuDataIndexedList extends CNabuDataList implements INabuDataIn
         return $this;
     }
 
-    public function getKeys(string $index = null): ?array
+    public function getKeys(?string $index = null): ?array
     {
         $retval = null;
 
@@ -80,7 +93,7 @@ abstract class CNabuDataIndexedList extends CNabuDataList implements INabuDataIn
         return $retval;
     }
 
-    public function hasKey($key, ?string $index): bool
+    public function hasKey($key, ?string $index = null): bool
     {
         $retval = false;
 
@@ -109,12 +122,12 @@ abstract class CNabuDataIndexedList extends CNabuDataList implements INabuDataIn
         return $retval;
     }
 
-    public function getItem(string $key, ?string $index): ?INabuDataReadable
+    public function getItem(string $key, ?string $index = null): ?INabuDataReadable
     {
         $retval = null;
 
         if (is_null($index)) {
-            $retval = parent::getIndex($key);
+            $retval = parent::getItem($key);
         } else {
             $retval = $this->getItemInternal($key, $index);
         }
@@ -126,7 +139,7 @@ abstract class CNabuDataIndexedList extends CNabuDataList implements INabuDataIn
     {
         $retval = null;
 
-        $nb_index_id = nb_getMixedValue($item, $this->index_field);
+        $nb_index_id = nb_getMixedValue($item, $this->getMainIndexFieldName());
         if (!is_null($nb_index_id) && $this->hasKey($nb_index_id)) {
             $retval = parent::removeItem($nb_index_id);
             if ($retval instanceof INabuDataReadable && is_array($this->secondary_indexes)) {

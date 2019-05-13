@@ -30,42 +30,4 @@ namespace nabu\data\interfaces;
  */
 interface INabuDataIndexedList extends INabuDataList
 {
-    /**
-     * This method is called internally by getItem() or findByIndex() when the item does not exists
-     * in the list. If we do not want to acquire/retrieve an object, only return null as result.
-     * @param string $key Id of the item to be acquired.
-     * @param string $index Secondary index to be used if needed.
-     * @return INabuDataReadable|null Returns a @see { INabuDataReadable } instance if acquired or null if not.
-     */
-    protected function acquireItem($key, $index = false): ?INabuDataReadable;
-    /**
-     * Creates secondary indexes if needed.
-     */
-    protected function createSecondaryIndexes();
-    /**
-     * Empty the list and reset all indexes.
-     * @return INabuDataIndexedList Return the self pointer to grant fluent interfaces.
-     */
-    public function clear(): INabuDataIndexedList;
-    /**
-     * Gets keys of this index as an array.
-     * @param string $index Alternate index to get keys.
-     * @return array|null Returns the array of keys if the list is filled or null if the list is empty.
-     */
-    public function getKeys($index = false): ?array;
-    /**
-     * Check if a key exists.
-     * @param mixed $key Key to check.
-     * @param string|null $index Alternative index to be used.
-     * @return bool Returns true if the key exists in the required index.
-     */
-    public function hasKey($key, ?string $index): bool;
-    /**
-     * Gets an item from the collection indexed by $key. If the list does not contain the item, calls internally
-     * the protected method @see { acquireItem() } to retrieve the item from the storage.
-     * @param string $key Id of searched instance.
-     * @param string|null $index If null then uses the main index and otherwise specifies an alternate index to use.
-     * @return INabuDataReadable|null Returns the instance indexed by $key in selected index or null if not exists.
-     */
-    public function getItem(string $key, ?string $index): ?INabuDataReadable;
 }
