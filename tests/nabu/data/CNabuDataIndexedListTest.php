@@ -123,6 +123,38 @@ class CNabuDataIndexedListTest extends TestCase
 
         $this->assertNull($list->getItem(1));
     }
+
+    /**
+     * @test merge
+     */
+    public function testMerge()
+    {
+        $list_left = new CNabuDataIndexedListTesting('key_field');
+        for ($i = 1; $i < 21; $i = $i + 2) {
+            $list_left->addItem(new CNabuDataIndexedListObjectTesting(
+                array(
+                    'key_field' => $i,
+                    'key_value' => "value $i"
+                )
+            ));
+        }
+
+        $list_right = new CNabuDataIndexedListTesting('key_field');
+        for ($i = 2; $i < 22; $i = $i + 2) {
+            $list_right->addItem(new CNabuDataIndexedListObjectTesting(
+                array(
+                    'key_field' => $i,
+                    'key_value' => "value $i"
+                )
+            ));
+        }
+
+        $merge_list = new CNabuDataIndexedListTesting('key_field');
+        $merge_list->merge($list_left);
+        $merge_list->merge($list_right);
+
+        $this->assertSame(20, count($merge_list));
+    }
 }
 
 class CNabuDataIndexedListTesting extends CNabuDataIndexedList
@@ -134,7 +166,7 @@ class CNabuDataIndexedListTesting extends CNabuDataIndexedList
 
     protected function createSecondaryIndexes()
     {
-        
+
     }
 }
 

@@ -37,11 +37,11 @@ use nabu\min\CNabuObject;
 abstract class CNabuDataList extends CNabuObject implements INabuDataList
 {
     /** @var array|null Associative array containing all objects in the list. */
-    private $list = null;
+    protected $list = null;
     /** @var int Current Iterator position. */
     private $list_position = 0;
     /** @var string|null Main index field to index all objects in the primary list. */
-    private $index_field = null;
+    protected $index_field = null;
 
     /**
      * This method is called internally by getItem() or findByIndex() when the item does not exists

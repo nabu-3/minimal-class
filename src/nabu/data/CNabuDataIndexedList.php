@@ -154,7 +154,7 @@ abstract class CNabuDataIndexedList extends CNabuDataList implements INabuDataIn
 
     public function merge(?INabuDataList $list): int
     {
-        if ($list->isFilled()) {
+        if ($this->isFilled()) {
             $count = parent::merge($list);
         } else {
             $this->list = $list->list;
