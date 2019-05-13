@@ -144,11 +144,15 @@ abstract class CNabuDataList extends CNabuObject implements INabuDataList
 
     public function hasKey($key, ?string $index = null): bool
     {
+        $retval = false;
+        
         if (is_scalar($key)) {
-            return is_array($this->list) && array_key_exists($key, $this->list);
+            $retval = is_array($this->list) && array_key_exists($key, $this->list);
         } else {
             trigger_error(sprintf(TRIGGER_ERROR_INVALID_KEY, var_export($key, true)));
         }
+
+        return $retval;
     }
 
     public function addItem(INabuDataReadable $item): INabuDataReadable
