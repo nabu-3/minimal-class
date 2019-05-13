@@ -200,10 +200,22 @@ abstract class CNabuDataList extends CNabuObject implements INabuDataList
     {
         $retval = null;
 
-        $nb_index_id = nb_getMixedValue($item, $this->index_field);
-        if (!is_null($nb_index_id) && $this->hasKey($nb_index_id)) {
-            $retval = $this->list[$nb_index_id];
-            unset($this->list[$nb_index_id]);
+        if (is_null($this->index_field)) {
+            if (is_scalar($item) && $this->hasKey($item)) {
+                $retval = $this->list[$item];
+                unset($this->list[$item]);
+            } elseif ($item instanceof INabuDataReadable && in_array($item, $this->list)) {
+                $keys = array_keys($this->list, $item, true);
+                foreach ($keys as $key) {
+                    unset($this->list[$key]);
+                }
+            }
+        } else {
+            $nb_index_id = nb_getMixedValue($item, $this->index_field);
+            if (!is_null($nb_index_id) && $this->hasKey($nb_index_id)) {
+                $retval = $this->list[$nb_index_id];
+                unset($this->list[$nb_index_id]);
+            }
         }
 
         return $retval;

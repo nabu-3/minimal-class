@@ -21,6 +21,8 @@
 
 namespace nabu\data;
 
+use PHPUnit\Framework\Error\Error;
+
 use PHPUnit\Framework\TestCase;
 
 use nabu\data\interfaces\INabuDataReadable;
@@ -50,7 +52,100 @@ class CNabuDataListTest extends TestCase
      * @test addItem
      * @test nb_getMixedValue
      */
-    public function testAddItem()
+    public function testArrayList()
+    {
+        $arrobj = array();
+
+        for ($i = 1; $i < 11; $i++) {
+            $arrobj[$i - 1] = array(
+                'key_field' => $i,
+                'key_value' => "value $i"
+            );
+        }
+
+        $list = new CNabuDataListTesting();
+        $this->assertNull($list->getMainIndexFieldName());
+        $this->assertSame(0, count($list));
+        $this->assertFalse($list->valid());
+        $this->assertTrue($list->isEmpty());
+        $this->assertFalse($list->isFilled());
+        $this->assertNull($list->getKeys());
+        $this->assertNull($list->getItems());
+
+        $accumindex = array();
+
+        for ($i = 1; $i <= count($arrobj); $i++) {
+            $currarr = $arrobj[$i - 1];
+            $accumindex[] = ($i - 1);
+            $payload = new CNabuDataListObjectTesting($currarr);
+            $list->addItem($payload);
+            $this->assertSame($i, count($list));
+            $this->assertTrue($list->valid());
+            $this->assertFalse($list->isEmpty());
+            $this->assertTrue($list->isFilled());
+            $this->assertSame($accumindex, $list->getKeys());
+            $this->assertIsArray($list->getItems());
+            $this->assertSame($i, count($list->getItems()));
+            $this->assertTrue($list->hasKey($i - 1));
+            $object = $list->getItem($i - 1);
+            $this->assertInstanceOf(INabuDataReadable::class, $object);
+            $this->assertSame($currarr, $object->getValuesAsArray());
+            if ($i === 1) {
+                $list->rewind();
+            } else {
+                $list->next();
+            }
+            $this->assertSame($currarr, $list->current()->getValuesAsArray());
+            $this->assertSame($i - 1, $list->key());
+            $this->assertInstanceOf(INabuDataReadable::class, $list->current());
+            $this->assertSame($payload, $list->current());
+        }
+
+        $list->next();
+        $this->assertFalse($list->valid());
+        $list->rewind();
+        $this->assertTrue($list->valid());
+
+        $i = (int)(count($list) / 2);
+        $item = $list->removeItem($i);
+        $this->assertInstanceOf(INabuDataReadable::class, $item);
+        $this->assertSame(count($arrobj) - 1, count($list));
+        $this->assertNull($list->getItem($i));
+
+        $i = (int)(count($list) / 3);
+        $item = $list->removeItem($i);
+        $this->assertInstanceOf(INabuDataReadable::class, $item);
+        $this->assertSame(count($arrobj) - 2, count($list));
+        $this->assertNull($list->getItem($i));
+
+        $list->clear();
+        $this->assertSame(0, count($list));
+        $this->assertFalse($list->valid());
+        $this->assertTrue($list->isEmpty());
+        $this->assertFalse($list->isFilled());
+        $this->assertNull($list->getKeys());
+        $this->assertNull($list->getItems());
+
+        $this->assertNull($list->getItem(1));
+    }
+
+    /**
+     * @test __construct
+     * @test count
+     * @test current
+     * @test next
+     * @test key
+     * @test valid
+     * @test rewind
+     * @test getMainIndexFieldName
+     * @test isEmpty
+     * @test isFilled
+     * @test getKeys
+     * @test getItems
+     * @test addItem
+     * @test nb_getMixedValue
+     */
+    public function testAssociativeList()
     {
         $arrobj = array();
 
@@ -123,6 +218,18 @@ class CNabuDataListTest extends TestCase
         $this->assertNull($list->getItems());
 
         $this->assertNull($list->getItem(1));
+    }
+
+    /**
+     * @test hasKey
+     */
+    public function testHasKeyFails()
+    {
+        $list = new CNabuDataListTesting();
+
+        $this->expectException(Error::class);
+        $this->expectExceptionMessage(sprintf(TRIGGER_ERROR_INVALID_KEY, var_export(array('check_key'), true)));
+        $list->hasKey(array('check_key'));
     }
 }
 
