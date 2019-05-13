@@ -230,14 +230,14 @@ abstract class CNabuDataList extends CNabuObject implements INabuDataList
     {
         $count = 0;
 
-        if ($list->isFilled()) {
+        if ($this->isFilled() && $list->isFilled()) {
             foreach ($list as $key => $item) {
                 if (!$this->hasKey($key)) {
                     $this->addItem($item);
                     $count++;
                 }
             }
-        } else {
+        } elseif ($this->isEmpty() && $list->isFilled()) {
             $this->list = $list->list;
             $count = is_array($list->list) ? count($list->list) : 0;
         }
