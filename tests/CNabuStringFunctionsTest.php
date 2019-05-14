@@ -25,7 +25,7 @@ use PHPUnit\Framework\TestCase;
  * PHPUnit tests to verify functionality of strings.php functions
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
  * @since 3.0.1
- * @version 3.0.1
+ * @version 3.0.3
  */
 class CNabUStringFunctionsTest extends TestCase
 {
