@@ -61,7 +61,7 @@ class CNabuDataIndexedListTest extends TestCase
             );
         }
 
-        $list = new CNabuDataListTesting('key_field');
+        $list = new CNabuDataIndexedListTesting('key_field');
         $this->assertSame('key_field', $list->getMainIndexFieldName());
         $this->assertSame(0, count($list));
         $this->assertFalse($list->valid());
@@ -75,7 +75,7 @@ class CNabuDataIndexedListTest extends TestCase
         for ($i = 1; $i <= count($arrobj); $i++) {
             $currarr = $arrobj[$i - 1];
             $accumindex[] = $currarr['key_field'];
-            $payload = new CNabuDataListObjectTesting($currarr);
+            $payload = new CNabuDataIndexedListObjectTesting($currarr);
             $list->addItem($payload);
             $this->assertSame($i, count($list));
             $this->assertTrue($list->valid());
