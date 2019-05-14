@@ -30,8 +30,8 @@ use nabu\data\interfaces\INabuDataReadable;
 /**
  * PHPUnit tests to verify functionality of class @see { CNabuDataList }.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
- * @since 3.0.2
- * @version 3.0.2
+ * @since 3.0.3
+ * @version 3.0.3
  * @package nabu\data
  */
 class CNabuDataListTest extends TestCase

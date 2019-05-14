@@ -29,10 +29,10 @@ use nabu\data\interfaces\INabuDataReadable;
 use nabu\data\interfaces\INabuDataListIndex;
 
 /**
- * PHPUnit tests to verify functionality of class @see { CNabuDataList }.
+ * PHPUnit tests to verify functionality of class @see { CNabuDataIndexedList }.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
- * @since 3.0.2
- * @version 3.0.2
+ * @since 3.0.3
+ * @version 3.0.3
  * @package nabu\data
  */
 class CNabuDataIndexedListTest extends TestCase
@@ -226,7 +226,7 @@ class CNabuDataIndexedListTesting extends CNabuDataIndexedList
         return null;
     }
 
-    protected function createSecondaryIndexes()
+    protected function createSecondaryIndexes(): void
     {
         $this->addSecondaryIndex(
             new CNabuDataIndexedListIndex($this, 'key_value', 'key_value', 'secondary_index')

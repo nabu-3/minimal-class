@@ -53,7 +53,7 @@ abstract class CNabuDataIndexedList extends CNabuDataList implements INabuDataIn
     /**
      * Creates secondary indexes if needed.
      */
-    abstract protected function createSecondaryIndexes();
+    abstract protected function createSecondaryIndexes(): void;
 
     /**
      * Creates the instance and initiates the secondary index list.
