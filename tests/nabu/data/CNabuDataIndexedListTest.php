@@ -21,9 +21,12 @@
 
 namespace nabu\data;
 
+use PHPUnit\Framework\Error\Error;
+
 use PHPUnit\Framework\TestCase;
 
 use nabu\data\interfaces\INabuDataReadable;
+use nabu\data\interfaces\INabuDataListIndex;
 
 /**
  * PHPUnit tests to verify functionality of class @see { CNabuDataList }.
@@ -57,7 +60,8 @@ class CNabuDataIndexedListTest extends TestCase
         for ($i = 1; $i < 11; $i++) {
             $arrobj[$i - 1] = array(
                 'key_field' => $i,
-                'key_value' => "value $i"
+                'key_value' => "value $i",
+                'key_value_2' => $i * 3
             );
         }
 
@@ -71,10 +75,16 @@ class CNabuDataIndexedListTest extends TestCase
         $this->assertNull($list->getItems());
 
         $accumindex = array();
+        $accumsecond = array();
 
         for ($i = 1; $i <= count($arrobj); $i++) {
             $currarr = $arrobj[$i - 1];
             $accumindex[] = $currarr['key_field'];
+            $accumsecond[$currarr['key_value']] = array(
+                'key' => $currarr['key_value'],
+                'pointer' => $currarr['key_field'],
+                'order' => $currarr['key_value']
+            );
             $payload = new CNabuDataIndexedListObjectTesting($currarr);
             $list->addItem($payload);
             $this->assertSame($i, count($list));
@@ -82,10 +92,15 @@ class CNabuDataIndexedListTest extends TestCase
             $this->assertFalse($list->isEmpty());
             $this->assertTrue($list->isFilled());
             $this->assertSame($accumindex, $list->getKeys());
+            $this->assertSame($accumsecond, $list->getKeys('secondary_index'));
             $this->assertIsArray($list->getItems());
             $this->assertSame($i, count($list->getItems()));
             $this->assertTrue($list->hasKey($currarr['key_field']));
+            $this->assertTrue($list->hasKey($currarr['key_value'], 'secondary_index'));
             $object = $list->getItem($i);
+            $this->assertInstanceOf(INabuDataReadable::class, $object);
+            $this->assertSame($currarr, $object->getValuesAsArray());
+            $object = $list->getItem($currarr['key_value'], 'secondary_index');
             $this->assertInstanceOf(INabuDataReadable::class, $object);
             $this->assertSame($currarr, $object->getValuesAsArray());
             if ($i === 1) {
@@ -114,6 +129,14 @@ class CNabuDataIndexedListTest extends TestCase
         $this->assertSame(count($arrobj) - 2, count($list));
         $this->assertNull($list->getItem($item->getValue('key_field')));
 
+        $index = $list->getSecondaryIndex('secondary_index_2');
+        $this->assertInstanceOf(INabuDataListIndex::class, $index);
+        $list->removeSecondaryIndex('secondary_index_2');
+
+        $index = $list->getSecondaryIndex('secondary_index');
+        $this->assertInstanceOf(INabuDataListIndex::class, $index);
+        $list->removeSecondaryIndex('secondary_index');
+
         $list->clear();
         $this->assertSame(0, count($list));
         $this->assertFalse($list->valid());
@@ -123,6 +146,28 @@ class CNabuDataIndexedListTest extends TestCase
         $this->assertNull($list->getItems());
 
         $this->assertNull($list->getItem(1));
+    }
+
+    /**
+     * @test getSecondaryIndex
+     */
+    public function testGetSecondaryIndexFails()
+    {
+        $list = new CNabuDataIndexedListTesting('key_field');
+        $this->expectException(Error::class);
+        $this->expectExceptionMessage(sprintf(TRIGGER_ERROR_INVALID_INDEX, 'secondary_index_3'));
+        $list->getSecondaryIndex('secondary_index_3');
+    }
+
+    /**
+     * @test removeSecondaryIndex
+     */
+    public function testRemoveSecondaryIndexFails()
+    {
+        $list = new CNabuDataIndexedListTesting('key_field');
+        $this->expectException(Error::class);
+        $this->expectExceptionMessage(sprintf(TRIGGER_ERROR_INVALID_INDEX, 'secondary_index_3'));
+        $list->removeSecondaryIndex('secondary_index_3');
     }
 
     /**
@@ -169,6 +214,9 @@ class CNabuDataIndexedListTesting extends CNabuDataIndexedList
     {
         $this->addSecondaryIndex(
             new CNabuDataIndexedListIndex($this, 'key_value', 'key_value', 'secondary_index')
+        );
+        $this->addSecondaryIndex(
+            new CNabuDataIndexedListIndex($this, 'key_value_2', 'key_value_2', 'secondary_index_2')
         );
     }
 }
