@@ -21,37 +21,30 @@
 
 namespace nabu\data\interfaces;
 
-use Countable;
-
 /**
- * Interface to implement editable data objects of nabu-3.
+ * Interface to implement indexed lists of data objects implementing @see { INabuDataReadable } interface in nabu-3.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
- * @since 3.0.2
+ * @since 3.0.3
  * @version 3.0.3
  * @package \nabu\data\interfaces
  */
-interface INabuDataReadable extends Countable
+interface INabuDataIndexedList extends INabuDataList
 {
     /**
-     * Check if none values are stored.
-     * @return bool Returns true if data storage is empty.
+     * Adds a new index to have alternate indexes of this list.
+     * @param INabuDataListIndex $index Instance to manage this index.
+     * @return INabuDataListIndex Returns the $index added.
      */
-    public function isEmpty(): bool;
+    public function addSecondaryIndex(INabuDataListIndex $index): INabuDataListIndex;
     /**
-     * Check if a value name exists.
-     * @param string $name Name of the value to check.
-     * @return bool Returns true if the value name exists.
+     * Get a Secondary Index instance. If desired index not exists triggers an User error.
+     * @param string $index Index name to get.
+     * @return INabuDataListIndex Index instance found.
      */
-    public function hasValue(string $name): bool;
+    public function getSecondaryIndex(string $index): INabuDataListIndex;
     /**
-     * Get a value identified by his name.
-     * @param string $name Name of the value to get.
-     * @return mixed|null Returns the stored value if exists or null otherwise.
+     * Remove a Secondary Index instance. If desired index not exists triggers an User error.
+     * @param string $index Index name to get.
      */
-    public function getValue(string $name);
-    /**
-     * Get all values stored in this instance as an associative array.
-     * @return array|null If values exists returns an associative array. If none value exists, returns null.
-     */
-    public function getValuesAsArray(): ?array;
+    public function removeSecondaryIndex(string $index): void;
 }

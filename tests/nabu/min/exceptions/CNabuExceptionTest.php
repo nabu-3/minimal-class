@@ -26,10 +26,10 @@ use PHPUnit\Framework\TestCase;
 use nabu\min\exceptions\ENabuException;
 
 /**
- * PHPUnit tests to verify functionality of class @see ENabuException
+ * PHPUnit tests to verify functionality of class @see { ENabuException }
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
- * @since 3.0.0 Surface
- * @version 3.0.0 Surface
+ * @since 3.0.0
+ * @version 3.0.3
  * @package nabu\min\exceptions
  */
 class CNabuExceptionTest extends TestCase
@@ -55,8 +55,8 @@ class CNabuExceptionTest extends TestCase
 /**
  * Class defined for convenience to test @see CNabuException abstract class.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
- * @since 3.0.12 Surface
- * @version 3.0.12 Surface
+ * @since 3.0.0
+ * @version 3.0.3
  * @package tests\nabu\min
  */
 class ENabuExceptionAux extends ENabuException

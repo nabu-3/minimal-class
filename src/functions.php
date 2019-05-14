@@ -88,3 +88,30 @@ function nb_isValidGUID($guid)
            preg_match('/^\{[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}\}$/', $guid) === 1
     ;
 }
+
+/**
+ * Inspect $object to get a field value or a direct value.
+ * If $object is an instance derived from {@see \nabu\data\CNabuDataObject} and, if $type
+ * is setted, an instance is derived also from $type, search in this instance
+ * for a field named $field and returns its value. If value not found returns false.
+ * Otherwise, if $object is a number or a string then returns its value directly.
+ * @param mixed $object Object instance or scalar variable to locate the mixed value.
+ * @param string $field Field name to search in $object.
+ * @param string|null $type Class name to force type cast or null for default.
+ * @return mixed|null Return the value of the field if $object is an instance and $field
+ * exists inside it, or $object directly if is an scalar value.
+ */
+function nb_getMixedValue($object, string $field, ?string $type = null)
+{
+    $value = null;
+
+    if (($object instanceof \nabu\data\interfaces\INabuDataReadable) &&
+        (is_null($type) || ($object instanceof $type))
+    ) {
+        $value = $object->getValue($field);
+    } elseif (is_scalar($object)) {
+        $value = $object;
+    }
+
+    return $value;
+}

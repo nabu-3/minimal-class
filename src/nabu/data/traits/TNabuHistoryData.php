@@ -27,7 +27,7 @@ use nabu\data\CNabuDataObject;
  * Trait to manage a TNabuDataObject as a LIFO stack data object.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
  * @since 3.0.2
- * @version 3.0.2
+ * @version 3.0.3
  * @package \nabu\data\traits
  */
 trait TNabuHistoryData
