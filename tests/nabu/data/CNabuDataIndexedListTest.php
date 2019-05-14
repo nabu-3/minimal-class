@@ -48,8 +48,9 @@ class CNabuDataIndexedListTest extends TestCase
      * @test getKeys
      * @test getItems
      * @test addItem
+     * @test nb_getMixedValue
      */
-    public function testAddItem()
+    public function testAssociativeList()
     {
         $arrobj = array();
 
@@ -60,7 +61,7 @@ class CNabuDataIndexedListTest extends TestCase
             );
         }
 
-        $list = new CNabuDataIndexedListTesting('key_field');
+        $list = new CNabuDataListTesting('key_field');
         $this->assertSame('key_field', $list->getMainIndexFieldName());
         $this->assertSame(0, count($list));
         $this->assertFalse($list->valid());
@@ -74,7 +75,7 @@ class CNabuDataIndexedListTest extends TestCase
         for ($i = 1; $i <= count($arrobj); $i++) {
             $currarr = $arrobj[$i - 1];
             $accumindex[] = $currarr['key_field'];
-            $payload = new CNabuDataIndexedListObjectTesting($currarr);
+            $payload = new CNabuDataListObjectTesting($currarr);
             $list->addItem($payload);
             $this->assertSame($i, count($list));
             $this->assertTrue($list->valid());
@@ -166,7 +167,9 @@ class CNabuDataIndexedListTesting extends CNabuDataIndexedList
 
     protected function createSecondaryIndexes()
     {
-
+        $this->addSecondaryIndex(
+            new CNabuDataIndexedListIndex($this, 'key_value', 'key_value', 'secondary_index')
+        );
     }
 }
 

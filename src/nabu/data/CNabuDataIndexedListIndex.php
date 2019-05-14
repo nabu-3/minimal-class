@@ -133,7 +133,7 @@ class CNabuDataIndexedListIndex extends CNabuObject implements INabuDataListInde
      */
     protected function extractNodes(INabuDataReadable $item): ?array
     {
-        $main_index_name = $this->list->getIndexedFieldName();
+        $main_index_name = $this->list->getMainIndexFieldName();
         if (($item->isValueNumeric($main_index_name) || $item->isValueGUID($main_index_name)) &&
             ($item->isValueString($this->key_field) || $item->isValueNumeric($this->key_field))
         ) {

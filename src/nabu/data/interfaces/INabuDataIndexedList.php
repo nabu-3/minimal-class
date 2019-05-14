@@ -30,4 +30,21 @@ namespace nabu\data\interfaces;
  */
 interface INabuDataIndexedList extends INabuDataList
 {
+    /**
+     * Adds a new index to have alternate indexes of this list.
+     * @param INabuDataListIndex $index Instance to manage this index.
+     * @return INabuDataListIndex Returns the $index added.
+     */
+    public function addSecondaryIndex(INabuDataListIndex $index): INabuDataListIndex;
+    /**
+     * Get a Secondary Index instance. If desired index not exists triggers an User error.
+     * @param string $index Index name to get.
+     * @return INabuDataListIndex Index instance found.
+     */
+    public function getSecondaryIndex(string $index): INabuDataListIndex;
+    /**
+     * Remove a Secondary Index instance. If desired index not exists triggers an User error.
+     * @param string $index Index name to get.
+     */
+    public function removeSecondaryIndex(string $index): void;
 }

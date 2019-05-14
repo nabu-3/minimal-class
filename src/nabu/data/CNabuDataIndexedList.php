@@ -165,6 +165,44 @@ abstract class CNabuDataIndexedList extends CNabuDataList implements INabuDataIn
         return $count;
     }
 
+    public function addSecondaryIndex(INabuDataListIndex $index): INabuDataListIndex
+    {
+        $name = $index->getName();
+
+        if (is_array($this->secondary_indexes)) {
+            $this->secondary_indexes[$name] = $index;
+        } else {
+            $this->secondary_indexes = array($name => $index);
+        }
+
+        return $index;
+    }
+
+    public function getSecondaryIndex(string $index): INabuDataListIndex
+    {
+        if (is_array($this->secondary_indexes) &&
+            array_key_exists($index, $this->secondary_indexes)
+        ) {
+            return $this->secondary_indexes[$index];
+        } else {
+            trigger_error(sprintf(TRIGGER_ERROR_INVALID_INDEX, $index));
+        }
+    }
+
+    public function removeSecondaryIndex(string $index): void
+    {
+        if (is_array($this->secondary_indexes) &&
+            array_key_exists($index, $this->secondary_indexes)
+        ) {
+            unset($this->secondary_indexes[$index]);
+            if (count($this->secondary_indexes) === 0) {
+                $this->secondary_indexes = null;
+            }
+        } else {
+            trigger_error(sprintf(TRIGGER_ERROR_INVALID_INDEX, $index));
+        }
+    }
+
     /**
      * Private method to get an Item as part of a Secondary Index.
      * @param string $key Id of searched instance.
@@ -186,21 +224,5 @@ abstract class CNabuDataIndexedList extends CNabuDataList implements INabuDataIn
         }
 
         return $retval;
-    }
-
-    /**
-     * Get a SecondaryIndex instance inernally. If desired index not exists triggers an User error.
-     * @param string $index Index name to get.
-     * @return INabuDataListIndex Index instance found.
-     */
-    private function getSecondaryIndex(string $index): INabuDataListIndex
-    {
-        if (is_array($this->secondary_indexes) &&
-            array_key_exists($index, $this->secondary_indexes)
-        ) {
-            return $this->secondary_indexes[$index];
-        } else {
-            trigger_error(sprintf(TRIGGER_ERROR_INVALID_INDEX, $index));
-        }
     }
 }
