@@ -32,7 +32,7 @@ use PHPUnit\Framework\TestCase;
  * PHPUnit tests to verify functionality of class @see { CNabuRODataObject }.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
  * @since 3.0.2
- * @version 3.0.3
+ * @version 3.0.4
  * @package nabu\data
  */
 class CNabuDataObjectTest extends TestCase

@@ -32,7 +32,7 @@ use nabu\data\CNabuRODataObject;
  * PHPUnit tests to verify functionality of class @see { TNabuDataIterator }.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
  * @since 3.0.3
- * @version 3.0.3
+ * @version 3.0.4
  * @package nabu\data\traits
  */
 class TNabuDataIteratorTest extends TestCase

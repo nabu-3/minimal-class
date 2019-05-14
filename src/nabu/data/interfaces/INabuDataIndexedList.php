@@ -25,7 +25,7 @@ namespace nabu\data\interfaces;
  * Interface to implement indexed lists of data objects implementing @see { INabuDataReadable } interface in nabu-3.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
  * @since 3.0.3
- * @version 3.0.3
+ * @version 3.0.4
  * @package \nabu\data\interfaces
  */
 interface INabuDataIndexedList extends INabuDataList

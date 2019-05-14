@@ -25,7 +25,7 @@ namespace nabu\data\traits;
  * Trait to manage a TNabuDataObject as an XML object.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
  * @since 3.0.2
- * @version 3.0.3
+ * @version 3.0.4
  * @package \nabu\data\traits
  */
 trait TNabuXMLData

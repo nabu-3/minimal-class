@@ -28,7 +28,7 @@ use nabu\data\interfaces\INabuDataWritable;
  * Trait to manage a @see { INabuDataWritable } or a @see { INabuDataReadable } derived classes as JSON data.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
  * @since 3.0.3
- * @version 3.0.3
+ * @version 3.0.4
  * @package \nabu\data\traits
  */
 trait TNabuJSONData

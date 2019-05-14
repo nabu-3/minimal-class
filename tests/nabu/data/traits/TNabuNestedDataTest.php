@@ -32,7 +32,7 @@ use nabu\data\CNabuRODataObject;
  * PHPUnit tests to verify functionality of trait @see { TNabuNestedData }.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
  * @since 3.0.2
- * @version 3.0.3
+ * @version 3.0.4
  * @package nabu\data\traits
  */
 class TNabuNestedDataTest extends TestCase
