@@ -25,7 +25,7 @@ namespace nabu\data\interfaces;
  * Interface to implement readable data objects of nabu-3.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
  * @since 3.0.2
- * @version 3.0.2
+ * @version 3.0.3
  * @package \nabu\data\interfaces
  */
 interface INabuDataWritable
