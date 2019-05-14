@@ -180,13 +180,17 @@ abstract class CNabuDataIndexedList extends CNabuDataList implements INabuDataIn
 
     public function getSecondaryIndex(string $index): INabuDataListIndex
     {
+        $retval = null;
+
         if (is_array($this->secondary_indexes) &&
             array_key_exists($index, $this->secondary_indexes)
         ) {
-            return $this->secondary_indexes[$index];
+            $retval = $this->secondary_indexes[$index];
         } else {
             trigger_error(sprintf(TRIGGER_ERROR_INVALID_INDEX, $index));
         }
+
+        return $retval;
     }
 
     public function removeSecondaryIndex(string $index): void
@@ -211,16 +215,19 @@ abstract class CNabuDataIndexedList extends CNabuDataList implements INabuDataIn
      */
     private function getItemInternal(string $key, string $index): ?INabuDataReadable
     {
+        $retval = null;
+
         $list_index = $this->getSecondaryIndex($index);
         if (($pointer = $list_index->getItemPointer($key)) &&
             array_key_exists(self::INDEX_POINTER, $pointer) &&
             $this->hasKey($pointer[self::INDEX_POINTER])
         ) {
             $retval = $this->list[$pointer[self::INDEX_POINTER]];
-            if (is_null($retval)) {
-                $retval = $this->acquireItem($key, $index);
-                ($retval instanceof INabuDataReadable) && $this->addItem($retval);
-            }
+        }
+
+        if (is_null($retval)) {
+            $retval = $this->acquireItem($key, $index);
+            ($retval instanceof INabuDataReadable) && $this->addItem($retval);
         }
 
         return $retval;

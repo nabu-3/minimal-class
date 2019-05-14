@@ -149,6 +149,22 @@ class CNabuDataIndexedListTest extends TestCase
     }
 
     /**
+     * @test clear
+     * @test getItem
+     * @test getItemInternal
+     */
+    public function testClear()
+    {
+        $list = new CNabuDataIndexedListTesting('key_field');
+        $object = $list->getItem('not present');
+        $this->assertNull($object);
+        $object = $list->getItem('not_pressent', 'secondary_index');
+        $this->assertNull($object);
+        $list->clear();
+        $this->assertSame(0, count($list));
+    }
+
+    /**
      * @test getSecondaryIndex
      */
     public function testGetSecondaryIndexFails()
