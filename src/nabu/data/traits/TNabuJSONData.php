@@ -81,7 +81,7 @@ trait TNabuJSONData
     }
 
     /**
-     * Converts internal data fo JSON string.
+     * Converts internal data to JSON string.
      * @return string|null If some data exists, then returns a string representation of JSON. Otherwise return null.
      */
     public function toJSON()
@@ -96,5 +96,30 @@ trait TNabuJSONData
         }
 
         return $result;
+    }
+
+    /**
+     * Creates a new instance of INabuDataReadable from a JSON file.
+     * @param string $filename File name to be loaded.
+     * @return INabuDataReadable Returns the new instance of class used to call this method.
+     */
+    public static function createFromJSONFile(string $filename): INabuDataReadable
+    {
+        $called_class = get_called_class();
+
+        if (strlen($filename) > 0 &&
+            is_string($realname = realpath($filename)) &&
+            file_exists($realname) &&
+            is_file($realname) &&
+            (
+                mime_content_type($realname) !== 'text/plain' ||
+                ($raw = file_get_contents($realname)) === false ||
+                !($json = json_decode($raw, JSON_OBJECT_AS_ARRAY))
+            )
+        ) {
+            trigger_error(sprintf(TRIGGER_ERROR_INVALID_FILE, $filename), E_USER_ERROR);
+        }
+
+        return new $called_class($index_field, $json);
     }
 }

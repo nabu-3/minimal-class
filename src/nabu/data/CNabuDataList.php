@@ -21,6 +21,9 @@
 
 namespace nabu\data;
 
+use InvalidArgumentException;
+use UnexpectedValueException;
+
 use nabu\data\interfaces\INabuDataList;
 use nabu\data\interfaces\INabuDataReadable;
 
@@ -42,6 +45,7 @@ abstract class CNabuDataList extends CNabuObject implements INabuDataList
     private $list_position = 0;
     /** @var string|null Main index field to index all objects in the primary list. */
     protected $index_field = null;
+    /** @var string|null Child data class used to create child data programmatically. */
 
     /**
      * This method is called internally by getItem() or findByIndex() when the item does not exists
@@ -50,17 +54,32 @@ abstract class CNabuDataList extends CNabuObject implements INabuDataList
      * @return INabuDataReadable|null Returns a @see { INabuDataReadable } instance if acquired or null if not.
      */
     abstract protected function acquireItem($key): ?INabuDataReadable;
+    /**
+     * This method is called internally by mergeArray() for each array item that we need to merge.
+     * @param array $data Data array to pass to new instance.
+     * @return INabuDataReadable|null Returns the new created instance if allowed or null otherwise.
+     */
+    abstract protected function createDataInstance(array $data): ?INabuDataReadable;
 
     /**
      * Creates the instance.
      * @param string|null $index_field Field index to be used for main indexation.
+     * @param mixed|null $source_list Another INabuDataList instance or an array to copy the list.
      */
-    public function __construct(?string $index_field = null)
+    public function __construct(?string $index_field = null, $source_list = null)
     {
         parent::__construct();
 
         $this->index_field = $index_field;
         $this->rewind();
+
+        if ($source_list instanceof INabuDataList) {
+            $this->merge($source_list);
+        } elseif (is_array($source_list)) {
+            $this->mergeArray($source_list);
+        } elseif (!is_null($source_list)) {
+            throw new InvalidArgumentException(sprintf(TRIGGER_ERROR_INVALID_ARGUMENT, '$source_list'));
+        }
     }
 
     public function count()
@@ -252,8 +271,16 @@ abstract class CNabuDataList extends CNabuObject implements INabuDataList
         if (is_array($array) && count($array) > 0) {
             foreach ($array as $key => $item) {
                 if (!$this->hasKey($key)) {
-                    $this->addItem($item);
-                    $count++;
+                    if ($item instanceof INabuDataReadable) {
+                        $this->addItem($item);
+                        $count++;
+                    } elseif (is_array($item) &&
+                              $this->addItem($this->createDataInstance($item)) instanceof INabuDataReadable
+                    ) {
+                        $count++;
+                    } else {
+                        throw new UnexpectedValueException();
+                    }
                 }
             }
         }
