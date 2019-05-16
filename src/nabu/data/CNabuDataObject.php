@@ -21,6 +21,7 @@
 
 namespace nabu\data;
 
+use nabu\data\interfaces\INabuDataIterable;
 use nabu\data\interfaces\INabuDataReadable;
 use nabu\data\interfaces\INabuDataWritable;
 
@@ -73,20 +74,15 @@ abstract class CNabuDataObject extends CNabuRODataObject implements INabuDataWri
         return $this;
     }
 
-    public function reset(): bool
+    public function clear(): INabuDataIterable
     {
-        $retval = false;
-
         if ($this->isEditable()) {
-            if (is_array($this->data)) {
-                $this->data = null;
-                $retval = true;
-            }
+            $this->clearInternal();
         } else {
             trigger_error(TRIGGER_ERROR_READ_ONLY_MODE, E_USER_ERROR);
         }
 
-        return $retval;
+        return $this;
     }
 
     public function setValue(string $name, $value): INabuDataWritable

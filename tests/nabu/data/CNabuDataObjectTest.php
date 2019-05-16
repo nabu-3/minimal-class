@@ -28,6 +28,8 @@ use PHPUnit\Framework\Error\Notice;
 
 use PHPUnit\Framework\TestCase;
 
+use nabu\data\interfaces\INabuDataIterable;
+
 /**
  * PHPUnit tests to verify functionality of class @see { CNabuRODataObject }.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
@@ -60,9 +62,9 @@ class CNabuDataObjectTest extends TestCase
     }
 
     /**
-     * @test reset
+     * @test clear
      */
-    public function testReset()
+    public function testClear()
     {
         $object = new CNabuDataObjectTestingWR(
             array(
@@ -70,17 +72,17 @@ class CNabuDataObjectTest extends TestCase
             )
         );
         $this->assertFalse($object->isEmpty());
-        $object->reset();
+        $this->assertInstanceOf(INabuDataIterable::class, $object->clear());
         $this->assertTrue($object->isEmpty());
 
         $object = new CNabuDataObjectTestingWR();
         $this->assertTrue($object->isEmpty());
-        $this->assertFalse($object->reset());
+        $this->assertInstanceOf(INabuDataIterable::class, $object->clear());
 
         $object = new CNabuDataObjectTestingWR();
         $object->setAsReadOnly();
         $this->expectException(Error::class);
-        $object->reset();
+        $object->clear();
     }
 
     /**

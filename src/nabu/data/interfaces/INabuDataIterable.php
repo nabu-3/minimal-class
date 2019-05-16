@@ -21,30 +21,31 @@
 
 namespace nabu\data\interfaces;
 
+use Countable;
+use SeekableIterator;
+
 /**
- * Interface to implement editable data objects of nabu-3.
+ * Interface to implement iterable objects in nabu-3.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
- * @since 3.0.2
+ * @since 3.0.3
  * @version 3.0.4
  * @package \nabu\data\interfaces
  */
-interface INabuDataReadable extends INabuDataIterable
+interface INabuDataIterable extends Countable, SeekableIterator
 {
     /**
-     * Check if a value name exists.
-     * @param string $name Name of the value to check.
-     * @return bool Returns true if the value name exists.
+     * Check if none values are stored.
+     * @return bool Returns true if data storage is empty.
      */
-    public function hasValue(string $name): bool;
+    public function isEmpty(): bool;
     /**
-     * Get a value identified by his name.
-     * @param string $name Name of the value to get.
-     * @return mixed|null Returns the stored value if exists or null otherwise.
+     * Check if the list if filled.
+     * @return bool Returns true if the list contains at least one item of false if is empty.
      */
-    public function getValue(string $name);
+    public function isFilled(): bool;
     /**
-     * Get all values stored in this instance as an associative array.
-     * @return array|null If values exists returns an associative array. If none value exists, returns null.
+     * Empty the list and reset all indexes.
+     * @return INabuDataList Return the self pointer to grant fluent interfaces.
      */
-    public function getValuesAsArray(): ?array;
+    public function clear(): INabuDataIterable;
 }

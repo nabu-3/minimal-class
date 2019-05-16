@@ -21,9 +21,10 @@
 
 namespace nabu\data;
 
-use nabu\data\interfaces\INabuDataReadable;
+use LogicException;
 
-use \nabu\min\CNabuObject;
+use nabu\data\interfaces\INabuDataIterable;
+use nabu\data\interfaces\INabuDataReadable;
 
 /**
  * Abstract class to implement read only data objects of nabu-3.
@@ -33,22 +34,11 @@ use \nabu\min\CNabuObject;
  * @version 3.0.4
  * @package \nabu\data
  */
-abstract class CNabuRODataObject extends CNabuObject implements INabuDataReadable
+abstract class CNabuRODataObject extends CNabuDataIterable implements INabuDataReadable
 {
-    /** @var array|null Data stored in the instance. Functions that applies to set data in this instance modifies this
-     * array. */
-    protected $data = null;
-
-    public function __construct(array $data = null)
+    public function clear(): INabuDataIterable
     {
-        parent::__construct();
-
-        $this->data = $data;
-    }
-
-    public function isEmpty(): bool
-    {
-        return ($this->data === null) || (count($this->data) == 0);
+        throw new LogicException('Read only data objects cannot be clean.');
     }
 
     public function hasValue(string $name): bool
@@ -59,11 +49,6 @@ abstract class CNabuRODataObject extends CNabuObject implements INabuDataReadabl
     public function getValue(string $name)
     {
         return ($this->data == null || !array_key_exists($name, $this->data) ? null : $this->data[$name]);
-    }
-
-    public function count(): int
-    {
-        return is_array($this->data) ? count($this->data) : 0;
     }
 
     public function getValuesAsArray(): ?array

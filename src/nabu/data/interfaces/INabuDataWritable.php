@@ -51,11 +51,6 @@ interface INabuDataWritable
      */
     public function setAsReadOnly(): INabuDataWritable;
     /**
-     * Reset the data content stored in the instance and empty internal storage, lossing all previous stored data.
-     * @return bool Returns true if the instance is reseted.
-     */
-    public function reset(): bool;
-    /**
      * Sets a Value associated to a name.
      * @param string $name Name of the value to set.
      * @param mixed $value Value to be setted.

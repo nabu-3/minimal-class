@@ -49,7 +49,7 @@ class TNabuHistoryDataTest extends TestCase
         $object = new CNabuHistoryDataTestingWR();
         $this->assertTrue($object->isEmpty());
         $this->assertTrue($object->isHistoryEmpty());
-        $this->assertFalse($object->reset());
+        $this->assertSame($object, $object->clear());
         $this->assertFalse($object->resetHistory());
         $object->setValue('test_name', 'test_value');
         $this->assertTrue($object->push());

@@ -25,9 +25,8 @@ use InvalidArgumentException;
 use UnexpectedValueException;
 
 use nabu\data\interfaces\INabuDataList;
+use nabu\data\interfaces\INabuDataIterable;
 use nabu\data\interfaces\INabuDataReadable;
-
-use nabu\min\CNabuObject;
 
 /**
  * Abstract class to implement lists of data objects of nabu-3.
@@ -37,12 +36,8 @@ use nabu\min\CNabuObject;
  * @version 3.0.4
  * @package \nabu\data
  */
-abstract class CNabuDataList extends CNabuObject implements INabuDataList
+abstract class CNabuDataList extends CNabuDataIterable implements INabuDataList
 {
-    /** @var array|null Associative array containing all objects in the list. */
-    protected $list = null;
-    /** @var int Current Iterator position. */
-    private $list_position = 0;
     /** @var string|null Main index field to index all objects in the primary list. */
     protected $index_field = null;
     /** @var string|null Child data class used to create child data programmatically. */
@@ -82,50 +77,11 @@ abstract class CNabuDataList extends CNabuObject implements INabuDataList
         }
     }
 
-    public function count()
+    public function clear(): INabuDataIterable
     {
-        return is_null($this->list) ? 0 : count($this->list);
-    }
-
-    public function current()
-    {
-        $current = null;
-
-        if ($this->valid()) {
-            $keys = array_keys($this->list);
-            $current = $this->list[$keys[$this->list_position]];
-        }
-
-        return $current;
-    }
-
-    public function next()
-    {
-        $this->list_position++;
-    }
-
-    public function key()
-    {
-        $key = null;
-
-        if ($this->valid()) {
-            $keys = array_keys($this->list);
-            $key = $keys[$this->list_position];
-        }
-
-        return $key;
-    }
-
-    public function valid()
-    {
-        $size = is_array($this->list) ? count($this->list) : 0;
-
-        return $this->list_position < $size;
-    }
-
-    public function rewind()
-    {
-        $this->list_position = 0;
+        $this->clearInternal();
+        
+        return $this;
     }
 
     public function getMainIndexFieldName(): ?string
@@ -133,32 +89,14 @@ abstract class CNabuDataList extends CNabuObject implements INabuDataList
         return $this->index_field;
     }
 
-    public function isEmpty(): bool
-    {
-        return !is_array($this->list) || count($this->list) === 0;
-    }
-
-    public function isFilled(): bool
-    {
-        return is_array($this->list) && count($this->list) > 0;
-    }
-
-    public function clear(): INabuDataList
-    {
-        $this->list = null;
-        $this->rewind();
-
-        return $this;
-    }
-
     public function getKeys(string $index = null): ?array
     {
-        return is_array($this->list) ? array_keys($this->list) : null;
+        return is_array($this->data) ? array_keys($this->data) : null;
     }
 
     public function getItems(): ?array
     {
-        return $this->list;
+        return $this->data;
     }
 
     public function hasKey($key, ?string $index = null): bool
@@ -166,7 +104,7 @@ abstract class CNabuDataList extends CNabuObject implements INabuDataList
         $retval = false;
 
         if (is_scalar($key)) {
-            $retval = is_array($this->list) && array_key_exists($key, $this->list);
+            $retval = is_array($this->data) && array_key_exists($key, $this->data);
         } else {
             trigger_error(sprintf(TRIGGER_ERROR_INVALID_KEY, var_export($key, true)));
         }
@@ -180,22 +118,22 @@ abstract class CNabuDataList extends CNabuObject implements INabuDataList
 
         if (!is_null($this->index_field)) {
             if ($item->hasValue($this->index_field)) {
-                if (is_array($this->list)) {
-                    $this->list[$item->getValue($this->index_field)] = $item;
+                if (is_array($this->data)) {
+                    $this->data[$item->getValue($this->index_field)] = $item;
                     $retval = $item;
                 } else {
-                    $this->list = array(
+                    $this->data = array(
                         $item->getValue($this->index_field) => $item
                     );
                     $retval = $item;
                 }
             }
         } else {
-            if (is_array($this->list)) {
-                $this->list[] = $item;
+            if (is_array($this->data)) {
+                $this->data[] = $item;
                 $retval = $item;
             } else {
-                $this->list = array($item);
+                $this->data = array($item);
                 $retval = $item;
             }
         }
@@ -207,8 +145,8 @@ abstract class CNabuDataList extends CNabuObject implements INabuDataList
     {
         $retval = null;
 
-        if ($this->isFilled() && array_key_exists($key, $this->list)) {
-            $retval = $this->list[$key];
+        if ($this->isFilled() && array_key_exists($key, $this->data)) {
+            $retval = $this->data[$key];
         }
 
         if (is_null($retval)) {
@@ -225,20 +163,20 @@ abstract class CNabuDataList extends CNabuObject implements INabuDataList
 
         if (is_null($this->index_field)) {
             if (is_scalar($item) && $this->hasKey($item)) {
-                $retval = $this->list[$item];
-                unset($this->list[$item]);
-            } elseif ($item instanceof INabuDataReadable && in_array($item, $this->list)) {
-                $keys = array_keys($this->list, $item, true);
+                $retval = $this->data[$item];
+                unset($this->data[$item]);
+            } elseif ($item instanceof INabuDataReadable && in_array($item, $this->data)) {
+                $keys = array_keys($this->data, $item, true);
                 foreach ($keys as $key) {
-                    unset($this->list[$key]);
+                    unset($this->data[$key]);
                 }
                 $retval = $item;
             }
         } else {
             $nb_index_id = nb_getMixedValue($item, $this->index_field);
             if (!is_null($nb_index_id) && $this->hasKey($nb_index_id)) {
-                $retval = $this->list[$nb_index_id];
-                unset($this->list[$nb_index_id]);
+                $retval = $this->data[$nb_index_id];
+                unset($this->data[$nb_index_id]);
             }
         }
 
@@ -257,8 +195,8 @@ abstract class CNabuDataList extends CNabuObject implements INabuDataList
                 }
             }
         } elseif ($this->isEmpty() && $list->isFilled()) {
-            $this->list = $list->list;
-            $count = is_array($list->list) ? count($list->list) : 0;
+            $this->data = $list->data;
+            $count = is_array($list->data) ? count($list->data) : 0;
         }
 
         return $count;

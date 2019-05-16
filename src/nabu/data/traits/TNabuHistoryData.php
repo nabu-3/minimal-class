@@ -44,7 +44,7 @@ trait TNabuHistoryData
         $retval = false;
 
         if ($this instanceof CNabuDataObject && $this->isEditable()) {
-            parent::reset();
+            parent::clear();
             if (is_array($this->data_stack)) {
                 $this->data_stack = null;
                 $retval = true;

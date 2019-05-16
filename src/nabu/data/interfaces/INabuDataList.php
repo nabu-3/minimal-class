@@ -31,28 +31,13 @@ use Countable;
  * @version 3.0.4
  * @package \nabu\data\interfaces
  */
-interface INabuDataList extends Countable, Iterator
+interface INabuDataList extends INabuDataIterable
 {
     /**
      * Gets the main Indexed Field Name.
      * @return string|null Returns the name of indexed field.
      */
     public function getMainIndexFieldName(): ?string;
-    /**
-     * Check if the list is empty.
-     * @return bool Returns true if the list is empty or false if not.
-     */
-    public function isEmpty(): bool;
-    /**
-     * Check if the list if filled.
-     * @return bool Returns true if the list contains at least one item of false if is empty.
-     */
-    public function isFilled(): bool;
-    /**
-     * Empty the list and reset all indexes.
-     * @return INabuDataList Return the self pointer to grant fluent interfaces.
-     */
-    public function clear(): INabuDataList;
     /**
      * Gets keys of this index as an array.
      * @param string|null $index Alternate index to get keys.

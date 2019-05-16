@@ -236,7 +236,7 @@ class CNabuDataIndexedListTesting extends CNabuDataIndexedList
         );
     }
 
-    protected function createDataInstance(array $data): ?\nabu\data\interfaces\INabuDataReadable
+    protected function createDataInstance(array $data): ?INabuDataReadable
     {
         return new CNabuDataIndexedListObjectTesting($data);
     }

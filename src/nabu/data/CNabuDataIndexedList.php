@@ -22,6 +22,7 @@
 namespace nabu\data;
 
 use nabu\data\interfaces\INabuDataList;
+use nabu\data\interfaces\INabuDataIterable;
 use nabu\data\interfaces\INabuDataReadable;
 use nabu\data\interfaces\INabuDataListIndex;
 use nabu\data\interfaces\INabuDataIndexedList;
@@ -66,7 +67,7 @@ abstract class CNabuDataIndexedList extends CNabuDataList implements INabuDataIn
         $this->createSecondaryIndexes();
     }
 
-    public function clear(): INabuDataList
+    public function clear(): INabuDataIterable
     {
         parent::clear();
 
@@ -157,9 +158,9 @@ abstract class CNabuDataIndexedList extends CNabuDataList implements INabuDataIn
         if ($this->isFilled()) {
             $count = parent::merge($list);
         } else {
-            $this->list = $list->list;
+            $this->data = $list->data;
             $this->secondary_indexes = $list->secondary_indexes;
-            $count = is_array($list->list) ? count($list->list) : 0;
+            $count = is_array($list->data) ? count($list->data) : 0;
         }
 
         return $count;
@@ -222,7 +223,7 @@ abstract class CNabuDataIndexedList extends CNabuDataList implements INabuDataIn
             array_key_exists(self::INDEX_POINTER, $pointer) &&
             $this->hasKey($pointer[self::INDEX_POINTER])
         ) {
-            $retval = $this->list[$pointer[self::INDEX_POINTER]];
+            $retval = $this->data[$pointer[self::INDEX_POINTER]];
         }
 
         if (is_null($retval)) {
