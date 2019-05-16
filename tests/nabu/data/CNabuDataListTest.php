@@ -303,6 +303,11 @@ class CNabuDataListTesting extends CNabuDataList
     {
         return null;
     }
+
+    protected function createDataInstance(array $data): ?\nabu\data\interfaces\INabuDataReadable
+    {
+        return new CNabuDataListObjectTesting($data);
+    }
 }
 
 class CNabuDataListObjectTesting extends CNabuDataObject

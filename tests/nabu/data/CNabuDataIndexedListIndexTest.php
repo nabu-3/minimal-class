@@ -60,4 +60,9 @@ class CNabuDataIndexedListIndexTesting extends CNabuDataIndexedList
             new CNabuDataIndexedListIndex($this, 'key_value', 'key_value', 'secondary_index')
         );
     }
+
+    protected function createDataInstance(array $data): ?INabuDataReadable
+    {
+        return null;
+    }
 }

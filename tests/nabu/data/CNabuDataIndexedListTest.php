@@ -235,6 +235,11 @@ class CNabuDataIndexedListTesting extends CNabuDataIndexedList
             new CNabuDataIndexedListIndex($this, 'key_value_2', 'key_value_2', 'secondary_index_2')
         );
     }
+
+    protected function createDataInstance(array $data): ?\nabu\data\interfaces\INabuDataReadable
+    {
+        return new CNabuDataIndexedListObjectTesting($data);
+    }
 }
 
 class CNabuDataIndexedListObjectTesting extends CNabuDataObject
