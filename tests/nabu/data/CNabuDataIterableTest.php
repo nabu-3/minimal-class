@@ -94,6 +94,16 @@ class CNabuDataIterableTest extends TestCase
         $list->rewind();
         $this->assertTrue($list->valid());
 
+        for ($i = 1; $i < $limit * 10; $i++) {
+            $j = rand(1, $limit);
+            $key = "key_$j";
+            $value = "value $j";
+            $list->seek($j - 1);
+            $this->assertTrue($list->valid());
+            $this->assertSame($key, $list->key());
+            $this->assertSame($value, $list->current());
+        }
+
         $i = (int)(count($list) / 2);
 
         $list->clear();
