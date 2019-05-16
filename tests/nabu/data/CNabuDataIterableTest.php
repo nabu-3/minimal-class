@@ -21,6 +21,8 @@
 
 namespace nabu\data;
 
+use OutOfBoundsException;
+
 use PHPUnit\Framework\TestCase;
 
 use nabu\data\interfaces\INabuDataIterable;
@@ -62,7 +64,6 @@ class CNabuDataIterableTest extends TestCase
      * @test clearInternal
      * @test isEmpty
      * @test isFilled
-     * @test nb_getMixedValue
      */
     public function testFilledIterable()
     {
@@ -113,6 +114,18 @@ class CNabuDataIterableTest extends TestCase
         $this->assertFalse($list->isFilled());
 
         $this->assertNull($list->current());
+    }
+
+    /**
+     * @test _construct
+     * @test seek
+     */
+    public function testSeekFails()
+    {
+        $list = new CNabuDataIterableTesting();
+
+        $this->expectException(OutOfBoundsException::class);
+        $list->seek(300);
     }
 }
 
