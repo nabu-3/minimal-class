@@ -21,6 +21,8 @@
 
 namespace nabu\data;
 
+use LogicException;
+
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -34,7 +36,6 @@ class CNabuRODataObjectTest extends TestCase
 {
     /**
      * @test __construct
-     * @test isEmpty
      * @test hasValue
      * @test isValueNumeric
      * @test isValueFloat
@@ -282,20 +283,19 @@ class CNabuRODataObjectTest extends TestCase
     }
 
     /**
-     * @test reset
-     * @test isEmpty
+     * @test clear
      */
-    public function testReset()
+    public function testClear()
     {
         $object = new CNabuDataObjectTestingRO(
             array(
                 'test_name' => 'test_value'
             )
         );
-        $this->assertFalse($object->isEmpty());
 
-        $object = new CNabuDataObjectTestingRO();
-        $this->assertTrue($object->isEmpty());
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage('Read only data objects cannot be clean.');
+        $object->clear();
     }
 
     /**
