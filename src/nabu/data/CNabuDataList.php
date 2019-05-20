@@ -69,8 +69,10 @@ abstract class CNabuDataList extends CNabuDataIterable implements INabuDataList
         $this->rewind();
 
         if ($source_list instanceof INabuDataList) {
+            error_log("to Merge\n");
             $this->merge($source_list);
         } elseif (is_array($source_list)) {
+            error_log("to Merge Array\n");
             $this->mergeArray($source_list);
         } elseif (!is_null($source_list)) {
             throw new InvalidArgumentException(sprintf(TRIGGER_ERROR_INVALID_ARGUMENT, '$source_list'));
@@ -80,7 +82,7 @@ abstract class CNabuDataList extends CNabuDataIterable implements INabuDataList
     public function clear(): INabuDataIterable
     {
         $this->clearInternal();
-        
+
         return $this;
     }
 
@@ -194,10 +196,12 @@ abstract class CNabuDataList extends CNabuDataIterable implements INabuDataList
                     $count++;
                 }
             }
+            error_log(count($this) . "\n");
         } elseif ($this->isEmpty() && $list->isFilled()) {
             $this->data = $list->data;
-            $count = is_array($list->data) ? count($list->data) : 0;
-        }
+            $count = is_array($this->data) ? count($this->data) : 0;
+            error_log(count($this) . "\n");
+         }
 
         return $count;
     }
@@ -219,8 +223,12 @@ abstract class CNabuDataList extends CNabuDataIterable implements INabuDataList
                     } else {
                         throw new UnexpectedValueException();
                     }
+                    error_log("hasKey success $key");
+                } else {
+                    error_log("hasKey fails $key");
                 }
             }
+            error_log(__METHOD__ . ' ' . count($this) . ' ' . count($this->data));
         }
 
         return $count;

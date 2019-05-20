@@ -295,6 +295,79 @@ class CNabuDataListTest extends TestCase
 
         $this->assertSame(20, count($merge_list));
     }
+
+    /**
+     * @test __construct
+     * @test count
+     * @test current
+     * @test next
+     * @test key
+     * @test valid
+     * @test rewind
+     */
+    public function testConstructFromDataList()
+    {
+        error_log("\n" . __METHOD__);
+        $arrobj = array();
+        $arrobj2 = array();
+
+        for ($i = 1; $i < 11; $i++) {
+            $arrobj[$i - 1] = array(
+                'key_field' => $i,
+                'key_value' => "value $i"
+            );
+            $arrobj2[$i + 10] = array(
+                'key_field' => $i + 10,
+                'key_value' => 'value ' . ($i + 10)
+            );
+        }
+        $this->assertSame(10, count($arrobj));
+
+        $list = new CNabuDataListTesting('key_field', $arrobj);
+        //$this->assertSame(10, count($list));
+
+        // $copy = new CNabuDataListTesting(null, $arrobj2);
+        // $this->assertSame(10, count($copy));
+        //
+        // $copy->merge($list);
+        // $this->assertSame(20, count($copy));
+
+        // foreach ($copy as $key => $value) {
+        //     $this->assertInstanceOf(CNabuDataListObjectTesting::class, $value);
+        //     $this->assertSame($arrobj[$key]['key_field'], $value->getValue('key_field'));
+        //     $this->assertSame($arrobj[$key]['key_value'], $value->getValue('key_value'));
+        // }
+    }
+
+    /**
+     * @test __construct
+     * @test count
+     * @test current
+     * @test next
+     * @test key
+     * @test valid
+     * @test rewind
+     */
+    public function testConstructFromArray()
+    {
+        $arrobj = array();
+
+        for ($i = 1; $i < 11; $i++) {
+            $arrobj[$i - 1] = array(
+                'key_field' => $i,
+                'key_value' => "value $i"
+            );
+        }
+
+        $list = new CNabuDataListTesting(null, $arrobj);
+        $this->assertSame(count($arrobj), count($list));
+
+        foreach ($list as $key => $value) {
+            $this->assertInstanceOf(CNabuDataListObjectTesting::class, $value);
+            $this->assertSame($arrobj[$key]['key_field'], $value->getValue('key_field'));
+            $this->assertSame($arrobj[$key]['key_value'], $value->getValue('key_value'));
+        }
+    }
 }
 
 class CNabuDataListTesting extends CNabuDataList
