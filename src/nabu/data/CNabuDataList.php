@@ -116,7 +116,18 @@ abstract class CNabuDataList extends CNabuDataIterable implements INabuDataList
     {
         $retval = null;
 
-        if (!is_null($this->index_field)) {
+        if (is_null($this->index_field)) {
+            if (is_null($key)) {
+                trigger_error(sprintf(TRIGGER_ERROR_INVALID_ARGUMENT, '$key'));
+            }
+            if (is_array($this->data)) {
+                $this->data[$key] = $item;
+                $retval = $item;
+            } else {
+                $this->data = array($key => $item);
+                $retval = $item;
+            }
+        } else {
             if ($item->hasValue($this->index_field)) {
                 if (is_array($this->data)) {
                     $this->data[$item->getValue($this->index_field)] = $item;
@@ -127,17 +138,6 @@ abstract class CNabuDataList extends CNabuDataIterable implements INabuDataList
                     );
                     $retval = $item;
                 }
-            }
-        } else {
-            if (is_null($key)) {
-                trigger_error(sprintf(TRIGGER_ERROR_INVALID_ARGUMENT, '$key'));
-            }
-            if (is_array($this->data)) {
-                $this->data[$key] = $item;
-                $retval = $item;
-            } else {
-                $this->data = array($key => $item);
-                $retval = $item;
             }
         }
 

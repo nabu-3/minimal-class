@@ -21,6 +21,9 @@
 
 namespace nabu\data;
 
+use InvalidArgumentException;
+use UnexpectedValueException;
+
 use PHPUnit\Framework\Error\Error;
 
 use PHPUnit\Framework\TestCase;
@@ -394,6 +397,48 @@ class CNabuDataListTest extends TestCase
             $i++;
         }
         $this->assertSame(20, $i);
+    }
+
+    /**
+     * @test __construct
+     */
+    public function testConstructFails()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage(sprintf(TRIGGER_ERROR_INVALID_ARGUMENT, '$source_list'));
+        $list = new CNabuDataListTesting(null, 23);
+    }
+
+    /**
+     * @test addItem
+     */
+    public function testAddItemFails()
+    {
+        $list = new CNabuDataListTesting();
+
+        $this->expectException(Error::class);
+        $this->expectExceptionMessage(sprintf(TRIGGER_ERROR_INVALID_ARGUMENT, '$key'));
+        $list->addItem(new CNabuDataListObjectTesting(), null);
+    }
+
+    /**
+     * @test mergeArray
+     */
+    public function testMergeArrayFails()
+    {
+        $list = new CNabuDataListTesting();
+
+        $this->expectException(UnexpectedValueException::class);
+        $list->mergeArray(array(58));
+    }
+
+    /**
+     * @test locateKey
+     */
+    public function testLocateKeyFails()
+    {
+        $this->expectException(UnexpectedValueException::class);
+        $list = new CNabuDataListTesting('key_exception', array('key_exception' => 1, 'key_value' => 'val 1'));
     }
 }
 

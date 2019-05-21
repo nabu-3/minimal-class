@@ -112,10 +112,6 @@ abstract class CNabuDataIndexedList extends CNabuDataList implements INabuDataIn
 
     public function addItem(INabuDataReadable $item, $key = null): INabuDataReadable
     {
-        // if (!is_null($key)) {
-        //     trigger_error(sprintf(TRIGGER_ERROR_INVALID_ARGUMENT, '$key'));
-        // }
-
         $retval = parent::addItem($item);
 
         if (is_array($this->secondary_indexes) && ($retval instanceof INabuDataReadable)) {
