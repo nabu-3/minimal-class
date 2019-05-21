@@ -56,15 +56,11 @@ abstract class CNabuDataIndexedList extends CNabuDataList implements INabuDataIn
      */
     abstract protected function createSecondaryIndexes(): void;
 
-    /**
-     * Creates the instance and initiates the secondary index list.
-     * @param string $index_field Field index to be used for main indexation.
-     */
-    public function __construct(string $index_field)
+    public function __construct(?string $index_field = null, $source_list = null)
     {
-        parent::__construct($index_field);
-
         $this->createSecondaryIndexes();
+
+        parent::__construct($index_field, $source_list);
     }
 
     public function clear(): INabuDataIterable

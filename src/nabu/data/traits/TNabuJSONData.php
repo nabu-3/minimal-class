@@ -120,6 +120,6 @@ trait TNabuJSONData
             trigger_error(sprintf(TRIGGER_ERROR_INVALID_FILE, $filename), E_USER_ERROR);
         }
 
-        return new $called_class($index_field, $json);
+        return new $called_class($json);
     }
 }

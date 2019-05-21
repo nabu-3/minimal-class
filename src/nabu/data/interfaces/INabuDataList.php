@@ -21,9 +21,6 @@
 
 namespace nabu\data\interfaces;
 
-use Iterator;
-use Countable;
-
 /**
  * Interface to implement lists of data objects implementing @see { INabuDataReadable } interface in nabu-3.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
@@ -33,6 +30,12 @@ use Countable;
  */
 interface INabuDataList extends INabuDataIterable
 {
+    /**
+     * Creates the instance.
+     * @param string|null $index_field Field index to be used for main indexation.
+     * @param mixed|null $source_list Another INabuDataList instance or an array to copy the list.
+     */
+    public function __construct(?string $index_field = null, $source_list = null);
     /**
      * Gets the main Indexed Field Name.
      * @return string|null Returns the name of indexed field.

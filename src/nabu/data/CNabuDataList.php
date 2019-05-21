@@ -56,11 +56,6 @@ abstract class CNabuDataList extends CNabuDataIterable implements INabuDataList
      */
     abstract protected function createDataInstance(array $data): ?INabuDataReadable;
 
-    /**
-     * Creates the instance.
-     * @param string|null $index_field Field index to be used for main indexation.
-     * @param mixed|null $source_list Another INabuDataList instance or an array to copy the list.
-     */
     public function __construct(?string $index_field = null, $source_list = null)
     {
         parent::__construct();
