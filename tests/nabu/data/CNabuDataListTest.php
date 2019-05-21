@@ -78,7 +78,7 @@ class CNabuDataListTest extends TestCase
             $currarr = $arrobj[$i - 1];
             $accumindex[] = ($i - 1);
             $payload = new CNabuDataListObjectTesting($currarr);
-            $list->addItem($payload);
+            $list->addItem($payload, $i - 1);
             $this->assertSame($i, count($list));
             $this->assertTrue($list->valid());
             $this->assertFalse($list->isEmpty());
@@ -307,7 +307,6 @@ class CNabuDataListTest extends TestCase
      */
     public function testConstructFromDataList()
     {
-        error_log("\n" . __METHOD__);
         $arrobj = array();
         $arrobj2 = array();
 
@@ -316,27 +315,35 @@ class CNabuDataListTest extends TestCase
                 'key_field' => $i,
                 'key_value' => "value $i"
             );
-            $arrobj2[$i + 10] = array(
+            $arrobj2[$i + 9] = array(
                 'key_field' => $i + 10,
                 'key_value' => 'value ' . ($i + 10)
             );
         }
         $this->assertSame(10, count($arrobj));
+        $this->assertSame(10, count($arrobj2));
+
+        $arrsum = array_merge($arrobj, $arrobj2);
+        $this->assertSame(20, count($arrsum));
 
         $list = new CNabuDataListTesting('key_field', $arrobj);
-        //$this->assertSame(10, count($list));
+        $this->assertSame(10, count($list));
 
-        // $copy = new CNabuDataListTesting(null, $arrobj2);
-        // $this->assertSame(10, count($copy));
-        //
-        // $copy->merge($list);
-        // $this->assertSame(20, count($copy));
+        $copy = new CNabuDataListTesting('key_field', $arrobj2);
+        $this->assertSame(10, count($copy));
 
-        // foreach ($copy as $key => $value) {
-        //     $this->assertInstanceOf(CNabuDataListObjectTesting::class, $value);
-        //     $this->assertSame($arrobj[$key]['key_field'], $value->getValue('key_field'));
-        //     $this->assertSame($arrobj[$key]['key_value'], $value->getValue('key_value'));
-        // }
+        $merge = new CNabuDataListTesting('key_field', $list);
+        $merge->merge($copy);
+        $this->assertSame(20, count($merge));
+
+        $i = 0;
+        foreach ($merge as $key => $value) {
+            $this->assertInstanceOf(CNabuDataListObjectTesting::class, $value);
+            $this->assertSame($arrsum[$i]['key_field'], $value->getValue('key_field'));
+            $this->assertSame($arrsum[$i]['key_value'], $value->getValue('key_value'));
+            $i++;
+        }
+        $this->assertSame(20, $i);
     }
 
     /**
@@ -351,22 +358,42 @@ class CNabuDataListTest extends TestCase
     public function testConstructFromArray()
     {
         $arrobj = array();
+        $arrobj2 = array();
 
         for ($i = 1; $i < 11; $i++) {
             $arrobj[$i - 1] = array(
                 'key_field' => $i,
                 'key_value' => "value $i"
             );
+            $arrobj2[$i + 9] = array(
+                'key_field' => $i + 10,
+                'key_value' => 'value ' . ($i + 10)
+            );
         }
+        $this->assertSame(10, count($arrobj));
+        $this->assertSame(10, count($arrobj2));
+
+        $arrsum = array_merge($arrobj, $arrobj2);
+        $this->assertSame(20, count($arrsum));
 
         $list = new CNabuDataListTesting(null, $arrobj);
-        $this->assertSame(count($arrobj), count($list));
+        $this->assertSame(10, count($list));
 
-        foreach ($list as $key => $value) {
+        $copy = new CNabuDataListTesting(null, $arrobj2);
+        $this->assertSame(10, count($copy));
+
+        $merge = new CNabuDataListTesting(null, $list);
+        $merge->merge($copy);
+        $this->assertSame(10, count($merge));
+
+        $i = 0;
+        foreach ($merge as $key => $value) {
             $this->assertInstanceOf(CNabuDataListObjectTesting::class, $value);
-            $this->assertSame($arrobj[$key]['key_field'], $value->getValue('key_field'));
-            $this->assertSame($arrobj[$key]['key_value'], $value->getValue('key_value'));
+            $this->assertSame($arrsum[$i]['key_field'], $value->getValue('key_field'));
+            $this->assertSame($arrsum[$i]['key_value'], $value->getValue('key_value'));
+            $i++;
         }
+        $this->assertSame(20, $i);
     }
 }
 

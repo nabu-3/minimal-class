@@ -59,9 +59,10 @@ interface INabuDataList extends INabuDataIterable
     /**
      * Adds a new item to the list.
      * @param INabuDataReadable $item Object item to be added.
+     * @param mixed|null $key Optional key to use to index the item when index field is not inside $item parameter.
      * @return INabuDataReadable Returns the inserted object instance.
      */
-    public function addItem(INabuDataReadable $item): INabuDataReadable;
+    public function addItem(INabuDataReadable $item, $key = null): INabuDataReadable;
     /**
      * Gets an item from the collection indexed by $key. If the list does not contain the item, calls internally
      * the protected method @see { acquireItem() } to retrieve the item from the storage.

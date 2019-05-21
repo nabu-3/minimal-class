@@ -69,10 +69,8 @@ abstract class CNabuDataList extends CNabuDataIterable implements INabuDataList
         $this->rewind();
 
         if ($source_list instanceof INabuDataList) {
-            error_log("to Merge\n");
             $this->merge($source_list);
         } elseif (is_array($source_list)) {
-            error_log("to Merge Array\n");
             $this->mergeArray($source_list);
         } elseif (!is_null($source_list)) {
             throw new InvalidArgumentException(sprintf(TRIGGER_ERROR_INVALID_ARGUMENT, '$source_list'));
@@ -114,7 +112,7 @@ abstract class CNabuDataList extends CNabuDataIterable implements INabuDataList
         return $retval;
     }
 
-    public function addItem(INabuDataReadable $item): INabuDataReadable
+    public function addItem(INabuDataReadable $item, $key = null): INabuDataReadable
     {
         $retval = null;
 
@@ -131,11 +129,14 @@ abstract class CNabuDataList extends CNabuDataIterable implements INabuDataList
                 }
             }
         } else {
+            if (is_null($key)) {
+                trigger_error(sprintf(TRIGGER_ERROR_INVALID_ARGUMENT, '$key'));
+            }
             if (is_array($this->data)) {
-                $this->data[] = $item;
+                $this->data[$key] = $item;
                 $retval = $item;
             } else {
-                $this->data = array($item);
+                $this->data = array($key => $item);
                 $retval = $item;
             }
         }
@@ -192,15 +193,13 @@ abstract class CNabuDataList extends CNabuDataIterable implements INabuDataList
         if ($this->isFilled() && $list->isFilled()) {
             foreach ($list as $key => $item) {
                 if (!$this->hasKey($key)) {
-                    $this->addItem($item);
+                    $this->addItem($item, $key);
                     $count++;
                 }
             }
-            error_log(count($this) . "\n");
         } elseif ($this->isEmpty() && $list->isFilled()) {
             $this->data = $list->data;
             $count = is_array($this->data) ? count($this->data) : 0;
-            error_log(count($this) . "\n");
          }
 
         return $count;
@@ -212,25 +211,47 @@ abstract class CNabuDataList extends CNabuDataIterable implements INabuDataList
 
         if (is_array($array) && count($array) > 0) {
             foreach ($array as $key => $item) {
-                if (!$this->hasKey($key)) {
+                $final_key = $this->locateKey($item, $key);
+                if (!$this->hasKey($final_key)) {
                     if ($item instanceof INabuDataReadable) {
-                        $this->addItem($item);
+                        $this->addItem($item, $final_key);
                         $count++;
                     } elseif (is_array($item) &&
-                              $this->addItem($this->createDataInstance($item)) instanceof INabuDataReadable
+                              $this->addItem($this->createDataInstance($item), $final_key) instanceof INabuDataReadable
                     ) {
                         $count++;
                     } else {
                         throw new UnexpectedValueException();
                     }
-                    error_log("hasKey success $key");
-                } else {
-                    error_log("hasKey fails $key");
                 }
             }
-            error_log(__METHOD__ . ' ' . count($this) . ' ' . count($this->data));
         }
 
         return $count;
+    }
+
+    /**
+     * Locate the effective Key value for an item in mergeArray iterator.
+     * @param mixed|null $item Item object. Can be an array or an instance of INabuDataReadable.
+     * @param mixed|null $default Default value if index value does not exists or index_field is not setted.
+     * @return mixed Returns the effective key.
+     */
+    private function locateKey($item = null, $default = null)
+    {
+        $value = $default;
+
+        if (is_string($this->index_field)) {
+            if ($item instanceof INabuDataReadable) {
+                $value = $item->getValue($this->index_field);
+            } elseif (is_array($item)) {
+                if (array_key_exists($this->index_field, $item)) {
+                    $value = $item[$this->index_field];
+                }
+            } else {
+                throw new UnexpectedValueException();
+            }
+        }
+
+        return $value;
     }
 }
