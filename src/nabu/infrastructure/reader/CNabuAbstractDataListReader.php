@@ -172,7 +172,7 @@ abstract class CNabuAbstractDataListReader extends CNabuObject implements INabuD
     /**
      * Check if all mandatory fields are present in columns.
      * @param array $fields Fields found in columns.
-     * @throws Error Throws and error if a mandatory field is missed.
+     * @throws Error Throws an error if a mandatory field is missed.
      */
     private function checkMandatoryFields(array $fields): void
     {
@@ -182,5 +182,46 @@ abstract class CNabuAbstractDataListReader extends CNabuObject implements INabuD
         }
     }
 
+    /**
+     * Maps data in an object implementing @see { INabuDataList } interface and returns it.
+     * @param INabuDataList $resultset Data List container to place mapped data.
+     * @param array $datasheet Source datasheet.
+     * @param array $map_fields Map columns correspondence to map data.
+     * @param string|null $index_field If setted, the list is indexed using values in this field.
+     * @return INabuDataList Returns the instance of @see { INabuDataList } with translated data.
+     * @throws Error Throws an error if something fails.
+     */
+    private function mapData(
+        INabuDataList $resultset, array $datasheet, array $map_fields, ?string $index_field = null
+    ): INabuDataList {
+
+        if (($l = count($datasheet)) >= $this->header_names_offset) {
+            for ($i = $this->header_names_offset; $i <= $l; $i++) {
+                if (array_key_exists($i, $datasheet)) {
+                    $source = $datasheet[$i];
+                    $reg = array();
+                    foreach ($map_fields as $key => $pos) {
+                        $reg[$key] = $source[$pos];
+                    }
+                    if (count($missed_fields = array_diff($this->required_fields, array_keys($reg))) > 0) {
+                        trigger_error(sprintf(
+                            TRIGGER_ERROR_REQUIRED_FIELDS_NOT_FOUND_IN_LINE,
+                            implode(', ', $missed_fields),
+                            $i
+                            )
+                        );
+                    }
+                    $record = new CNabuSpreadsheetDataRecord($reg);
+                    if (is_null($index_field)) {
+                        $resultset->addItem($record, $i - $offset);
+                    } else {
+                        $resultset->addItem($record);
+                    }
+                }
+            }
+        }
+
+        return $resultset;
+    }
 
 }
