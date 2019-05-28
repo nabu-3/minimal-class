@@ -28,13 +28,13 @@ use PHPUnit\Framework\TestCase;
 use nabu\data\interfaces\INabuDataIterable;
 
 /**
- * PHPUnit tests to verify functionality of class @see { CNabuDataIterable }.
+ * PHPUnit tests to verify functionality of class @see { CNabuAbstractDataIterable }.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
  * @since 3.0.4
  * @version 3.0.4
  * @package nabu\data
  */
-class CNabuDataIterableTest extends TestCase
+class CNabuAbstractDataIterableTest extends TestCase
 {
     /**
      * @test __construct
@@ -45,7 +45,7 @@ class CNabuDataIterableTest extends TestCase
      */
     public function testEmptyIterable()
     {
-        $list = new CNabuDataIterableTesting();
+        $list = new CNabuAbstractDataIterableTesting();
         $this->assertSame(0, count($list));
         $this->assertSame(0, $list->count());
         $this->assertFalse($list->valid());
@@ -74,7 +74,7 @@ class CNabuDataIterableTest extends TestCase
             $arrobj["key_$i"] = "value $i";
         }
 
-        $list = new CNabuDataIterableTesting($arrobj);
+        $list = new CNabuAbstractDataIterableTesting($arrobj);
         $this->assertSame($limit, count($list));
         $this->assertSame($limit, $list->count());
         $this->assertTrue($list->valid());
@@ -122,14 +122,14 @@ class CNabuDataIterableTest extends TestCase
      */
     public function testSeekFails()
     {
-        $list = new CNabuDataIterableTesting();
+        $list = new CNabuAbstractDataIterableTesting();
 
         $this->expectException(OutOfBoundsException::class);
         $list->seek(300);
     }
 }
 
-class CNabuDataIterableTesting extends CNabuDataIterable
+class CNabuAbstractDataIterableTesting extends CNabuAbstractDataIterable
 {
     public function clear(): INabuDataIterable
     {

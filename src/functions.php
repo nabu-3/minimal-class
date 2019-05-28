@@ -91,7 +91,7 @@ function nb_isValidGUID($guid)
 
 /**
  * Inspect $object to get a field value or a direct value.
- * If $object is an instance derived from {@see \nabu\data\CNabuDataObject} and, if $type
+ * If $object is an instance derived from {@see \nabu\data\CNabuAbstractDataObject} and, if $type
  * is setted, an instance is derived also from $type, search in this instance
  * for a field named $field and returns its value. If value not found returns false.
  * Otherwise, if $object is a number or a string then returns its value directly.

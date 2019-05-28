@@ -26,7 +26,7 @@ use Exception;
 
 use PHPUnit\Framework\TestCase;
 
-use nabu\data\CNabuRODataObject;
+use nabu\data\CNabuAbstractRODataObject;
 
 /**
  * PHPUnit tests to verify functionality of class @see { TNabuDataIterator }.
@@ -124,7 +124,7 @@ class TNabuDataIteratorTest extends TestCase
     }
 }
 
-class CNabuDataIteratorTesting extends CNabuRODataObject implements Iterator
+class CNabuDataIteratorTesting extends CNabuAbstractRODataObject implements Iterator
 {
     use TNabuDataIterator;
 }

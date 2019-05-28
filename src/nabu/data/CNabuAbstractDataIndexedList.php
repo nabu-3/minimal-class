@@ -35,7 +35,7 @@ use nabu\data\interfaces\INabuDataIndexedList;
  * @version 3.0.4
  * @package \nabu\data
  */
-abstract class CNabuDataIndexedList extends CNabuDataList implements INabuDataIndexedList
+abstract class CNabuAbstractDataIndexedList extends CNabuAbstractDataList implements INabuDataIndexedList
 {
     /** @var string Index Pointer field name literal value. */
     private const INDEX_POINTER = 'pointer';

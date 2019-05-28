@@ -29,13 +29,13 @@ use nabu\data\interfaces\INabuDataReadable;
 use nabu\data\interfaces\INabuDataListIndex;
 
 /**
- * PHPUnit tests to verify functionality of class @see { CNabuDataIndexedList }.
+ * PHPUnit tests to verify functionality of class @see { CNabuAbstractDataIndexedList }.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
  * @since 3.0.3
  * @version 3.0.4
  * @package nabu\data
  */
-class CNabuDataIndexedListTest extends TestCase
+class CNabuAbstractDataIndexedListTest extends TestCase
 {
     /**
      * @test __construct
@@ -65,7 +65,7 @@ class CNabuDataIndexedListTest extends TestCase
             );
         }
 
-        $list = new CNabuDataIndexedListTesting('key_field');
+        $list = new CNabuAbstractDataIndexedListTesting('key_field');
         $this->assertSame('key_field', $list->getMainIndexFieldName());
         $this->assertSame(0, count($list));
         $this->assertFalse($list->valid());
@@ -85,7 +85,7 @@ class CNabuDataIndexedListTest extends TestCase
                 'pointer' => $currarr['key_field'],
                 'order' => $currarr['key_value']
             );
-            $payload = new CNabuDataIndexedListObjectTesting($currarr);
+            $payload = new CNabuAbstractDataIndexedListObjectTesting($currarr);
             $list->addItem($payload);
             $this->assertSame($i, count($list));
             $this->assertTrue($list->valid());
@@ -155,7 +155,7 @@ class CNabuDataIndexedListTest extends TestCase
      */
     public function testClear()
     {
-        $list = new CNabuDataIndexedListTesting('key_field');
+        $list = new CNabuAbstractDataIndexedListTesting('key_field');
         $object = $list->getItem('not present');
         $this->assertNull($object);
         $object = $list->getItem('not_pressent', 'secondary_index');
@@ -169,7 +169,7 @@ class CNabuDataIndexedListTest extends TestCase
      */
     public function testGetSecondaryIndexFails()
     {
-        $list = new CNabuDataIndexedListTesting('key_field');
+        $list = new CNabuAbstractDataIndexedListTesting('key_field');
         $this->expectException(Error::class);
         $this->expectExceptionMessage(sprintf(TRIGGER_ERROR_INVALID_INDEX, 'secondary_index_3'));
         $list->getSecondaryIndex('secondary_index_3');
@@ -180,7 +180,7 @@ class CNabuDataIndexedListTest extends TestCase
      */
     public function testRemoveSecondaryIndexFails()
     {
-        $list = new CNabuDataIndexedListTesting('key_field');
+        $list = new CNabuAbstractDataIndexedListTesting('key_field');
         $this->expectException(Error::class);
         $this->expectExceptionMessage(sprintf(TRIGGER_ERROR_INVALID_INDEX, 'secondary_index_3'));
         $list->removeSecondaryIndex('secondary_index_3');
@@ -191,9 +191,9 @@ class CNabuDataIndexedListTest extends TestCase
      */
     public function testMerge()
     {
-        $list_left = new CNabuDataIndexedListTesting('key_field');
+        $list_left = new CNabuAbstractDataIndexedListTesting('key_field');
         for ($i = 1; $i < 21; $i = $i + 2) {
-            $list_left->addItem(new CNabuDataIndexedListObjectTesting(
+            $list_left->addItem(new CNabuAbstractDataIndexedListObjectTesting(
                 array(
                     'key_field' => $i,
                     'key_value' => "value $i"
@@ -201,9 +201,9 @@ class CNabuDataIndexedListTest extends TestCase
             ));
         }
 
-        $list_right = new CNabuDataIndexedListTesting('key_field');
+        $list_right = new CNabuAbstractDataIndexedListTesting('key_field');
         for ($i = 2; $i < 22; $i = $i + 2) {
-            $list_right->addItem(new CNabuDataIndexedListObjectTesting(
+            $list_right->addItem(new CNabuAbstractDataIndexedListObjectTesting(
                 array(
                     'key_field' => $i,
                     'key_value' => "value $i"
@@ -211,7 +211,7 @@ class CNabuDataIndexedListTest extends TestCase
             ));
         }
 
-        $merge_list = new CNabuDataIndexedListTesting('key_field');
+        $merge_list = new CNabuAbstractDataIndexedListTesting('key_field');
         $merge_list->merge($list_left);
         $merge_list->merge($list_right);
 
@@ -219,7 +219,7 @@ class CNabuDataIndexedListTest extends TestCase
     }
 }
 
-class CNabuDataIndexedListTesting extends CNabuDataIndexedList
+class CNabuAbstractDataIndexedListTesting extends CNabuAbstractDataIndexedList
 {
     protected function acquireItem($key, ?string $index = null): ?INabuDataReadable
     {
@@ -229,20 +229,20 @@ class CNabuDataIndexedListTesting extends CNabuDataIndexedList
     protected function createSecondaryIndexes(): void
     {
         $this->addSecondaryIndex(
-            new CNabuDataIndexedListIndex($this, 'key_value', 'key_value', 'secondary_index')
+            new CNabuAbstractDataIndexedListIndex($this, 'key_value', 'key_value', 'secondary_index')
         );
         $this->addSecondaryIndex(
-            new CNabuDataIndexedListIndex($this, 'key_value_2', 'key_value_2', 'secondary_index_2')
+            new CNabuAbstractDataIndexedListIndex($this, 'key_value_2', 'key_value_2', 'secondary_index_2')
         );
     }
 
     protected function createDataInstance(array $data): ?INabuDataReadable
     {
-        return new CNabuDataIndexedListObjectTesting($data);
+        return new CNabuAbstractDataIndexedListObjectTesting($data);
     }
 }
 
-class CNabuDataIndexedListObjectTesting extends CNabuDataObject
+class CNabuAbstractDataIndexedListObjectTesting extends CNabuAbstractDataObject
 {
 
 }

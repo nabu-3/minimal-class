@@ -26,13 +26,13 @@ use PHPUnit\Framework\TestCase;
 use nabu\data\interfaces\INabuDataReadable;
 
 /**
- * PHPUnit tests to verify functionality of class @see { CNabuDataList }.
+ * PHPUnit tests to verify functionality of class @see { CNabuAbstractDataList }.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
  * @since 3.0.3
  * @version 3.0.4
  * @package nabu\data
  */
-class CNabuDataIndexedListIndexTest extends TestCase
+class CNabuAbstractDataIndexedListIndexTest extends TestCase
 {
     /**
      * @test getIndexedFieldName
@@ -40,14 +40,14 @@ class CNabuDataIndexedListIndexTest extends TestCase
      */
     public function testMinimal()
     {
-        $list = new CNabuDataIndexedListIndexTesting('key_field');
+        $list = new CNabuAbstractDataIndexedListIndexTesting('key_field');
         $index = $list->getSecondaryIndex('secondary_index');
         $this->assertTrue($index->isEmpty());
         $this->assertSame('key_value', $index->getIndexedFieldName());
     }
 }
 
-class CNabuDataIndexedListIndexTesting extends CNabuDataIndexedList
+class CNabuAbstractDataIndexedListIndexTesting extends CNabuAbstractDataIndexedList
 {
     protected function acquireItem($key, ?string $index = null): ?INabuDataReadable
     {
@@ -57,7 +57,7 @@ class CNabuDataIndexedListIndexTesting extends CNabuDataIndexedList
     protected function createSecondaryIndexes(): void
     {
         $this->addSecondaryIndex(
-            new CNabuDataIndexedListIndex($this, 'key_value', 'key_value', 'secondary_index')
+            new CNabuAbstractDataIndexedListIndex($this, 'key_value', 'key_value', 'secondary_index')
         );
     }
 

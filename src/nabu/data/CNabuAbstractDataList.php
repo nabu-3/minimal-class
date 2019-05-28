@@ -36,7 +36,7 @@ use nabu\data\interfaces\INabuDataReadable;
  * @version 3.0.4
  * @package \nabu\data
  */
-abstract class CNabuDataList extends CNabuDataIterable implements INabuDataList
+abstract class CNabuAbstractDataList extends CNabuAbstractDataIterable implements INabuDataList
 {
     /** @var string|null Main index field to index all objects in the primary list. */
     protected $index_field = null;
@@ -137,6 +137,12 @@ abstract class CNabuDataList extends CNabuDataIterable implements INabuDataList
         }
 
         return $retval;
+    }
+
+    public function createItemFromArray(array $item, $key = null): INabuDataReadable
+    {
+        $instance = $this->createDataInstance($item);
+        return $this->addItem($instance, $key);
     }
 
     public function getItem(string $key, ?string $index = null): ?INabuDataReadable

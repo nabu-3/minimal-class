@@ -33,7 +33,7 @@ use nabu\data\interfaces\INabuDataWritable;
  * @version 3.0.4
  * @package \nabu\data
  */
-abstract class CNabuDataObject extends CNabuRODataObject implements INabuDataWritable
+abstract class CNabuAbstractDataObject extends CNabuAbstractRODataObject implements INabuDataWritable
 {
     /** @var int MODE_READONLY Constant value to determine if the instance is in read only mode. */
     const MODE_READONLY = 0;
@@ -42,13 +42,13 @@ abstract class CNabuDataObject extends CNabuRODataObject implements INabuDataWri
 
     /** @var string TRIGGER_NOTICE_USING_ARRAY Constant literal for Notice message. */
     private const TRIGGER_NOTICE_USING_ARRAY =
-        "CNabuDataObject::setValue is using an array value. Try to use TNabuJSONData trait in your class.";
+        "CNabuAbstractDataObject::setValue is using an array value. Try to use TNabuJSONData trait in your class.";
     /** @var string TRIGGER_NOTICE_USING_OBJECT Constant literal for Notice message. */
     private const TRIGGER_NOTICE_USING_OBJECT =
-        "CNabuDataObject::setValue is using a mismatch value. Result will be unpredectible.";
+        "CNabuAbstractDataObject::setValue is using a mismatch value. Result will be unpredectible.";
 
     /** @var int Current Edit mode. */
-    protected $edit_mode = CNabuDataObject::MODE_EDITABLE;
+    protected $edit_mode = CNabuAbstractDataObject::MODE_EDITABLE;
 
     public function isEditable(): bool
     {
@@ -145,7 +145,7 @@ abstract class CNabuDataObject extends CNabuRODataObject implements INabuDataWri
      * If previous data exists, then merge arrays at first level. If you manage multilevel arrays, try to use
      * @see { TNabuJSONData } trait.
      * @param array $array Associative array with names and values.
-     * @return CNabuDataObject Returns the self pointer for convenience to call cascade setters.
+     * @return CNabuAbstractDataObject Returns the self pointer for convenience to call cascade setters.
      */
     public function setArrayValues(array $array)
     {
@@ -184,7 +184,7 @@ abstract class CNabuDataObject extends CNabuRODataObject implements INabuDataWri
 
     /**
      * Transfer a mixed value from $object to this instance. This method evaluates if $object is an instance of
-     * CNabuDataObject and, if setted $type, an instance of it, and then, transfers the value like a transferValue call.
+     * CNabuAbstractDataObject and, if setted $type, an instance of it, and then, transfers the value like a transferValue call.
      * Otherwise, if $object is null, scalar or array, then hi is setted like a setValue call.
      * @param mixed|null $object Mixed value or object instance where is stored the value to be transferred.
      * @param string|null $source_name Name of field in $object that contains the value.
@@ -209,7 +209,7 @@ abstract class CNabuDataObject extends CNabuRODataObject implements INabuDataWri
     }
 
     /**
-     * Echange values between this instance and another instance derived from CNabuDataObject.
+     * Echange values between this instance and another instance derived from CNabuAbstractDataObject.
      * @param INabuDataWritable|null $object Object instance to exchange values.
      * @param string|null $source_name Source name of value to exchange.
      * @param string|null $target_name Target name in $object to exchange values. If null, then usees $source_name.

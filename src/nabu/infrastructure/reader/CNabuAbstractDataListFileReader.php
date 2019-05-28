@@ -72,7 +72,7 @@ abstract class CNabuAbstractDataListFileReader extends CNabuAbstractDataListRead
         ?array $required_fields = null,
         bool $strict_source_names = true,
         int $header_names_offset = 0,
-        int $first_row_offset = $header_names_offset + 1
+        int $first_row_offset = 0
     ) {
         parent::__construct(
             $matrix_fields, $required_fields, $strict_source_names, $header_names_offset, $first_row_offset
@@ -95,8 +95,8 @@ abstract class CNabuAbstractDataListFileReader extends CNabuAbstractDataListRead
             mb_strlen($this->filename) === 0 ||
             !file_exists($this->filename) ||
             !is_file($this->filename) ||
-            !in_array(mime_content_type($realname), $this->getValidMIMETypes()) ||
-            !$this->customFileValidation()
+            !in_array(mime_content_type($this->filename), $this->getValidMIMETypes()) ||
+            !$this->customFileValidation($this->filename)
         ) {
             $this->filename = null;
             trigger_error(sprintf(TRIGGER_ERROR_INVALID_FILE_READER_FILENAME, $filename));
@@ -107,10 +107,10 @@ abstract class CNabuAbstractDataListFileReader extends CNabuAbstractDataListRead
 
     public function loadFromFile(string $filename): void
     {
-        if ($this->validateFilename($filename) &&
-            $this->openSourceFile($this->filename)
+        if (!$this->validateFile($filename) ||
+            !$this->openSourceFile($this->filename)
         ) {
-            return true;
+            trigger_error(sprintf(TRIGGER_ERROR_INVALID_FILE_READER_FILENAME, $filename));
         }
     }
 }

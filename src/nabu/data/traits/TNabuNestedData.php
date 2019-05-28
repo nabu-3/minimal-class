@@ -112,7 +112,7 @@ trait TNabuNestedData
     }
 
     /**
-     * Overrides @see { CNabuRODataObject::hasValue() } to check if a Path exists.
+     * Overrides @see { CNabuAbstractRODataObject::hasValue() } to check if a Path exists.
      * @param string $path Path to check.
      * @return bool Returns true if the path exists.
      */

@@ -31,13 +31,13 @@ use PHPUnit\Framework\TestCase;
 use nabu\data\interfaces\INabuDataIterable;
 
 /**
- * PHPUnit tests to verify functionality of class @see { CNabuRODataObject }.
+ * PHPUnit tests to verify functionality of class @see { CNabuAbstractRODataObject }.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
  * @since 3.0.2
  * @version 3.0.4
  * @package nabu\data
  */
-class CNabuDataObjectTest extends TestCase
+class CNabuAbstractDataObjectTest extends TestCase
 {
     /**
      * @test __construct
@@ -48,7 +48,7 @@ class CNabuDataObjectTest extends TestCase
      */
     public function testConstruct()
     {
-        $object = new CNabuDataObjectTestingWR();
+        $object = new CNabuAbstractDataObjectTestingWR();
         $this->assertTrue($object->isEditable());
         $this->assertFalse($object->isReadOnly());
 
@@ -66,7 +66,7 @@ class CNabuDataObjectTest extends TestCase
      */
     public function testClear()
     {
-        $object = new CNabuDataObjectTestingWR(
+        $object = new CNabuAbstractDataObjectTestingWR(
             array(
                 'test_name' => 'test_value'
             )
@@ -75,11 +75,11 @@ class CNabuDataObjectTest extends TestCase
         $this->assertInstanceOf(INabuDataIterable::class, $object->clear());
         $this->assertTrue($object->isEmpty());
 
-        $object = new CNabuDataObjectTestingWR();
+        $object = new CNabuAbstractDataObjectTestingWR();
         $this->assertTrue($object->isEmpty());
         $this->assertInstanceOf(INabuDataIterable::class, $object->clear());
 
-        $object = new CNabuDataObjectTestingWR();
+        $object = new CNabuAbstractDataObjectTestingWR();
         $object->setAsReadOnly();
         $this->expectException(Error::class);
         $object->clear();
@@ -94,7 +94,7 @@ class CNabuDataObjectTest extends TestCase
      */
     public function testSetValueScalar()
     {
-        $object = new CNabuDataObjectTestingWR();
+        $object = new CNabuAbstractDataObjectTestingWR();
         $this->assertTrue($object->isEditable());
         $this->assertSame($object, $object->setValue('test_name', 'test_value'));
         $this->assertSame('test_value', $object->getValue('test_name'));
@@ -117,7 +117,7 @@ class CNabuDataObjectTest extends TestCase
      */
     public function testValueArray()
     {
-        $object = new CNabuDataObjectTestingWR();
+        $object = new CNabuAbstractDataObjectTestingWR();
         $this->assertTrue($object->isEditable());
         $this->expectException(Notice::class);
         $object->setValue('test_array', array(1, 2, 3, 4));
@@ -128,7 +128,7 @@ class CNabuDataObjectTest extends TestCase
      */
     public function testValueObject()
     {
-        $object = new CNabuDataObjectTestingWR();
+        $object = new CNabuAbstractDataObjectTestingWR();
         $this->assertTrue($object->isEditable());
         $this->expectException(Notice::class);
         $object->setValue('test_object', new stdClass());
@@ -139,7 +139,7 @@ class CNabuDataObjectTest extends TestCase
      */
     public function testSetArrayValues()
     {
-        $object = new CNabuDataObjectTestingWR();
+        $object = new CNabuAbstractDataObjectTestingWR();
         $this->assertTrue($object->isEditable());
         $this->assertSame($object, $object->setArrayValues(array('a' => 1, 'b' => 2)));
         $this->assertSame(1, $object->getValue('a'));
@@ -159,11 +159,11 @@ class CNabuDataObjectTest extends TestCase
      */
     public function testTransferValue()
     {
-        $obj_source = new CNabuDataObjectTestingWR();
+        $obj_source = new CNabuAbstractDataObjectTestingWR();
         $this->assertTrue($obj_source->isEditable());
         $obj_source->setValue('test_name', 20);
 
-        $obj_target = new CNabuDataObjectTestingWR();
+        $obj_target = new CNabuAbstractDataObjectTestingWR();
         $this->assertTrue($obj_target->isEditable());
 
         $obj_target->transferValue($obj_source, 'test_name');
@@ -188,11 +188,11 @@ class CNabuDataObjectTest extends TestCase
      */
     public function testTransferMixedValue()
     {
-        $obj_source = new CNabuDataObjectTestingWR();
+        $obj_source = new CNabuAbstractDataObjectTestingWR();
         $this->assertTrue($obj_source->isEditable());
         $obj_source->setValue('test_name', 20);
 
-        $obj_target = new CNabuDataObjectTestingWR();
+        $obj_target = new CNabuAbstractDataObjectTestingWR();
         $this->assertTrue($obj_target->isEditable());
 
         $obj_target->transferMixedValue($obj_source, 'test_name');
@@ -223,11 +223,11 @@ class CNabuDataObjectTest extends TestCase
      */
     public function testExchangeValue()
     {
-        $obj_source = new CNabuDataObjectTestingWR();
+        $obj_source = new CNabuAbstractDataObjectTestingWR();
         $this->assertTrue($obj_source->isEditable());
         $obj_source->setValue('test_name', 20);
 
-        $obj_target = new CNabuDataObjectTestingWR();
+        $obj_target = new CNabuAbstractDataObjectTestingWR();
         $this->assertTrue($obj_target->isEditable());
         $obj_target->setValue('test_name', 30);
 
@@ -252,12 +252,12 @@ class CNabuDataObjectTest extends TestCase
      */
     public function testCopyData()
     {
-        $obj_source = new CNabuDataObjectTestingWR();
+        $obj_source = new CNabuAbstractDataObjectTestingWR();
         $this->assertTrue($obj_source->isEditable());
         $obj_source->setValue('test_name', 20);
         $obj_source->setValue('other_test', 'string');
 
-        $obj_target = new CNabuDataObjectTestingWR();
+        $obj_target = new CNabuAbstractDataObjectTestingWR();
         $this->assertTrue($obj_target->isEditable());
         $obj_target->copyData($obj_source);
         $this->assertSame(20, $obj_source->getValue('test_name'));
@@ -272,7 +272,7 @@ class CNabuDataObjectTest extends TestCase
     }
 }
 
-class CNabuDataObjectTestingWR extends CNabuDataObject
+class CNabuAbstractDataObjectTestingWR extends CNabuAbstractDataObject
 {
 
 }

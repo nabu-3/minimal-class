@@ -34,7 +34,7 @@ use nabu\data\interfaces\INabuDataReadable;
  * @version 3.0.4
  * @package \nabu\data
  */
-abstract class CNabuRODataObject extends CNabuDataIterable implements INabuDataReadable
+abstract class CNabuAbstractRODataObject extends CNabuAbstractDataIterable implements INabuDataReadable
 {
     public function clear(): INabuDataIterable
     {
@@ -221,18 +221,18 @@ abstract class CNabuRODataObject extends CNabuDataIterable implements INabuDataR
 
     /**
      * Check if a value of this instance matches another value in another instance.
-     * @param CNabuRODataObject|null $object Object instance to match values.
+     * @param CNabuAbstractRODataObject|null $object Object instance to match values.
      * @param string|null $source_name Source name of value to match.
      * @param string|null $target_name Target name in $object to match. If null, then uses $source_name.
      * @param bool $strict If true comparation is strict (uses === to match).
      * @return bool Returns true if both values exists and matchs.
      */
     public function matchValue(
-        CNabuRODataObject $object = null, string $source_name = null, string $target_name = null, bool $strict = false
+        CNabuAbstractRODataObject $object = null, string $source_name = null, string $target_name = null, bool $strict = false
     ): bool {
         $retval = false;
 
-        if ($object instanceof CNabuRODataObject) {
+        if ($object instanceof CNabuAbstractRODataObject) {
             $target_name = (is_string($target_name) ? $target_name : $source_name);
             $retval = $this->hasValue($source_name) &&
                       $object->hasValue($target_name) &&

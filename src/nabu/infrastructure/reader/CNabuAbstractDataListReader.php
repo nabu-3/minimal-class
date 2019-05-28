@@ -47,18 +47,24 @@ abstract class CNabuAbstractDataListReader extends CNabuObject implements INabuD
     /** @var int Header names offset. */
     protected $header_names_offset = 0;
     /** @var int First row offset. */
-    protected $first_row_offset = $this->header_names_offset + 1;
+    protected $first_row_offset = 0;
 
     /**
      * Called internally. Creates an empty Data List Instance implementing @see { INabuDataList } interface.
      * @return INabuDataList Returns created instance. */
-    protected function createDataListInstance(): INabuDataList;
+    protected abstract function createDataListInstance(): INabuDataList;
     /**
      * Called internally. Returns the source as a two level associative array, where the first level are the rows,
      * and the second the columns for each row. All cells in the same column will have the same index name in each row.
      * @return array|null Returns the array if data exists or null otherwise.
      */
-    protected function getSourceDataAsArray(): ?array;
+    protected abstract function getSourceDataAsArray(): ?array;
+    /**
+     * Called internally at the beginning of @see { parse() } method. Returns true if parse can be done.
+     * If something is wrong, this method can raise and exception.
+     * @return bool Returns true if parse can be done.
+     */
+    protected abstract function checkBeforeParse(): bool;
 
     /**
      * Creates the instance passing optionally the Matrix and Required fields, and Use Strict Source Names policy.
@@ -73,7 +79,7 @@ abstract class CNabuAbstractDataListReader extends CNabuObject implements INabuD
         ?array $required_fields = null,
         bool $strict_source_names = true,
         int $header_names_offset = 0,
-        int $first_row_offset = $header_names_offset + 1
+        int $first_row_offset = 0
     ) {
         parent::__construct();
 
@@ -120,20 +126,46 @@ abstract class CNabuAbstractDataListReader extends CNabuObject implements INabuD
         return $this;
     }
 
+    public function getHeaderNamesOffset(): int
+    {
+        return $this->header_names_offset;
+    }
+
+    public function setHeaderNamesOffset(int $offset = 0): INabuDataListReader
+    {
+        $this->header_names_offset = $offset;
+
+        return $this;
+    }
+
+    public function getFirstRowOffset(): int
+    {
+        return $this->first_row_offset;
+    }
+
+    public function setFirstRowOffset(int $offset = 0): INabuDataListReader
+    {
+        $this->first_row_offset = $offset;
+
+        return $this;
+    }
+
     public function parse(): INabuDataList
     {
-        $sourcedata = $this->getSourceAsArray();
-        $resultset = $this->createDataInstance();
+        if ($this->checkBeforeParse()) {
+            $sourcedata = $this->getSourceDataAsArray();
+            $resultset = $this->createDataListInstance();
 
-        if (!is_null($sourcedata) && count($sourcedata) > 0) {
-            $index_field = $resultset->getMainIndexFieldName();
-            $copy_required_fields = $this->required_fields;
-            if (is_string($index_field) && !in_array($index_field, $copy_required_fields)) {
-                $copy_required_fields[] = $index_field;
+            if (!is_null($sourcedata) && count($sourcedata) > 0) {
+                $index_field = $resultset->getMainIndexFieldName();
+                $copy_required_fields = $this->required_fields;
+                if (is_string($index_field) && !in_array($index_field, $copy_required_fields)) {
+                    $copy_required_fields[] = $index_field;
+                }
+                $translated_fields = $this->calculateColumnNameTranslations($sourcedata[$this->header_names_offset]);
+                $this->checkMandatoryFields($translated_fields);
+                $this->mapData($resultset, $sourcedata, $translated_fields, $index_field);
             }
-            $translated_fields = $this->calculateColumnNameTranslations($translation_fields, $resultset[1], $canonize);
-            $this->checkMandatoryFields($translated_fields, $required_fields);
-            $this->mapData($resultset, $sourcedata, $translated_fields, $required_fields, $index_field, 2);
         }
 
         return $resultset;
@@ -196,7 +228,7 @@ abstract class CNabuAbstractDataListReader extends CNabuObject implements INabuD
     ): INabuDataList {
 
         if (($l = count($datasheet)) >= $this->header_names_offset) {
-            for ($i = $this->header_names_offset; $i <= $l; $i++) {
+            for ($i = $this->first_row_offset; $i <= $l; $i++) {
                 if (array_key_exists($i, $datasheet)) {
                     $source = $datasheet[$i];
                     $reg = array();
@@ -211,12 +243,7 @@ abstract class CNabuAbstractDataListReader extends CNabuObject implements INabuD
                             )
                         );
                     }
-                    $record = new CNabuSpreadsheetDataRecord($reg);
-                    if (is_null($index_field)) {
-                        $resultset->addItem($record, $i - $offset);
-                    } else {
-                        $resultset->addItem($record);
-                    }
+                    $this->createDataRow($resultset, $reg, $index_field, $i - $this->first_row_offset);
                 }
             }
         }
@@ -224,4 +251,23 @@ abstract class CNabuAbstractDataListReader extends CNabuObject implements INabuD
         return $resultset;
     }
 
+    /**
+     * Creates a Data Row in the resultset.
+     * @param INabuDataList $resultset The Data List (resultset) where to add new row.
+     * @param array $row The array representing row fields to add.
+     * @param string|null $index_field If set, the row is indexed using this field.
+     * @param mixed|null $index_value If set, the default value to use as index where $index_field is not set or null.
+     */
+    private function createDataRow(
+        INabuDataList $resultset,
+        array $row,
+        ?string $index_field = null,
+        $index_value = null
+    ): void {
+        if (is_null($index_field)) {
+            $resultset->createItemFromArray($row, $index_value);
+        } else {
+            $resultset->createItemFromArray($row);
+        }
+    }
 }

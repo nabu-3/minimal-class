@@ -21,7 +21,7 @@
 
 namespace nabu\data\traits;
 
-use nabu\data\CNabuDataObject;
+use nabu\data\CNabuAbstractDataObject;
 
 /**
  * Trait to manage a TNabuDataObject as a LIFO stack data object.
@@ -43,7 +43,7 @@ trait TNabuHistoryData
     {
         $retval = false;
 
-        if ($this instanceof CNabuDataObject && $this->isEditable()) {
+        if ($this instanceof CNabuAbstractDataObject && $this->isEditable()) {
             parent::clear();
             if (is_array($this->data_stack)) {
                 $this->data_stack = null;
@@ -73,7 +73,7 @@ trait TNabuHistoryData
     {
         $retval = false;
 
-        if ($this instanceof CNabuDataObject && $this->isEditable()) {
+        if ($this instanceof CNabuAbstractDataObject && $this->isEditable()) {
             if (is_array($this->data)) {
                 if (is_array($this->data_stack)) {
                     array_push($this->data_stack, $this->data);
@@ -97,7 +97,7 @@ trait TNabuHistoryData
     {
         $result = false;
 
-        if ($this instanceof CNabuDataObject && $this->isEditable()) {
+        if ($this instanceof CNabuAbstractDataObject && $this->isEditable()) {
             if (is_array($this->data_stack) && count($this->data_stack)) {
                 $this->data = array_pop($this->data_stack);
                 $result = true;
@@ -120,7 +120,7 @@ trait TNabuHistoryData
     {
         $retval = false;
 
-        if ($this instanceof CNabuDataObject && $this->isEditable()) {
+        if ($this instanceof CNabuAbstractDataObject && $this->isEditable()) {
             if (is_array($this->data)) {
                 if (is_array($this->data_stack)) {
                     array_pop($this->data_stack);

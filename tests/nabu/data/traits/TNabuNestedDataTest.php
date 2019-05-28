@@ -25,8 +25,8 @@ use PHPUnit\Framework\Error\Error;
 
 use PHPUnit\Framework\TestCase;
 
-use nabu\data\CNabuDataObject;
-use nabu\data\CNabuRODataObject;
+use nabu\data\CNabuAbstractDataObject;
+use nabu\data\CNabuAbstractRODataObject;
 
 /**
  * PHPUnit tests to verify functionality of trait @see { TNabuNestedData }.
@@ -205,7 +205,7 @@ class TNabuNestedDataTest extends TestCase
      * @test setValue
      * @test hasValue
      * @test getValue
-     * @test CNabuRODataObject::isValueEqualTo
+     * @test CNabuAbstractRODataObject::isValueEqualTo
      */
     public function testSetValueWR()
     {
@@ -242,16 +242,16 @@ class TNabuNestedDataTest extends TestCase
     }
 
     /**
-     * @test CNabuRODataObject::isValueNull
-     * @test CNabuRODataObject::isValueEmpty
-     * @test CNabuRODataObject::isValueNumeric
-     * @test CNabuRODataObject::isValueFloat
-     * @test CNabuRODataObject::isValueBool
-     * @test CNabuRODataObject::isValueString
-     * @test CNabuRODataObject::isValueEmptyString
-     * @test CNabuRODataObject::isValueGUID
-     * @test CNabuRODataObject::isValueArray
-     * @test CNabuRODataObject::isValueEmptyArray
+     * @test CNabuAbstractRODataObject::isValueNull
+     * @test CNabuAbstractRODataObject::isValueEmpty
+     * @test CNabuAbstractRODataObject::isValueNumeric
+     * @test CNabuAbstractRODataObject::isValueFloat
+     * @test CNabuAbstractRODataObject::isValueBool
+     * @test CNabuAbstractRODataObject::isValueString
+     * @test CNabuAbstractRODataObject::isValueEmptyString
+     * @test CNabuAbstractRODataObject::isValueGUID
+     * @test CNabuAbstractRODataObject::isValueArray
+     * @test CNabuAbstractRODataObject::isValueEmptyArray
      */
     public function testInheritedIsValueXMethods()
     {
@@ -542,12 +542,12 @@ class TNabuNestedDataTest extends TestCase
     }
 }
 
-class CNabuNestedDataTestingRO extends CNabuRODataObject
+class CNabuNestedDataTestingRO extends CNabuAbstractRODataObject
 {
     use TNabuNestedData;
 }
 
-class CNabuNestedDataTestingWR extends CNabuDataObject
+class CNabuNestedDataTestingWR extends CNabuAbstractDataObject
 {
     use TNabuNestedData;
 }

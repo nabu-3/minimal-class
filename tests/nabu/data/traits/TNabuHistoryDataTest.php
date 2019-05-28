@@ -26,8 +26,8 @@ use PHPUnit\Framework\Error\Notice;
 
 use PHPUnit\Framework\TestCase;
 
-use nabu\data\CNabuDataObject;
-use nabu\data\CNabuRODataObject;
+use nabu\data\CNabuAbstractDataObject;
+use nabu\data\CNabuAbstractRODataObject;
 
 /**
  * PHPUnit tests to verify functionality of class @see { TNabuHistoryData }.
@@ -229,12 +229,12 @@ class TNabuHistoryDataTest extends TestCase
     }
 }
 
-class CNabuHistoryDataTestingWR extends CNabuDataObject
+class CNabuHistoryDataTestingWR extends CNabuAbstractDataObject
 {
     use TNabuHistoryData;
 }
 
-class CNabuHistoryDataTestingRO extends CNabuRODataObject
+class CNabuHistoryDataTestingRO extends CNabuAbstractRODataObject
 {
     use TNabuHistoryData;
 }

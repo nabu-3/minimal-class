@@ -21,11 +21,11 @@
 
 require_once 'vendor/autoload.php';
 
-use nabu\data\CNabuDataList;
-use nabu\data\CNabuDataObject;
+use nabu\data\CNabuAbstractDataList;
+use nabu\data\CNabuAbstractDataObject;
 use nabu\data\interfaces\INabuDataReadable;
 
-class CNabuDataListSample01 extends CNabuDataList
+class CNabuAbstractDataListSample01 extends CNabuAbstractDataList
 {
     protected function acquireItem($key): ?INabuDataReadable
     {
@@ -34,11 +34,11 @@ class CNabuDataListSample01 extends CNabuDataList
 
     protected function createDataInstance(array $data): ?INabuDataReadable
     {
-        return new CNabuDataListObjectSample01($data);
+        return new CNabuAbstractDataListObjectSample01($data);
     }
 }
 
-class CNabuDataListObjectSample01 extends CNabuDataObject
+class CNabuAbstractDataListObjectSample01 extends CNabuAbstractDataObject
 {
 
 }
@@ -59,5 +59,5 @@ for ($i = 1; $i < 11; $i++) {
 
 echo 'Array count: ' . count($arrobj) . "\n";
 
-$list = new CNabuDataListSample01('key_field', $arrobj);
+$list = new CNabuAbstractDataListSample01('key_field', $arrobj);
 echo 'List count: ' . count($list);

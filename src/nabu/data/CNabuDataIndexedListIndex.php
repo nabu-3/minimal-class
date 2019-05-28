@@ -35,7 +35,7 @@ use nabu\min\CNabuObject;
  * @version 3.0.4
  * @package \nabu\data
  */
-class CNabuDataIndexedListIndex extends CNabuObject implements INabuDataListIndex
+class CNabuAbstractDataIndexedListIndex extends CNabuObject implements INabuDataListIndex
 {
     /** @var INabuDataIndexedList|null List instance that owns this index. */
     protected $list = null;

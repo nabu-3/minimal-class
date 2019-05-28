@@ -35,7 +35,7 @@ use nabu\min\CNabuObject;
  * @version 3.0.4
  * @package \nabu\data
  */
-abstract class CNabuDataIterable extends CNabuObject implements INabuDataIterable
+abstract class CNabuAbstractDataIterable extends CNabuObject implements INabuDataIterable
 {
     /** @var array|null Data stored in the instance. Functions that applies to set data in this instance modifies this
      * array. */

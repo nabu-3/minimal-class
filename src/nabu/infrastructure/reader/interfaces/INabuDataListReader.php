@@ -70,6 +70,28 @@ interface INabuDataListReader
      */
     public function setUseStrictSourceNames(bool $strict_names): INabuDataListReader;
     /**
+     * Get the Header Names Offset in the source data.
+     * @return int Returns the offset.
+     */
+    public function getHeaderNamesOffset(): int;
+    /**
+     * Set the Header Names Offset in the source data.
+     * @param int $offset New offset.
+     * @return INabuDataListReader Returns the self pointer to grant Fluent Interface.
+     */
+    public function setHeaderNamesOffset(int $offset = 0): INabuDataListReader;
+    /**
+     * Get the First Row Offset in the source data.
+     * @return int Returns the offset.
+     */
+    public function getFirstRowOffset(): int;
+    /**
+     * Set the First Row Offset in the source data.
+     * @param int $offset New offset.
+     * @return INabuDataListReader Returns the self pointer to grant Fluent Interface.
+     */
+    public function setFirstRowOffset(int $offset = 0): INabuDataListReader;
+    /**
      * Parse source to create a INabuDataList collection with all records found.
      * This process discards columns not listed in conversion matrix and check for required fields.
      * @return INabuDataList Returns the INabuDataList containing valid records found.
