@@ -56,6 +56,10 @@ abstract class CNabuAbstractDataListFileReader extends CNabuAbstractDataListRead
      * @return bool Returns true if the File is opened and data found.
      */
     protected abstract function openSourceFile(string $filename): bool;
+    /**
+     * Closes the source data file after parse it or when the instance is released.
+     */
+    protected abstract function closeSourceFile(): void;
 
     /**
      * Creates the instance with the possibility to pass the file name of source file to be parsed.
@@ -81,6 +85,14 @@ abstract class CNabuAbstractDataListFileReader extends CNabuAbstractDataListRead
         if (is_string($filename)) {
             $this->loadFromFile($filename);
         }
+    }
+
+    /**
+     * Destructor of the instance. Releases Source File if opened.
+     */
+    public function __destruct()
+    {
+        $this->closeSourceFile();
     }
 
     /**

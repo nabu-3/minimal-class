@@ -65,6 +65,13 @@ abstract class CNabuAbstractDataListReader extends CNabuObject implements INabuD
      * @return bool Returns true if parse can be done.
      */
     protected abstract function checkBeforeParse(): bool;
+    /**
+     * Called internally at the end of @see { parse() } method. Returns true if parse can be done.
+     * If something is wrong, this method can raise an exception.
+     * @param INabuDataList $resultset The obtained resultset after parse source.
+     * @return bool Returns true if checks are Ok.
+     */
+    protected abstract function checkAfterParse(INabuDataList $resultset): bool;
 
     /**
      * Creates the instance passing optionally the Matrix and Required fields, and Use Strict Source Names policy.
@@ -165,6 +172,10 @@ abstract class CNabuAbstractDataListReader extends CNabuObject implements INabuD
                 $translated_fields = $this->calculateColumnNameTranslations($sourcedata[$this->header_names_offset]);
                 $this->checkMandatoryFields($translated_fields);
                 $this->mapData($resultset, $sourcedata, $translated_fields, $index_field);
+            }
+
+            if (!$this->checkAfterParse($resultset)) {
+                $resultset->clear();
             }
         }
 
