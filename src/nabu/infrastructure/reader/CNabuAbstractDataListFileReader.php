@@ -119,9 +119,8 @@ abstract class CNabuAbstractDataListFileReader extends CNabuAbstractDataListRead
 
     public function loadFromFile(string $filename): void
     {
-        if (!$this->validateFile($filename) ||
-            !$this->openSourceFile($this->filename)
-        ) {
+        $this->validateFile($filename);
+        if (!$this->openSourceFile($this->filename)) {
             trigger_error(sprintf(TRIGGER_ERROR_INVALID_FILE_READER_FILENAME, $filename));
         }
     }
