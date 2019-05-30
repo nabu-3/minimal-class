@@ -13,7 +13,7 @@ const TRIGGER_ERROR_INVALID_FILE_READER_FILENAME = "Invalid file name [%s] in Fi
 /** @var string TRIGGER_ERROR_REQUIRED_FIELDS_NOT_FOUND Constant literal for Error message. */
 const TRIGGER_ERROR_REQUIRED_FIELDS_NOT_FOUND = "Required fields [%s] not found.";
 /** @var string TRIGGER_ERROR_REQUIRED_FIELDS_NOT_FOUND Constant literal for Error message. */
-const TRIGGER_ERROR_REQUIRED_FIELDS_NOT_FOUND_IN_LINE = "Required fields [%s] not found in row [%d].";
+const TRIGGER_ERROR_REQUIRED_FIELDS_NOT_FOUND_IN_LINE = "Required field(s) [%s] not found in row [%d].";
 
 /** @var array Array list of vowels and consonants with different tildes in UTF-8. */
 const NABU_ARRAY_CHARACTER_WITH_TILDE = array(

@@ -241,20 +241,7 @@ abstract class CNabuAbstractDataListReader extends CNabuObject implements INabuD
         if (($l = count($datasheet)) >= $this->header_names_offset) {
             for ($i = $this->first_row_offset; $i <= $l; $i++) {
                 if (array_key_exists($i, $datasheet)) {
-                    $source = $datasheet[$i];
-                    $reg = array();
-                    foreach ($map_fields as $key => $pos) {
-                        $reg[$key] = $source[$pos];
-                    }
-                    if (count($missed_fields = array_diff($this->required_fields, array_keys($reg))) > 0) {
-                        trigger_error(sprintf(
-                            TRIGGER_ERROR_REQUIRED_FIELDS_NOT_FOUND_IN_LINE,
-                            implode(', ', $missed_fields),
-                            $i
-                            )
-                        );
-                    }
-                    $this->createDataRow($resultset, $reg, $index_field, $i - $this->first_row_offset);
+                    $this->createDataRow($resultset, $map_fields, $datasheet[$i], $i, $index_field, $i - $this->first_row_offset);
                 }
             }
         }
@@ -265,20 +252,39 @@ abstract class CNabuAbstractDataListReader extends CNabuObject implements INabuD
     /**
      * Creates a Data Row in the resultset.
      * @param INabuDataList $resultset The Data List (resultset) where to add new row.
-     * @param array $row The array representing row fields to add.
+     * @param array $map_fields Map columns correspondence to map data.
+     * @param array $source The array representing source row fields to add.
+     * @param int $index_position Index position in source array.
      * @param string|null $index_field If set, the row is indexed using this field.
      * @param mixed|null $index_value If set, the default value to use as index where $index_field is not set or null.
      */
     private function createDataRow(
         INabuDataList $resultset,
-        array $row,
+        array $map_fields,
+        array $source,
+        int $index_position,
         ?string $index_field = null,
         $index_value = null
     ): void {
+        $reg = array();
+        foreach ($map_fields as $key => $pos) {
+            if (array_key_exists($pos, $source)) {
+                $reg[$key] = $source[$pos];
+            }
+        }
+        if (count($missed_fields = array_diff($this->required_fields, array_keys($reg))) > 0) {
+            trigger_error(
+                sprintf(
+                    TRIGGER_ERROR_REQUIRED_FIELDS_NOT_FOUND_IN_LINE,
+                    implode(', ', $missed_fields),
+                    $index_position
+                )
+            );
+        }
         if (is_null($index_field)) {
-            $resultset->createItemFromArray($row, $index_value);
+            $resultset->createItemFromArray($reg, $index_value);
         } else {
-            $resultset->createItemFromArray($row);
+            $resultset->createItemFromArray($reg);
         }
     }
 }
