@@ -58,19 +58,48 @@ class CNabuAbstractDataListFileReaderTest extends TestCase
         $this->assertInstanceOf(INabuDataListFileReader::class, $reader);
         $this->assertInstanceOf(INabuDataListReader::class, $reader);
 
-        $reader->setConvertFieldsMatrix([
+        $fieldsMatrix = [
             'key_1' => 'field_1',
             'key_2' => 'field_2',
             'key_3' => 'field_3'
-        ]);
-        $reader->setRequiredFields(['field_1', 'field_2']);
+        ];
+        $reader->setConvertFieldsMatrix($fieldsMatrix);
+        $this->assertSame($fieldsMatrix, $reader->getConvertFieldsMatrix());
+
+        $requiredFields = ['field_1', 'field_2'];
+        $reader->setRequiredFields($requiredFields);
+        $this->assertSame($requiredFields, $reader->getRequiredFields());
+
         $reader->setUseStrictSourceNames(true);
+        $this->assertTrue($reader->isUseStrictSourceNames());
+
         $reader->setHeaderNamesOffset(0);
+        $this->assertSame(0, $reader->getHeaderNamesOffset());
+
         $reader->setFirstRowOffset(1);
+        $this->assertSame(1, $reader->getFirstRowOffset());
+
+        $reader->mockGetSourceDataAsArray = [
+            [ 'key_1', 'key_2', 'key_3'],
+            [ 'value 1', 'value 2', 'value 3'],
+            [ 'value 4', 'value 5', 'value 6'],
+            [ 'value 7', 'value 8', 'value 9']
+        ];
 
         $list = $reader->parse();
         $this->assertInstanceOf(INabuDataList::class, $list);
-        $this->assertSame(3, count($list));
+        $this->assertSame(count($reader->mockGetSourceDataAsArray) - 1, count($list));
+
+        for ($i = 1; $i <= count($reader->mockGetSourceDataAsArray); $i += 3) {
+            $this->assertTrue($list->hasKey("value $i"));
+            $row = $list->getItem("value $i");
+            $this->assertInstanceOf(INabuDataReadable::class, $row);
+            $this->assertInstanceOf(CNabuAbstractDataListFileReaderDataTesting::class, $row);
+            for ($j = 0; $j < 3; $j++) {
+                $this->assertTrue($row->hasValue('field_' . ($j + 1)));
+                $this->assertSame('value ' . ($i + $j), $row->getValue('field_' . ($j + 1)));
+            }
+        }
     }
 
     /**
@@ -105,19 +134,33 @@ class CNabuAbstractDataListFileReaderTest extends TestCase
 
 class CNbuAbstractDataListFileReaderTesting extends CNabuAbstractDataListFileReader
 {
+    /** @var array|null Fake value to return in getValidMIMETypes. */
+    public $mockValidMIMETypes = [ 'text/plain' ];
+    /** @var bool Fake value to return in customFileValidation. */
+    public $mockCustomFileValidation = true;
+    /** @var bool Fake value to return in openSourceFile. */
+    public $mockOpenSourceFile = true;
+    /** @var bool Fake value to return in getSourceDataAsArray. */
+    public $mockGetSourceDataAsArray = null;
+    /** @var bool Fake value to return in checkBeforeParse. */
+    public $mockCheckBeforeParse = true;
+    /** @var bool Fake value to return in checkAfterParse. */
+    public $mockCheckAfterParse = true;
+
+
     protected function getValidMIMETypes(): array
     {
-        return [ 'text/plain' ];
+        return $this->mockValidMIMETypes;
     }
 
     protected function customFileValidation(string $filename): bool
     {
-        return true;
+        return $this->mockCustomFileValidation;
     }
 
     protected function openSourceFile(string $filename): bool
     {
-        return true;
+        return $this->mockOpenSourceFile;
     }
 
     protected function closeSourceFile(): void
@@ -131,22 +174,17 @@ class CNbuAbstractDataListFileReaderTesting extends CNabuAbstractDataListFileRea
 
     protected function getSourceDataAsArray(): ?array
     {
-        return [
-            [ 'key_1', 'key_2', 'key_3'],
-            [ 'value 1', 'value 2', 'value 3'],
-            [ 'value 4', 'value 5', 'value 6'],
-            [ 'value 7', 'value 8', 'value 9']
-        ];
+        return $this->mockGetSourceDataAsArray;
     }
 
     protected function checkBeforeParse(): bool
     {
-        return true;
+        return $this->mockCheckBeforeParse;
     }
 
     protected function checkAfterParse(INabuDataList $resultset): bool
     {
-        return true;
+        return $this->mockCheckAfterParse;
     }
 }
 
