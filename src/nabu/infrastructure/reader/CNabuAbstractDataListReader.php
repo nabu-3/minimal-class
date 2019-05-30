@@ -273,13 +273,8 @@ abstract class CNabuAbstractDataListReader extends CNabuObject implements INabuD
             }
         }
         if (count($missed_fields = array_diff($this->required_fields, array_keys($reg))) > 0) {
-            error_log('I\'m here');
             trigger_error(
-                sprintf(
-                    TRIGGER_ERROR_REQUIRED_FIELDS_NOT_FOUND_IN_LINE,
-                    implode(', ', $missed_fields),
-                    $index_position
-                )
+                sprintf(TRIGGER_ERROR_REQUIRED_FIELDS_NOT_FOUND_IN_LINE, implode(', ', $missed_fields), $index_position)
             );
         }
         if (is_null($index_field)) {
