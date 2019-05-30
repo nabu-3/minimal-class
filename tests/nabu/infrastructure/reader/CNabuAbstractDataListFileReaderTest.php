@@ -21,6 +21,8 @@
 
 namespace nabu\infrastructure\reader;
 
+use PHPUnit\Framework\Error\Error;
+
 use PHPUnit\Framework\TestCase;
 
 use nabu\data\CNabuAbstractDataList;
@@ -52,6 +54,34 @@ class CNabuAbstractDataListFileReaderTest extends TestCase
         );
         $this->assertInstanceOf(INabuDataListFileReader::class, $reader);
         $this->assertInstanceOf(INabuDataListReader::class, $reader);
+    }
+
+    /**
+     * @test validateFile
+     * @test loadFromfile
+     */
+    public function testValidateFileFailsWithEmptyFilename()
+    {
+        $reader = new CNbuAbstractDataListFileReaderTesting();
+
+        $this->expectException(Error::class);
+        $this->expectExceptionMessage(sprintf(TRIGGER_ERROR_INVALID_FILE_READER_FILENAME, ''));
+
+        $reader->loadFromFile('');
+    }
+
+    /**
+     * @test validateFile
+     * @test loadFromfile
+     */
+    public function testValidateFileFailsWithNotFoundFilename()
+    {
+        $reader = new CNbuAbstractDataListFileReaderTesting();
+
+        $this->expectException(Error::class);
+        $this->expectExceptionMessage(sprintf(TRIGGER_ERROR_INVALID_FILE_READER_FILENAME, 'no-file.txt'));
+
+        $reader->loadFromFile('no-file.txt');
     }
 }
 
