@@ -277,13 +277,13 @@ class CNabuAbstractDataListFileReaderTest extends TestCase
         $reader->mockGetSourceDataAsArray = [
             [ 'key_1', 'key_2', 'key_3'],
             [ 'value 1', 'value 2', 'value 3'],
-            [ 'value 4', 'value 5'],
+            [ 'value 4'],
             [ 'value 7', 'value 8', 'value 9']
         ];
         $reader->mockDataListIndexField = 'field_1';
 
         $this->expectException(Error::class);
-        $this->expectExceptionMessage(sprintf(TRIGGER_ERROR_REQUIRED_FIELDS_NOT_FOUND_IN_LINE, 'field_3'));
+        $this->expectExceptionMessage(sprintf(TRIGGER_ERROR_REQUIRED_FIELDS_NOT_FOUND_IN_LINE, 'field_2, field_3'));
         $list = $reader->parse();
     }
 }
