@@ -124,7 +124,7 @@ class CNabuAbstractDataListFileReaderTest extends TestCase
         $reader->setConvertFieldsMatrix($fieldsMatrix);
         $this->assertSame($fieldsMatrix, $reader->getConvertFieldsMatrix());
 
-        $requiredFields = ['field_1', 'field_2'];
+        $requiredFields = ['field_2'];
         $reader->setRequiredFields($requiredFields);
         $this->assertSame($requiredFields, $reader->getRequiredFields());
 
@@ -159,6 +159,12 @@ class CNabuAbstractDataListFileReaderTest extends TestCase
                 $this->assertSame('value ' . ($i + $j), $row->getValue('field_' . ($j + 1)));
             }
         }
+
+        $reader->mockCheckAfterParse = false;
+        $reader->setUseStrictSourceNames(false);
+        $list = $reader->parse();
+        $this->assertInstanceOf(INabuDataList::class, $list);
+        $this->assertSame(0, count($list));
     }
 
     /**
@@ -188,6 +194,97 @@ class CNabuAbstractDataListFileReaderTest extends TestCase
         $this->expectExceptionMessage(sprintf(TRIGGER_ERROR_INVALID_FILE_READER_FILENAME, $filename));
 
         $reader->loadFromFile($filename);
+    }
+
+    /**
+     * @test checkMandatoryFields
+     */
+    public function testCheckMandatoryFieldsFailsWhenHaveMissedFields()
+    {
+        $reader = new CNbuAbstractDataListFileReaderTesting(
+            __DIR__ . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'sample-01.txt'
+        );
+        $this->assertInstanceOf(INabuDataListFileReader::class, $reader);
+        $this->assertInstanceOf(INabuDataListReader::class, $reader);
+
+        $fieldsMatrix = [
+            'key_1' => 'field_1',
+            'key_2' => 'field_2',
+            'key_3' => 'field_3',
+            'key_4' => 'field_4'
+        ];
+        $reader->setConvertFieldsMatrix($fieldsMatrix);
+        $this->assertSame($fieldsMatrix, $reader->getConvertFieldsMatrix());
+
+        $requiredFields = ['field_2', 'field_4'];
+        $reader->setRequiredFields($requiredFields);
+        $this->assertSame($requiredFields, $reader->getRequiredFields());
+
+        $reader->setUseStrictSourceNames(true);
+        $this->assertTrue($reader->isUseStrictSourceNames());
+
+        $reader->setHeaderNamesOffset(0);
+        $this->assertSame(0, $reader->getHeaderNamesOffset());
+
+        $reader->setFirstRowOffset(1);
+        $this->assertSame(1, $reader->getFirstRowOffset());
+
+        $reader->mockGetSourceDataAsArray = [
+            [ 'key_1', 'key_2', 'key_3'],
+            [ 'value 1', 'value 2', 'value 3'],
+            [ 'value 4', 'value 5', 'value 6'],
+            [ 'value 7', 'value 8', 'value 9']
+        ];
+        $reader->mockDataListIndexField = 'field_1';
+
+        $this->expectException(Error::class);
+        $this->expectExceptionMessage(sprintf(TRIGGER_ERROR_REQUIRED_FIELDS_NOT_FOUND, 'field_4'));
+        $list = $reader->parse();
+    }
+
+    /**
+     * @test checkMandatoryFields
+     */
+    public function testCheckMandatoryFieldsFailsWhenRowHaveMissedFields()
+    {
+        $reader = new CNbuAbstractDataListFileReaderTesting(
+            __DIR__ . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'sample-01.txt'
+        );
+        $this->assertInstanceOf(INabuDataListFileReader::class, $reader);
+        $this->assertInstanceOf(INabuDataListReader::class, $reader);
+
+        $fieldsMatrix = [
+            'key_1' => 'field_1',
+            'key_2' => 'field_2',
+            'key_3' => 'field_3'
+        ];
+        $reader->setConvertFieldsMatrix($fieldsMatrix);
+        $this->assertSame($fieldsMatrix, $reader->getConvertFieldsMatrix());
+
+        $requiredFields = ['field_2', 'field_3'];
+        $reader->setRequiredFields($requiredFields);
+        $this->assertSame($requiredFields, $reader->getRequiredFields());
+
+        $reader->setUseStrictSourceNames(true);
+        $this->assertTrue($reader->isUseStrictSourceNames());
+
+        $reader->setHeaderNamesOffset(0);
+        $this->assertSame(0, $reader->getHeaderNamesOffset());
+
+        $reader->setFirstRowOffset(1);
+        $this->assertSame(1, $reader->getFirstRowOffset());
+
+        $reader->mockGetSourceDataAsArray = [
+            [ 'key_1', 'key_2', 'key_3'],
+            [ 'value 1', 'value 2', 'value 3'],
+            [ 'value 4', 'value 5'],
+            [ 'value 7', 'value 8', 'value 9']
+        ];
+        $reader->mockDataListIndexField = 'field_1';
+
+        $this->expectException(Error::class);
+        $this->expectExceptionMessage(sprintf(TRIGGER_ERROR_REQUIRED_FIELDS_NOT_FOUND_IN_LINE, 'field_3'));
+        $list = $reader->parse();
     }
 }
 
