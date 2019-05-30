@@ -46,6 +46,9 @@ class CNabuAbstractDataListFileReaderTest extends TestCase
 {
     /**
      * @test __construct
+     * @test __destruct
+     * @test validateFile
+     * @test loadFromFile
      */
     public function testConstruct()
     {
@@ -54,6 +57,20 @@ class CNabuAbstractDataListFileReaderTest extends TestCase
         );
         $this->assertInstanceOf(INabuDataListFileReader::class, $reader);
         $this->assertInstanceOf(INabuDataListReader::class, $reader);
+
+        $reader->setConvertFieldsMatrix([
+            'key_1' => 'field_1',
+            'key_2' => 'field_2',
+            'key_3' => 'field_3'
+        ]);
+        $reader->setRequiredFields(['field_1', 'field_2']);
+        $reader->setUseStrictSourceNames(true);
+        $reader->setHeaderNamesOffset(0);
+        $reader->setFirstRowOffset(1);
+
+        $list = $reader->parse();
+        $this->assertInstanceOf(INabuDataList::class, $list);
+        $this->assertSame(3, count($list));
     }
 
     /**
@@ -109,28 +126,24 @@ class CNbuAbstractDataListFileReaderTesting extends CNabuAbstractDataListFileRea
 
     protected function createDataListInstance(): INabuDataList
     {
-        return new CNabuAbstractDataListFileReaderDataListTesting();
+        return new CNabuAbstractDataListFileReaderDataListTesting('field_1');
     }
 
-    /**
-     * @inheritDoc
-     */
     protected function getSourceDataAsArray(): ?array
     {
-        throw new \LogicException('Not implemented'); // TODO
+        return [
+            [ 'key_1', 'key_2', 'key_3'],
+            [ 'value 1', 'value 2', 'value 3'],
+            [ 'value 4', 'value 5', 'value 6'],
+            [ 'value 7', 'value 8', 'value 9']
+        ];
     }
 
-    /**
-     * @inheritDoc
-     */
     protected function checkBeforeParse(): bool
     {
         return true;
     }
 
-    /**
-     * @inheritDoc
-     */
     protected function checkAfterParse(INabuDataList $resultset): bool
     {
         return true;
@@ -146,11 +159,11 @@ class CNabuAbstractDataListFileReaderDataListTesting extends CNabuAbstractDataLi
 
     protected function createDataInstance(array $data): ?INabuDataReadable
     {
-        return new CNabuAbstractDataListFileReaderDataesting();
+        return new CNabuAbstractDataListFileReaderDataTesting($data);
     }
 }
 
-class CNabuAbstractDataListFileReaderDataesting extends CNabuAbstractDataObject
+class CNabuAbstractDataListFileReaderDataTesting extends CNabuAbstractDataObject
 {
 
 }
