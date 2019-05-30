@@ -50,7 +50,7 @@ class CNabuAbstractDataListFileReaderTest extends TestCase
      * @test validateFile
      * @test loadFromFile
      */
-    public function testConstruct()
+    public function testWithoutIndexField()
     {
         $reader = new CNbuAbstractDataListFileReaderTesting(
             __DIR__ . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'sample-01.txt'
@@ -90,8 +90,67 @@ class CNabuAbstractDataListFileReaderTest extends TestCase
         $this->assertInstanceOf(INabuDataList::class, $list);
         $this->assertSame(count($reader->mockGetSourceDataAsArray) - 1, count($list));
 
-        for ($i = 1; $i <= count($reader->mockGetSourceDataAsArray); $i += 3) {
-            $this->assertTrue($list->hasKey("value $i"));
+        for ($i = 0; $i < count($reader->mockGetSourceDataAsArray) - 1; $i++) {
+            $this->assertTrue($list->hasKey($i));
+            $row = $list->getItem($i);
+            $this->assertInstanceOf(INabuDataReadable::class, $row);
+            $this->assertInstanceOf(CNabuAbstractDataListFileReaderDataTesting::class, $row);
+            for ($j = 0; $j < 3; $j++) {
+                $this->assertTrue($row->hasValue('field_' . ($j + 1)));
+                $this->assertSame('value ' . (($i * 3) + $j + 1), $row->getValue('field_' . ($j + 1)));
+            }
+        }
+    }
+
+    /**
+     * @test __construct
+     * @test __destruct
+     * @test validateFile
+     * @test loadFromFile
+     */
+    public function testWithIndexField()
+    {
+        $reader = new CNbuAbstractDataListFileReaderTesting(
+            __DIR__ . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'sample-01.txt'
+        );
+        $this->assertInstanceOf(INabuDataListFileReader::class, $reader);
+        $this->assertInstanceOf(INabuDataListReader::class, $reader);
+
+        $fieldsMatrix = [
+            'key_1' => 'field_1',
+            'key_2' => 'field_2',
+            'key_3' => 'field_3'
+        ];
+        $reader->setConvertFieldsMatrix($fieldsMatrix);
+        $this->assertSame($fieldsMatrix, $reader->getConvertFieldsMatrix());
+
+        $requiredFields = ['field_1', 'field_2'];
+        $reader->setRequiredFields($requiredFields);
+        $this->assertSame($requiredFields, $reader->getRequiredFields());
+
+        $reader->setUseStrictSourceNames(true);
+        $this->assertTrue($reader->isUseStrictSourceNames());
+
+        $reader->setHeaderNamesOffset(0);
+        $this->assertSame(0, $reader->getHeaderNamesOffset());
+
+        $reader->setFirstRowOffset(1);
+        $this->assertSame(1, $reader->getFirstRowOffset());
+
+        $reader->mockGetSourceDataAsArray = [
+            [ 'key_1', 'key_2', 'key_3'],
+            [ 'value 1', 'value 2', 'value 3'],
+            [ 'value 4', 'value 5', 'value 6'],
+            [ 'value 7', 'value 8', 'value 9']
+        ];
+        $reader->mockDataListIndexField = 'field_1';
+
+        $list = $reader->parse();
+        $this->assertInstanceOf(INabuDataList::class, $list);
+        $this->assertSame(count($reader->mockGetSourceDataAsArray) - 1, count($list));
+
+        for ($i = 1; $i < (count($reader->mockGetSourceDataAsArray) - 1) * 3; $i += 3) {
+            $this->assertTrue($list->hasKey("value $i"), "value $i");
             $row = $list->getItem("value $i");
             $this->assertInstanceOf(INabuDataReadable::class, $row);
             $this->assertInstanceOf(CNabuAbstractDataListFileReaderDataTesting::class, $row);
@@ -146,6 +205,8 @@ class CNbuAbstractDataListFileReaderTesting extends CNabuAbstractDataListFileRea
     public $mockCheckBeforeParse = true;
     /** @var bool Fake value to return in checkAfterParse. */
     public $mockCheckAfterParse = true;
+    /** @var string|null Fake Data List index field. */
+    public $mockDataListIndexField = null;
 
 
     protected function getValidMIMETypes(): array
@@ -169,7 +230,7 @@ class CNbuAbstractDataListFileReaderTesting extends CNabuAbstractDataListFileRea
 
     protected function createDataListInstance(): INabuDataList
     {
-        return new CNabuAbstractDataListFileReaderDataListTesting('field_1');
+        return new CNabuAbstractDataListFileReaderDataListTesting($this->mockDataListIndexField);
     }
 
     protected function getSourceDataAsArray(): ?array
