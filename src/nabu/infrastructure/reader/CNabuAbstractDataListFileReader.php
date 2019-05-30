@@ -107,6 +107,7 @@ abstract class CNabuAbstractDataListFileReader extends CNabuAbstractDataListRead
             mb_strlen($this->filename) === 0 ||
             !file_exists($this->filename) ||
             !is_file($this->filename) ||
+            !is_readable($this->filename) ||
             !in_array(mime_content_type($this->filename), $this->getValidMIMETypes()) ||
             !$this->customFileValidation($this->filename)
         ) {
@@ -120,8 +121,6 @@ abstract class CNabuAbstractDataListFileReader extends CNabuAbstractDataListRead
     public function loadFromFile(string $filename): void
     {
         $this->validateFile($filename);
-        if (!$this->openSourceFile($this->filename)) {
-            trigger_error(sprintf(TRIGGER_ERROR_INVALID_FILE_READER_FILENAME, $filename));
-        }
+        $this->openSourceFile($this->filename);
     }
 }

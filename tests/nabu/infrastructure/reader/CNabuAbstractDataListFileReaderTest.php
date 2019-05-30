@@ -78,10 +78,11 @@ class CNabuAbstractDataListFileReaderTest extends TestCase
     {
         $reader = new CNbuAbstractDataListFileReaderTesting();
 
+        $filename = __DIR__ . DIRECTORY_SEPARATOR . 'resources' . DIRECTORY_SEPARATOR . 'no-readable-file.txt';
         $this->expectException(Error::class);
-        $this->expectExceptionMessage(sprintf(TRIGGER_ERROR_INVALID_FILE_READER_FILENAME, 'no-file.txt'));
+        $this->expectExceptionMessage(sprintf(TRIGGER_ERROR_INVALID_FILE_READER_FILENAME, $filename));
 
-        $reader->loadFromFile('no-file.txt');
+        $reader->loadFromFile($filename);
     }
 }
 
