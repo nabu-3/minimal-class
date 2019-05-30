@@ -236,6 +236,23 @@ class CNabuAbstractDataListTest extends TestCase
     }
 
     /**
+     * @test createItemFromArray
+     */
+    public function testCreateItemFromArray()
+    {
+        $list = new CNabuAbstractDataListTesting('key_1');
+
+        $item = $list->createItemFromArray(array(
+            'key_1' => 'value 1',
+            'key_2' => 'value 2'
+        ));
+        $this->assertInstanceOf(INabuDataReadable::class, $item);
+        $this->assertSame(1, count($list));
+        $this->assertSame('value 1', $item->getValue('key_1'));
+        $this->assertSame('value 2', $item->getValue('key_2'));
+    }
+
+    /**
      * @test merge
      */
     public function testMerge()
