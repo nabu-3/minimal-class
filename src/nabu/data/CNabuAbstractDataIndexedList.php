@@ -184,7 +184,7 @@ abstract class CNabuAbstractDataIndexedList extends CNabuAbstractDataList implem
         ) {
             $retval = $this->secondary_indexes[$index];
         } else {
-            trigger_error(sprintf(TRIGGER_ERROR_INVALID_INDEX, $index));
+            trigger_error(sprintf(TRIGGER_ERROR_INVALID_INDEX, $index), E_USER_ERROR);
         }
 
         return $retval;
@@ -200,7 +200,7 @@ abstract class CNabuAbstractDataIndexedList extends CNabuAbstractDataList implem
                 $this->secondary_indexes = null;
             }
         } else {
-            trigger_error(sprintf(TRIGGER_ERROR_INVALID_INDEX, $index));
+            trigger_error(sprintf(TRIGGER_ERROR_INVALID_INDEX, $index), E_USER_ERROR);
         }
     }
 

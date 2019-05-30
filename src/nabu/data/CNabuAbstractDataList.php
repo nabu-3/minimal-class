@@ -101,7 +101,7 @@ abstract class CNabuAbstractDataList extends CNabuAbstractDataIterable implement
         if (is_scalar($key)) {
             $retval = is_array($this->data) && array_key_exists($key, $this->data);
         } else {
-            trigger_error(sprintf(TRIGGER_ERROR_INVALID_KEY, var_export($key, true)));
+            trigger_error(sprintf(TRIGGER_ERROR_INVALID_KEY, var_export($key, true)), E_USER_ERROR);
         }
 
         return $retval;
@@ -113,7 +113,7 @@ abstract class CNabuAbstractDataList extends CNabuAbstractDataIterable implement
 
         if (is_null($this->index_field)) {
             if (is_null($key)) {
-                trigger_error(sprintf(TRIGGER_ERROR_INVALID_ARGUMENT, '$key'));
+                trigger_error(sprintf(TRIGGER_ERROR_INVALID_ARGUMENT, '$key'), E_USER_ERROR);
             }
             if (is_array($this->data)) {
                 $this->data[$key] = $item;

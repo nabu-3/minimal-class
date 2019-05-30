@@ -112,7 +112,7 @@ abstract class CNabuAbstractDataListFileReader extends CNabuAbstractDataListRead
             !$this->customFileValidation($this->filename)
         ) {
             $this->filename = null;
-            trigger_error(sprintf(TRIGGER_ERROR_INVALID_FILE_READER_FILENAME, $filename));
+            trigger_error(sprintf(TRIGGER_ERROR_INVALID_FILE_READER_FILENAME, $filename), E_USER_ERROR);
         }
 
         return true;

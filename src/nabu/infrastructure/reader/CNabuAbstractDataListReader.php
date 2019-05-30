@@ -221,7 +221,7 @@ abstract class CNabuAbstractDataListReader extends CNabuObject implements INabuD
     {
         if (!(count($this->required_fields) === count(array_intersect(array_keys($fields), $this->required_fields)))) {
             $missed_columns = array_diff($this->required_fields, array_keys($fields));
-            trigger_error(sprintf(TRIGGER_ERROR_REQUIRED_FIELDS_NOT_FOUND, implode(', ', $missed_columns)));
+            trigger_error(sprintf(TRIGGER_ERROR_REQUIRED_FIELDS_NOT_FOUND, implode(', ', $missed_columns)), E_USER_ERROR);
         }
     }
 
@@ -274,7 +274,8 @@ abstract class CNabuAbstractDataListReader extends CNabuObject implements INabuD
         }
         if (count($missed_fields = array_diff($this->required_fields, array_keys($reg))) > 0) {
             trigger_error(
-                sprintf(TRIGGER_ERROR_REQUIRED_FIELDS_NOT_FOUND_IN_LINE, implode(', ', $missed_fields), $index_position)
+                sprintf(TRIGGER_ERROR_REQUIRED_FIELDS_NOT_FOUND_IN_LINE, implode(', ', $missed_fields), $index_position),
+                E_USER_ERROR
             );
         }
         if (is_null($index_field)) {
