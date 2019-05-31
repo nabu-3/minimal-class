@@ -25,7 +25,7 @@ namespace nabu\data\interfaces;
  * Interface to implement readable data objects of nabu-3.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
  * @since 3.0.2
- * @version 3.0.3
+ * @version 3.0.4
  * @package \nabu\data\interfaces
  */
 interface INabuDataWritable
@@ -51,11 +51,6 @@ interface INabuDataWritable
      */
     public function setAsReadOnly(): INabuDataWritable;
     /**
-     * Reset the data content stored in the instance and empty internal storage, lossing all previous stored data.
-     * @return bool Returns true if the instance is reseted.
-     */
-    public function reset(): bool;
-    /**
      * Sets a Value associated to a name.
      * @param string $name Name of the value to set.
      * @param mixed $value Value to be setted.
@@ -64,7 +59,7 @@ interface INabuDataWritable
     public function setValue(string $name, $value): INabuDataWritable;
     /**
      * Sets data array from another source.
-     * If $object is an object of class CNabuDataObject or any inherited class then copy his $data array.
+     * If $object is an object of class CNabuAbstractDataObject or any inherited class then copy his $data array.
      * If $object is an array then apply directly this array
      * @param INabuDataReadable $object
      */

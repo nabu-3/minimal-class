@@ -29,7 +29,7 @@ use nabu\data\interfaces\INabuDataWritable;
  * or multilevel data.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
  * @since 3.0.2
- * @version 3.0.3
+ * @version 3.0.4
  * @package \nabu\data\traits
  */
 trait TNabuNestedData
@@ -112,7 +112,7 @@ trait TNabuNestedData
     }
 
     /**
-     * Overrides @see { CNabuRODataObject::hasValue() } to check if a Path exists.
+     * Overrides @see { CNabuAbstractRODataObject::hasValue() } to check if a Path exists.
      * @param string $path Path to check.
      * @return bool Returns true if the path exists.
      */

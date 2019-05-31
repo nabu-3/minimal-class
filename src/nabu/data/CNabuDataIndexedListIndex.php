@@ -32,10 +32,10 @@ use nabu\min\CNabuObject;
  * This class can also be extended by third party classes to inherit his functionality.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
  * @since 3.0.3
- * @version 3.0.3
+ * @version 3.0.4
  * @package \nabu\data
  */
-class CNabuDataIndexedListIndex extends CNabuObject implements INabuDataListIndex
+class CNabuAbstractDataIndexedListIndex extends CNabuObject implements INabuDataListIndex
 {
     /** @var INabuDataIndexedList|null List instance that owns this index. */
     protected $list = null;

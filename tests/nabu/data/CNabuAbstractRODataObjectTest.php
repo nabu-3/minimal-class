@@ -21,20 +21,21 @@
 
 namespace nabu\data;
 
+use LogicException;
+
 use PHPUnit\Framework\TestCase;
 
 /**
- * PHPUnit tests to verify functionality of class @see { CNabuRODataObject }.
+ * PHPUnit tests to verify functionality of class @see { CNabuAbstractRODataObject }.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
  * @since 3.0.2
- * @version 3.0.3
+ * @version 3.0.4
  * @package nabu\data
  */
-class CNabuRODataObjectTest extends TestCase
+class CNabuAbstractRODataObjectTest extends TestCase
 {
     /**
      * @test __construct
-     * @test isEmpty
      * @test hasValue
      * @test isValueNumeric
      * @test isValueFloat
@@ -50,7 +51,7 @@ class CNabuRODataObjectTest extends TestCase
      */
     public function testConstruct()
     {
-        $object = new CNabuDataObjectTestingRO();
+        $object = new CNabuAbstractDataObjectTestingRO();
         $this->assertTrue($object->isEmpty());
         $this->assertFalse($object->hasValue('some_name'));
 
@@ -71,7 +72,7 @@ class CNabuRODataObjectTest extends TestCase
             'value_empty_array' => array()
         );
 
-        $object = new CNabuDataObjectTestingRO($data);
+        $object = new CNabuAbstractDataObjectTestingRO($data);
 
         $this->assertFalse($object->isEmpty());
         $this->assertFalse($object->hasValue('some_name'));
@@ -272,7 +273,7 @@ class CNabuRODataObjectTest extends TestCase
      */
     public function testDump()
     {
-        $object = new CNabuDataObjectTestingRO(
+        $object = new CNabuAbstractDataObjectTestingRO(
             array(
                 'test_name' => 'test_value'
             )
@@ -282,20 +283,19 @@ class CNabuRODataObjectTest extends TestCase
     }
 
     /**
-     * @test reset
-     * @test isEmpty
+     * @test clear
      */
-    public function testReset()
+    public function testClear()
     {
-        $object = new CNabuDataObjectTestingRO(
+        $object = new CNabuAbstractDataObjectTestingRO(
             array(
                 'test_name' => 'test_value'
             )
         );
-        $this->assertFalse($object->isEmpty());
 
-        $object = new CNabuDataObjectTestingRO();
-        $this->assertTrue($object->isEmpty());
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage('Read only data objects cannot be clean.');
+        $object->clear();
     }
 
     /**
@@ -304,7 +304,7 @@ class CNabuRODataObjectTest extends TestCase
      */
     public function testGetValuesAsArray()
     {
-        $object = new CNabuDataObjectTestingRO(
+        $object = new CNabuAbstractDataObjectTestingRO(
             array(
                 'field_1' => 'value 1',
                 'field_2' => 'value 2'
@@ -322,7 +322,7 @@ class CNabuRODataObjectTest extends TestCase
     }
 }
 
-class CNabuDataObjectTestingRO extends CNabuRODataObject
+class CNabuAbstractDataObjectTestingRO extends CNabuAbstractRODataObject
 {
 
 }

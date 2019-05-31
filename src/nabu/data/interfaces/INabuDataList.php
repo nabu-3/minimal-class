@@ -21,38 +21,26 @@
 
 namespace nabu\data\interfaces;
 
-use Iterator;
-use Countable;
-
 /**
  * Interface to implement lists of data objects implementing @see { INabuDataReadable } interface in nabu-3.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
  * @since 3.0.3
- * @version 3.0.3
+ * @version 3.0.4
  * @package \nabu\data\interfaces
  */
-interface INabuDataList extends Countable, Iterator
+interface INabuDataList extends INabuDataIterable
 {
+    /**
+     * Creates the instance.
+     * @param string|null $index_field Field index to be used for main indexation.
+     * @param mixed|null $source_list Another INabuDataList instance or an array to copy the list.
+     */
+    public function __construct(?string $index_field = null, $source_list = null);
     /**
      * Gets the main Indexed Field Name.
      * @return string|null Returns the name of indexed field.
      */
     public function getMainIndexFieldName(): ?string;
-    /**
-     * Check if the list is empty.
-     * @return bool Returns true if the list is empty or false if not.
-     */
-    public function isEmpty(): bool;
-    /**
-     * Check if the list if filled.
-     * @return bool Returns true if the list contains at least one item of false if is empty.
-     */
-    public function isFilled(): bool;
-    /**
-     * Empty the list and reset all indexes.
-     * @return INabuDataList Return the self pointer to grant fluent interfaces.
-     */
-    public function clear(): INabuDataList;
     /**
      * Gets keys of this index as an array.
      * @param string|null $index Alternate index to get keys.
@@ -74,9 +62,18 @@ interface INabuDataList extends Countable, Iterator
     /**
      * Adds a new item to the list.
      * @param INabuDataReadable $item Object item to be added.
+     * @param mixed|null $key Optional key to use to index the item when index field is not inside $item parameter.
      * @return INabuDataReadable Returns the inserted object instance.
      */
-    public function addItem(INabuDataReadable $item): INabuDataReadable;
+    public function addItem(INabuDataReadable $item, $key = null): INabuDataReadable;
+    /**
+     * Adds a new item to the list as an array of fields. Internally, the list converts
+     * the array to a valid data instance.
+     * @param array $item Array of item fields to be added.
+     * @param mixed|null $key Optional key to use to index the item when index field is not inside $item parameter.
+     * @return INabuDataReadable Returns created instance of inserted object.
+     */
+    public function createItemFromArray(array $item, $key = null): INabuDataReadable;
     /**
      * Gets an item from the collection indexed by $key. If the list does not contain the item, calls internally
      * the protected method @see { acquireItem() } to retrieve the item from the storage.

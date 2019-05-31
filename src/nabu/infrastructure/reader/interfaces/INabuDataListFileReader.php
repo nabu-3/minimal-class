@@ -19,32 +19,24 @@
  *  limitations under the License.
  */
 
-namespace nabu\data\interfaces;
+namespace nabu\infrastructure\reader\interfaces;
+
+use \Exception;
 
 /**
- * Interface to implement editable data objects of nabu-3.
+ * Interface to implement a Data List File Reader that fills a data list implementing @see { INabuDataList }
+ * interface in nabu-3.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
- * @since 3.0.2
+ * @since 3.0.4
  * @version 3.0.4
- * @package \nabu\data\interfaces
+ * @package \nabu\infrastructure\reader\interfaces
  */
-interface INabuDataReadable extends INabuDataIterable
+interface INabuDataListFileReader extends INabuDataListReader
 {
     /**
-     * Check if a value name exists.
-     * @param string $name Name of the value to check.
-     * @return bool Returns true if the value name exists.
+     * Loads the source data from a File.
+     * @param string $filename File name to read.
+     * @throws Exception Throws an exception if something unexpected success opening the file.
      */
-    public function hasValue(string $name): bool;
-    /**
-     * Get a value identified by his name.
-     * @param string $name Name of the value to get.
-     * @return mixed|null Returns the stored value if exists or null otherwise.
-     */
-    public function getValue(string $name);
-    /**
-     * Get all values stored in this instance as an associative array.
-     * @return array|null If values exists returns an associative array. If none value exists, returns null.
-     */
-    public function getValuesAsArray(): ?array;
+    public function loadFromFile(string $filename): void;
 }

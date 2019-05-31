@@ -21,6 +21,9 @@
 
 namespace nabu\data;
 
+use InvalidArgumentException;
+use UnexpectedValueException;
+
 use PHPUnit\Framework\Error\Error;
 
 use PHPUnit\Framework\TestCase;
@@ -28,13 +31,13 @@ use PHPUnit\Framework\TestCase;
 use nabu\data\interfaces\INabuDataReadable;
 
 /**
- * PHPUnit tests to verify functionality of class @see { CNabuDataList }.
+ * PHPUnit tests to verify functionality of class @see { CNabuAbstractDataList }.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
  * @since 3.0.3
- * @version 3.0.3
+ * @version 3.0.4
  * @package nabu\data
  */
-class CNabuDataListTest extends TestCase
+class CNabuAbstractDataListTest extends TestCase
 {
     /**
      * @test __construct
@@ -63,7 +66,7 @@ class CNabuDataListTest extends TestCase
             );
         }
 
-        $list = new CNabuDataListTesting();
+        $list = new CNabuAbstractDataListTesting();
         $this->assertNull($list->getMainIndexFieldName());
         $this->assertSame(0, count($list));
         $this->assertFalse($list->valid());
@@ -77,8 +80,8 @@ class CNabuDataListTest extends TestCase
         for ($i = 1; $i <= count($arrobj); $i++) {
             $currarr = $arrobj[$i - 1];
             $accumindex[] = ($i - 1);
-            $payload = new CNabuDataListObjectTesting($currarr);
-            $list->addItem($payload);
+            $payload = new CNabuAbstractDataListObjectTesting($currarr);
+            $list->addItem($payload, $i - 1);
             $this->assertSame($i, count($list));
             $this->assertTrue($list->valid());
             $this->assertFalse($list->isEmpty());
@@ -156,7 +159,7 @@ class CNabuDataListTest extends TestCase
             );
         }
 
-        $list = new CNabuDataListTesting('key_field');
+        $list = new CNabuAbstractDataListTesting('key_field');
         $this->assertSame('key_field', $list->getMainIndexFieldName());
         $this->assertSame(0, count($list));
         $this->assertFalse($list->valid());
@@ -170,7 +173,7 @@ class CNabuDataListTest extends TestCase
         for ($i = 1; $i <= count($arrobj); $i++) {
             $currarr = $arrobj[$i - 1];
             $accumindex[] = $currarr['key_field'];
-            $payload = new CNabuDataListObjectTesting($currarr);
+            $payload = new CNabuAbstractDataListObjectTesting($currarr);
             $list->addItem($payload);
             $this->assertSame($i, count($list));
             $this->assertTrue($list->valid());
@@ -225,7 +228,7 @@ class CNabuDataListTest extends TestCase
      */
     public function testHasKeyFails()
     {
-        $list = new CNabuDataListTesting();
+        $list = new CNabuAbstractDataListTesting();
 
         $this->expectException(Error::class);
         $this->expectExceptionMessage(sprintf(TRIGGER_ERROR_INVALID_KEY, var_export(array('check_key'), true)));
@@ -233,13 +236,30 @@ class CNabuDataListTest extends TestCase
     }
 
     /**
+     * @test createItemFromArray
+     */
+    public function testCreateItemFromArray()
+    {
+        $list = new CNabuAbstractDataListTesting('key_1');
+
+        $item = $list->createItemFromArray(array(
+            'key_1' => 'value 1',
+            'key_2' => 'value 2'
+        ));
+        $this->assertInstanceOf(INabuDataReadable::class, $item);
+        $this->assertSame(1, count($list));
+        $this->assertSame('value 1', $item->getValue('key_1'));
+        $this->assertSame('value 2', $item->getValue('key_2'));
+    }
+
+    /**
      * @test merge
      */
     public function testMerge()
     {
-        $list_left = new CNabuDataListTesting('key_field');
+        $list_left = new CNabuAbstractDataListTesting('key_field');
         for ($i = 1; $i < 21; $i = $i + 2) {
-            $list_left->addItem(new CNabuDataListObjectTesting(
+            $list_left->addItem(new CNabuAbstractDataListObjectTesting(
                 array(
                     'key_field' => $i,
                     'key_value' => "value $i"
@@ -247,9 +267,9 @@ class CNabuDataListTest extends TestCase
             ));
         }
 
-        $list_right = new CNabuDataListTesting('key_field');
+        $list_right = new CNabuAbstractDataListTesting('key_field');
         for ($i = 2; $i < 22; $i = $i + 2) {
-            $list_right->addItem(new CNabuDataListObjectTesting(
+            $list_right->addItem(new CNabuAbstractDataListObjectTesting(
                 array(
                     'key_field' => $i,
                     'key_value' => "value $i"
@@ -257,7 +277,7 @@ class CNabuDataListTest extends TestCase
             ));
         }
 
-        $merge_list = new CNabuDataListTesting('key_field');
+        $merge_list = new CNabuAbstractDataListTesting('key_field');
         $merge_list->merge($list_left);
         $merge_list->merge($list_right);
 
@@ -271,7 +291,7 @@ class CNabuDataListTest extends TestCase
     {
         $list_left = array();
         for ($i = 1; $i < 21; $i = $i + 2) {
-            $list_left[$i] = new CNabuDataListObjectTesting(
+            $list_left[$i] = new CNabuAbstractDataListObjectTesting(
                 array(
                     'key_field' => $i,
                     'key_value' => "value $i"
@@ -281,7 +301,7 @@ class CNabuDataListTest extends TestCase
 
         $list_right = array();
         for ($i = 2; $i < 22; $i = $i + 2) {
-            $list_right[$i] = new CNabuDataListObjectTesting(
+            $list_right[$i] = new CNabuAbstractDataListObjectTesting(
                 array(
                     'key_field' => $i,
                     'key_value' => "value $i"
@@ -289,23 +309,170 @@ class CNabuDataListTest extends TestCase
             );
         }
 
-        $merge_list = new CNabuDataListTesting('key_field');
+        $merge_list = new CNabuAbstractDataListTesting('key_field');
         $merge_list->mergeArray($list_left);
         $merge_list->mergeArray($list_right);
 
         $this->assertSame(20, count($merge_list));
     }
+
+    /**
+     * @test __construct
+     * @test count
+     * @test current
+     * @test next
+     * @test key
+     * @test valid
+     * @test rewind
+     */
+    public function testConstructFromDataList()
+    {
+        $arrobj = array();
+        $arrobj2 = array();
+
+        for ($i = 1; $i < 11; $i++) {
+            $arrobj[$i - 1] = array(
+                'key_field' => $i,
+                'key_value' => "value $i"
+            );
+            $arrobj2[$i + 9] = array(
+                'key_field' => $i + 10,
+                'key_value' => 'value ' . ($i + 10)
+            );
+        }
+        $this->assertSame(10, count($arrobj));
+        $this->assertSame(10, count($arrobj2));
+
+        $arrmerge = array_merge($arrobj, $arrobj2);
+        $this->assertSame(20, count($arrmerge));
+
+        $list = new CNabuAbstractDataListTesting('key_field', $arrobj);
+        $this->assertSame(10, count($list));
+
+        $copy = new CNabuAbstractDataListTesting('key_field', $arrobj2);
+        $this->assertSame(10, count($copy));
+
+        $merge = new CNabuAbstractDataListTesting('key_field', $list);
+        $merge->merge($copy);
+        $this->assertSame(20, count($merge));
+
+        $i = 0;
+        foreach ($merge as $key => $value) {
+            $this->assertInstanceOf(CNabuAbstractDataListObjectTesting::class, $value);
+            $this->assertSame($arrmerge[$i]['key_field'], $value->getValue('key_field'));
+            $this->assertSame($arrmerge[$i]['key_value'], $value->getValue('key_value'));
+            $i++;
+        }
+        $this->assertSame(20, $i);
+    }
+
+    /**
+     * @test __construct
+     * @test count
+     * @test current
+     * @test next
+     * @test key
+     * @test valid
+     * @test rewind
+     */
+    public function testConstructFromArray()
+    {
+        $arrobj = array();
+        $arrobj2 = array();
+
+        for ($i = 1; $i < 11; $i++) {
+            $arrobj[$i - 1] = array(
+                'key_field' => $i,
+                'key_value' => "value $i"
+            );
+            $arrobj2[$i + 9] = array(
+                'key_field' => $i + 10,
+                'key_value' => 'value ' . ($i + 10)
+            );
+        }
+        $this->assertSame(10, count($arrobj));
+        $this->assertSame(10, count($arrobj2));
+
+        $arrmerge = array_merge($arrobj, $arrobj2);
+        $this->assertSame(20, count($arrmerge));
+
+        $list = new CNabuAbstractDataListTesting(null, $arrobj);
+        $this->assertSame(10, count($list));
+
+        $copy = new CNabuAbstractDataListTesting(null, $arrobj2);
+        $this->assertSame(10, count($copy));
+
+        $merge = new CNabuAbstractDataListTesting(null, $list);
+        $merge->merge($copy);
+        $this->assertSame(20, count($merge));
+
+        $i = 0;
+        foreach ($merge as $key => $value) {
+            $this->assertInstanceOf(CNabuAbstractDataListObjectTesting::class, $value);
+            $this->assertSame($arrmerge[$i]['key_field'], $value->getValue('key_field'));
+            $this->assertSame($arrmerge[$i]['key_value'], $value->getValue('key_value'));
+            $i++;
+        }
+        $this->assertSame(20, $i);
+    }
+
+    /**
+     * @test __construct
+     */
+    public function testConstructFails()
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage(sprintf(TRIGGER_ERROR_INVALID_ARGUMENT, '$source_list'));
+        $list = new CNabuAbstractDataListTesting(null, 23);
+    }
+
+    /**
+     * @test addItem
+     */
+    public function testAddItemFails()
+    {
+        $list = new CNabuAbstractDataListTesting();
+
+        $this->expectException(Error::class);
+        $this->expectExceptionMessage(sprintf(TRIGGER_ERROR_INVALID_ARGUMENT, '$key'));
+        $list->addItem(new CNabuAbstractDataListObjectTesting(), null);
+    }
+
+    /**
+     * @test mergeArray
+     */
+    public function testMergeArrayFails()
+    {
+        $list = new CNabuAbstractDataListTesting();
+
+        $this->expectException(UnexpectedValueException::class);
+        $list->mergeArray(array(58));
+    }
+
+    /**
+     * @test locateKey
+     */
+    public function testLocateKeyFails()
+    {
+        $this->expectException(UnexpectedValueException::class);
+        $list = new CNabuAbstractDataListTesting('key_exception', array('key_exception' => 1, 'key_value' => 'val 1'));
+    }
 }
 
-class CNabuDataListTesting extends CNabuDataList
+class CNabuAbstractDataListTesting extends CNabuAbstractDataList
 {
     protected function acquireItem($key): ?INabuDataReadable
     {
         return null;
     }
+
+    protected function createDataInstance(array $data): ?\nabu\data\interfaces\INabuDataReadable
+    {
+        return new CNabuAbstractDataListObjectTesting($data);
+    }
 }
 
-class CNabuDataListObjectTesting extends CNabuDataObject
+class CNabuAbstractDataListObjectTesting extends CNabuAbstractDataObject
 {
 
 }

@@ -26,14 +26,14 @@ use PHPUnit\Framework\Error\Notice;
 
 use PHPUnit\Framework\TestCase;
 
-use nabu\data\CNabuDataObject;
-use nabu\data\CNabuRODataObject;
+use nabu\data\CNabuAbstractDataObject;
+use nabu\data\CNabuAbstractRODataObject;
 
 /**
  * PHPUnit tests to verify functionality of class @see { TNabuHistoryData }.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
  * @since 3.0.2
- * @version 3.0.3
+ * @version 3.0.4
  * @package nabu\data\traits
  */
 class TNabuHistoryDataTest extends TestCase
@@ -49,7 +49,7 @@ class TNabuHistoryDataTest extends TestCase
         $object = new CNabuHistoryDataTestingWR();
         $this->assertTrue($object->isEmpty());
         $this->assertTrue($object->isHistoryEmpty());
-        $this->assertFalse($object->reset());
+        $this->assertSame($object, $object->clear());
         $this->assertFalse($object->resetHistory());
         $object->setValue('test_name', 'test_value');
         $this->assertTrue($object->push());
@@ -229,12 +229,12 @@ class TNabuHistoryDataTest extends TestCase
     }
 }
 
-class CNabuHistoryDataTestingWR extends CNabuDataObject
+class CNabuHistoryDataTestingWR extends CNabuAbstractDataObject
 {
     use TNabuHistoryData;
 }
 
-class CNabuHistoryDataTestingRO extends CNabuRODataObject
+class CNabuHistoryDataTestingRO extends CNabuAbstractRODataObject
 {
     use TNabuHistoryData;
 }

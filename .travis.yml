@@ -23,5 +23,7 @@ install:
 script:
     - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
     - git fetch --no-tags https://github.com/nabu-3/minimal-class.git +refs/heads/master:refs/remotes/origin/master
+    - chmod ug-r ./tests/nabu/infrastructure/reader/resources/no-readable-file.txt
     - ./vendor/bin/phpunit
+    - chmod ug+r ./tests/nabu/infrastructure/reader/resources/no-readable-file.txt
     - sonar-scanner

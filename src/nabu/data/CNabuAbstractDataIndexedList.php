@@ -22,6 +22,7 @@
 namespace nabu\data;
 
 use nabu\data\interfaces\INabuDataList;
+use nabu\data\interfaces\INabuDataIterable;
 use nabu\data\interfaces\INabuDataReadable;
 use nabu\data\interfaces\INabuDataListIndex;
 use nabu\data\interfaces\INabuDataIndexedList;
@@ -31,10 +32,10 @@ use nabu\data\interfaces\INabuDataIndexedList;
  * This class can also be extended by third party classes to inherit his functionality.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
  * @since 3.0.3
- * @version 3.0.3
+ * @version 3.0.4
  * @package \nabu\data
  */
-abstract class CNabuDataIndexedList extends CNabuDataList implements INabuDataIndexedList
+abstract class CNabuAbstractDataIndexedList extends CNabuAbstractDataList implements INabuDataIndexedList
 {
     /** @var string Index Pointer field name literal value. */
     private const INDEX_POINTER = 'pointer';
@@ -55,18 +56,14 @@ abstract class CNabuDataIndexedList extends CNabuDataList implements INabuDataIn
      */
     abstract protected function createSecondaryIndexes(): void;
 
-    /**
-     * Creates the instance and initiates the secondary index list.
-     * @param string $index_field Field index to be used for main indexation.
-     */
-    public function __construct(string $index_field)
+    public function __construct(?string $index_field = null, $source_list = null)
     {
-        parent::__construct($index_field);
-
         $this->createSecondaryIndexes();
+
+        parent::__construct($index_field, $source_list);
     }
 
-    public function clear(): INabuDataList
+    public function clear(): INabuDataIterable
     {
         parent::clear();
 
@@ -109,7 +106,7 @@ abstract class CNabuDataIndexedList extends CNabuDataList implements INabuDataIn
         return $retval;
     }
 
-    public function addItem(INabuDataReadable $item): INabuDataReadable
+    public function addItem(INabuDataReadable $item, $key = null): INabuDataReadable
     {
         $retval = parent::addItem($item);
 
@@ -157,9 +154,9 @@ abstract class CNabuDataIndexedList extends CNabuDataList implements INabuDataIn
         if ($this->isFilled()) {
             $count = parent::merge($list);
         } else {
-            $this->list = $list->list;
+            $this->data = $list->data;
             $this->secondary_indexes = $list->secondary_indexes;
-            $count = is_array($list->list) ? count($list->list) : 0;
+            $count = is_array($list->data) ? count($list->data) : 0;
         }
 
         return $count;
@@ -187,7 +184,7 @@ abstract class CNabuDataIndexedList extends CNabuDataList implements INabuDataIn
         ) {
             $retval = $this->secondary_indexes[$index];
         } else {
-            trigger_error(sprintf(TRIGGER_ERROR_INVALID_INDEX, $index));
+            trigger_error(sprintf(TRIGGER_ERROR_INVALID_INDEX, $index), E_USER_ERROR);
         }
 
         return $retval;
@@ -203,7 +200,7 @@ abstract class CNabuDataIndexedList extends CNabuDataList implements INabuDataIn
                 $this->secondary_indexes = null;
             }
         } else {
-            trigger_error(sprintf(TRIGGER_ERROR_INVALID_INDEX, $index));
+            trigger_error(sprintf(TRIGGER_ERROR_INVALID_INDEX, $index), E_USER_ERROR);
         }
     }
 
@@ -222,7 +219,7 @@ abstract class CNabuDataIndexedList extends CNabuDataList implements INabuDataIn
             array_key_exists(self::INDEX_POINTER, $pointer) &&
             $this->hasKey($pointer[self::INDEX_POINTER])
         ) {
-            $retval = $this->list[$pointer[self::INDEX_POINTER]];
+            $retval = $this->data[$pointer[self::INDEX_POINTER]];
         }
 
         if (is_null($retval)) {

@@ -21,34 +21,24 @@
 
 namespace nabu\data;
 
-use nabu\data\interfaces\INabuDataReadable;
+use LogicException;
 
-use \nabu\min\CNabuObject;
+use nabu\data\interfaces\INabuDataIterable;
+use nabu\data\interfaces\INabuDataReadable;
 
 /**
  * Abstract class to implement read only data objects of nabu-3.
  * This class can also be extended by third party classes to inherit his functionality.
  * @author Rafael Gutierrez <rgutierrez@nabu-3.com>
  * @since 3.0.2
- * @version 3.0.3
+ * @version 3.0.4
  * @package \nabu\data
  */
-abstract class CNabuRODataObject extends CNabuObject implements INabuDataReadable
+abstract class CNabuAbstractRODataObject extends CNabuAbstractDataIterable implements INabuDataReadable
 {
-    /** @var array|null Data stored in the instance. Functions that applies to set data in this instance modifies this
-     * array. */
-    protected $data = null;
-
-    public function __construct(array $data = null)
+    public function clear(): INabuDataIterable
     {
-        parent::__construct();
-
-        $this->data = $data;
-    }
-
-    public function isEmpty(): bool
-    {
-        return ($this->data === null) || (count($this->data) == 0);
+        throw new LogicException('Read only data objects cannot be clean.');
     }
 
     public function hasValue(string $name): bool
@@ -59,11 +49,6 @@ abstract class CNabuRODataObject extends CNabuObject implements INabuDataReadabl
     public function getValue(string $name)
     {
         return ($this->data == null || !array_key_exists($name, $this->data) ? null : $this->data[$name]);
-    }
-
-    public function count(): int
-    {
-        return is_array($this->data) ? count($this->data) : 0;
     }
 
     public function getValuesAsArray(): ?array
@@ -236,18 +221,18 @@ abstract class CNabuRODataObject extends CNabuObject implements INabuDataReadabl
 
     /**
      * Check if a value of this instance matches another value in another instance.
-     * @param CNabuRODataObject|null $object Object instance to match values.
+     * @param CNabuAbstractRODataObject|null $object Object instance to match values.
      * @param string|null $source_name Source name of value to match.
      * @param string|null $target_name Target name in $object to match. If null, then uses $source_name.
      * @param bool $strict If true comparation is strict (uses === to match).
      * @return bool Returns true if both values exists and matchs.
      */
     public function matchValue(
-        CNabuRODataObject $object = null, string $source_name = null, string $target_name = null, bool $strict = false
+        CNabuAbstractRODataObject $object = null, string $source_name = null, string $target_name = null, bool $strict = false
     ): bool {
         $retval = false;
 
-        if ($object instanceof CNabuRODataObject) {
+        if ($object instanceof CNabuAbstractRODataObject) {
             $target_name = (is_string($target_name) ? $target_name : $source_name);
             $retval = $this->hasValue($source_name) &&
                       $object->hasValue($target_name) &&
