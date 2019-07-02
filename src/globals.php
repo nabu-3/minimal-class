@@ -19,15 +19,15 @@ const TRIGGER_ERROR_REQUIRED_FIELDS_NOT_FOUND_IN_LINE = "Required field(s) [%s] 
 const NABU_ARRAY_CHARACTER_WITH_TILDE = array(
     'á', 'é', 'í', 'ó', 'ú',
     'à', 'è', 'ì', 'ò', 'ù',
-    'ä', 'ë', 'ï', 'ö', 'ü',
-    'ÿ', 'â', 'ê', 'î', 'ô',
-    'û', 'ã', 'õ', 'ç'
+    'ä', 'ë', 'ï', 'ö', 'ü', 'ÿ',
+    'â', 'ê', 'î', 'ô', 'û',
+    'ã', 'õ', 'ç', 'ñ'
 );
 /** @var array Equivalent array list of vowels and consonants without tildes in UTF-8. */
 const NABU_ARRAY_CHARACTER_CANONICAL = array(
     'a', 'e', 'i', 'o', 'u',
     'a', 'e', 'i', 'o', 'u',
+    'a', 'e', 'i', 'o', 'u', 'y',
     'a', 'e', 'i', 'o', 'u',
-    'y', 'a', 'e', 'i', 'o',
-    'u', 'a', 'o', 'c'
+    'a', 'o', 'c', 'n'
 );
