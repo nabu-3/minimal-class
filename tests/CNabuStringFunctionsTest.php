@@ -60,4 +60,29 @@ class CNabUStringFunctionsTest extends TestCase
         $this->assertFalse(nb_strEndsWith('áccènt', 'ent'));
         $this->assertFalse(nb_strEndsWith('accent', 'ènt'));
     }
+
+    /**
+     * @return array Returns an array with a collection of tests.
+     */
+    public function getCanonicalStringDataProvider(): array
+    {
+        return [
+            ['àèìòù-aeiou', 'aeiou-aeiou'],
+            ['áéíóú-aeiou', 'aeiou-aeiou'],
+            ['äëïöü-aeiou', 'aeiou-aeiou'],
+            ['âêîôû-aeiou', 'aeiou-aeiou'],
+            ['ãõçñ-aocn', 'aocn-aocn']
+        ];
+    }
+
+    /**
+     * @test ::nb_getCanonicalString()
+     * @dataProvider getCanonicalStringDataProvider
+     * @param string|null $source Source string to test.
+     * @param string|null $target Target string to verify the test.
+     */
+    public function testNbGetCanonicalString(?string $source, ?string $target)
+    {
+        $this->assertSame($target, nb_getCanonicalString($source));
+    }
 }

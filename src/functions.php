@@ -115,3 +115,14 @@ function nb_getMixedValue($object, string $field, ?string $type = null)
 
     return $value;
 }
+
+/**
+ * Transform a string containing special characters defined in the array @see { NABU_ARRAY_CHARACTER_WITH_TILDE }
+ * with equivalent characters defined in the array @see { NABU_ARRAY_CHARACTER_CANONICAL }.
+ * @param string|null $string The string to canonicalize.
+ * @return string|null Returns the canonizalized string.
+ */
+function nb_getCanonicalString(?string $string): ?string
+{
+    return is_null($string) ? null : str_replace(NABU_ARRAY_CHARACTER_WITH_TILDE, NABU_ARRAY_CHARACTER_CANONICAL, $string);
+}
